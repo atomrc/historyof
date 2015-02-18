@@ -1,14 +1,16 @@
 /*global require*/
 var gulp = require("gulp"),
     browserify = require("gulp-browserify"),
-    uglify = require("gulp-uglify");
+    uglify = require("gulp-uglify"),
+    react = require("gulp-react");
 
 gulp.task("default", function() {
     "use strict";
     gulp
         .src("./src/js/application.js")
+        .pipe(react())
         .pipe(browserify())
-        .pipe(uglify())
+        //.pipe(uglify())
         .pipe(gulp.dest("./public/js"));
 });
 

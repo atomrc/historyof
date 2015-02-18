@@ -9,6 +9,7 @@
   "author": "Thomas Belin",
   "license": "ISC",
   "dependencies": {
-    "mongoose": "^3.8.23"
+    "mongoose": "^3.8.23",
+    "restify": "^2.8.5"
   }
 }

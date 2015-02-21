@@ -94,7 +94,7 @@
                 <div onClick={this.editEvent}>
                     <h2>{this.state.event.title}</h2>
                     <em>{this.state.event.date.toDateString()}</em>
-                    <p>{this.state.event.text}</p>
+                    <p dangerouslySetInnerHTML={{__html: this.state.event.text.replace(/\n/g, "<br>")}}></p>
                 </div>
             );
         }

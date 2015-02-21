@@ -37,7 +37,6 @@
 
         componentDidMount: function() {
           document.addEventListener("eventCreated", this.eventCreated);
-          document.addEventListener("eventUpdated", this.eventUpdated);
           this.loadEvents();
         },
 
@@ -67,16 +66,35 @@
     });
 
     var Event = React.createClass({
+        getInitialState: function () {
+            return this.props;
+        },
+
+        componentDidMount: function() {
+          document.addEventListener("eventUpdated", this.eventUpdated);
+        },
+
+        componentWillUnmount: function () {
+            document.removeEventListener("eventUpdated");
+        },
+
         editEvent: function () {
-            document.dispatchEvent(new CustomEvent("eventEdited", { detail: this.props.event }));
+            document.dispatchEvent(new CustomEvent("eventEdited", { detail: this.state.event }));
+        },
+
+        eventUpdated: function (e) {
+            var updatedEvent = e.detail;
+            if (updatedEvent.id === this.state.event.id) {
+                this.setState({ event: updatedEvent });
+            }
         },
 
         render: function () {
             return (
                 <div onClick={this.editEvent}>
-                    <h2>{this.props.event.title}</h2>
-                    <em>{this.props.event.date.toDateString()}</em>
-                    <p>{this.props.event.text}</p>
+                    <h2>{this.state.event.title}</h2>
+                    <em>{this.state.event.date.toDateString()}</em>
+                    <p>{this.state.event.text}</p>
                 </div>
             );
         }
@@ -117,7 +135,6 @@
         render: function () {
             return (
                 <form style={this.state.style} onSubmit={this.saveEvent}>
-                    <div>{JSON.stringify(this.state.event, null, 4)}</div>
                     <input type="text" name="title" value={this.state.event.title} onChange={this.updateEvent}/>
                     <input type="date" name="date" value={this.state.event.date} onChange={this.updateEvent}/>
                     <textarea name="text" value={this.state.event.text} onChange={this.updateEvent}/>

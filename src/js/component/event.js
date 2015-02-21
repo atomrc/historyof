@@ -8,18 +8,22 @@
         },
 
         componentDidMount: function() {
-          document.addEventListener("eventUpdated", this.eventUpdated);
+            document.addEventListener("eventUpdated", this.updateEvent);
         },
 
         componentWillUnmount: function () {
-            document.removeEventListener("eventUpdated");
+            document.removeEventListener("eventUpdated", this.updateEvent);
         },
 
-        editEvent: function () {
+        edit: function () {
             document.dispatchEvent(new CustomEvent("eventEdited", { detail: this.state.event }));
         },
 
-        eventUpdated: function (e) {
+       remove: function () {
+            document.dispatchEvent(new CustomEvent("eventRemoved", { detail: this.state.event }));
+        },
+
+        updateEvent: function (e) {
             var updatedEvent = e.detail;
             if (updatedEvent.id === this.state.event.id) {
                 this.setState({ event: updatedEvent });
@@ -28,7 +32,9 @@
 
         render: function () {
             return (
-                <div onClick={this.editEvent}>
+                <div>
+                    <a href="#" onClick={this.edit}>edit</a>&nbsp;
+                    <a href="#" onClick={this.remove}>delete</a>
                     <h2>{this.state.event.title}</h2>
                     <em>{this.state.event.date.toDateString()}</em>
                     <p dangerouslySetInnerHTML={{__html: this.state.event.text.replace(/\n/g, "<br>")}}></p>

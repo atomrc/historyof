@@ -14,6 +14,17 @@
             return {events: []};
         },
 
+        componentDidMount: function() {
+          document.addEventListener("eventCreated", this.addEvent);
+          document.addEventListener("eventRemoved", this.removeEvent);
+          this.loadEvents();
+        },
+
+        componentWillUnmount: function () {
+            document.removeEventListener("eventCreated", this.addEvent);
+            document.removeEventListener("eventRemoved", this.removeEvent);
+        },
+
         loadEvents: function () {
             var self = this,
                 request = new XMLHttpRequest();
@@ -29,19 +40,18 @@
             request.send();
         },
 
-        eventCreated: function (event) {
+        addEvent: function (e) {
             this.setState({
                 events: this.state.events.concat(event.detail)
             });
         },
 
-        componentDidMount: function() {
-          document.addEventListener("eventCreated", this.eventCreated);
-          this.loadEvents();
-        },
-
-        componentWillUnmount: function () {
-            document.removeEventListener("eventCreated");
+        removeEvent: function (e) {
+            this.setState({
+                events: this.state.events.filter(function (event) {
+                    return event.id !== e.detail.id;
+                })
+            });
         },
 
         render: function() {

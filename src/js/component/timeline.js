@@ -42,7 +42,7 @@
 
         addEvent: function (e) {
             this.setState({
-                events: this.state.events.concat(event.detail)
+                events: this.state.events.concat(e.detail)
             });
         },
 

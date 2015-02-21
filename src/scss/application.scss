@@ -7,3 +7,22 @@
         background-color: white;
     }
 }
+
+button.material {
+    border: none;
+    position: fixed;
+    right: 1em;
+    bottom: 1em;
+    box-shadow: 0 4px 4px #999;
+    border-radius: 1.25em;
+    width: 2.5em;
+    height: 2.5em;
+    line-height: 2.5em;
+    cursor: pointer;
+}
+
+#add-button {
+    font-size: 1.5em;
+    background-color: red;
+    color: white;
+}

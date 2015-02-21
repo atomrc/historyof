@@ -9,10 +9,20 @@
 
         componentDidMount: function() {
           document.addEventListener("eventEdited", this.edit);
+          document.addEventListener("createEvent", this.create);
+        },
+
+        componentDidunMount: function() {
+          document.removeEventListener("eventEdited", this.edit);
+          document.removeEventListener("createEvent", this.create);
         },
 
         resetState: function () {
             this.replaceState(this.getInitialState());
+        },
+
+        create: function () {
+            this.setState({ style: { display: "block" },  event: { date: new Date() }});
         },
 
         edit: function (e) {

@@ -19,7 +19,7 @@
             document.dispatchEvent(new CustomEvent("eventEdited", { detail: this.state.event }));
         },
 
-       remove: function () {
+        remove: function () {
             document.dispatchEvent(new CustomEvent("eventRemoved", { detail: this.state.event }));
         },
 

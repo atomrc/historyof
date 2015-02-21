@@ -6,13 +6,14 @@ var gulp = require("gulp"),
     uglify = require("gulp-uglify"),
     jade = require("gulp-jade"),
     sass = require("gulp-sass"),
-    react = require("gulp-react");
+    reactify = require("reactify");
 
 gulp.task("js", function() {
     gulp
         .src("./src/js/application.js")
-        .pipe(react())
-        .pipe(browserify())
+        .pipe(browserify({
+            transform: [reactify]
+        }))
         //.pipe(uglify())
         .pipe(gulp.dest("./public/js"));
 });
@@ -31,7 +32,7 @@ gulp.task("sass", function () {
 });
 
 gulp.task("watch", function () {
-    gulp.watch("src/js/*.js", ["js"]);
+    gulp.watch("src/js/**/*.js", ["js"]);
     gulp.watch("src/scss/*.scss", ["sass"]);
     gulp.watch("src/index.jade", ["jade"]);
 });

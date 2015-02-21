@@ -1,11 +1,13 @@
-/*global require*/
+/*eslint-env node */
+"use strict";
+
 var gulp = require("gulp"),
     browserify = require("gulp-browserify"),
     uglify = require("gulp-uglify"),
+    jade = require("gulp-jade"),
     react = require("gulp-react");
 
-gulp.task("default", function() {
-    "use strict";
+gulp.task("js", function() {
     gulp
         .src("./src/js/application.js")
         .pipe(react())
@@ -14,7 +16,14 @@ gulp.task("default", function() {
         .pipe(gulp.dest("./public/js"));
 });
 
+gulp.task("jade", function () {
+    gulp
+        .src("./src/index.jade")
+        .pipe(jade())
+        .pipe(gulp.dest("./public"));
+});
+
 gulp.task("watch", function () {
-    "use strict";
-    return gulp.watch("src/js/*.js", ["default"]);
+    gulp.watch("src/js/*.js", ["js"]);
+    gulp.watch("src/index.jade", ["jade"]);
 });

@@ -1,29 +1,38 @@
 (function () {
     "use strict";
-    var React = require("react");
+    var React = require("react"),
+        eventManager = require("../event/manager"),
+        eventEvents = require("../event/event-events");
 
     var Event = React.createClass({
         getInitialState: function () {
             return this.props;
         },
 
+        setEventListeners: function (up)
+        {
+            var listeners = {};
+            listeners[eventEvents.updated] = this.update;
+            eventManager.setEventListeners(listeners, up);
+        },
+
         componentDidMount: function() {
-            document.addEventListener("eventUpdated", this.updateEvent);
+          this.setEventListeners(true);
         },
 
         componentWillUnmount: function () {
-            document.removeEventListener("eventUpdated", this.updateEvent);
+            this.setEventListeners(false);
         },
 
         edit: function () {
-            document.dispatchEvent(new CustomEvent("eventEdited", { detail: this.state.event }));
+            eventManager.dispatchEvent(eventEvents.request.update, this.state.event);
         },
 
         remove: function () {
-            document.dispatchEvent(new CustomEvent("eventRemoved", { detail: this.state.event }));
+            eventManager.dispatchEvent(eventEvents.request.remove, this.state.event);
         },
 
-        updateEvent: function (e) {
+        update: function (e) {
             var updatedEvent = e.detail;
             if (updatedEvent.id === this.state.event.id) {
                 this.setState({ event: updatedEvent });

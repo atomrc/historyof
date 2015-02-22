@@ -1,7 +1,9 @@
 (function () {
     "use strict";
     var React = require("react"),
-        Event = require("./event");
+        Event = require("./event"),
+        eventManager = require("../event/manager"),
+        eventEvents = require("../event/event-events");
 
     /**
      * Will handle and display all the event of the timeline
@@ -14,15 +16,21 @@
             return {events: []};
         },
 
+        setEventListeners: function (up)
+        {
+            var listeners = {};
+            listeners[eventEvents.created] = this.addEvent;
+            listeners[eventEvents.removed] = this.removeEvent;
+            eventManager.setEventListeners(listeners, up);
+        },
+
         componentDidMount: function() {
-          document.addEventListener("eventCreated", this.addEvent);
-          document.addEventListener("eventRemoved", this.removeEvent);
+          this.setEventListeners(true);
           this.loadEvents();
         },
 
         componentWillUnmount: function () {
-            document.removeEventListener("eventCreated", this.addEvent);
-            document.removeEventListener("eventRemoved", this.removeEvent);
+            this.setEventListeners(false);
         },
 
         loadEvents: function () {

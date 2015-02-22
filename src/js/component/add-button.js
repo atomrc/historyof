@@ -1,12 +1,14 @@
 /*global require*/
 (function () {
     "use strict";
-    var React = require("react");
+    var React = require("react"),
+        eventManager = require("../event/manager"),
+        eventEvents = require("../event/event-events");
 
     var AddButton = React.createClass({
 
         sendAddEvent: function () {
-            document.dispatchEvent(new CustomEvent("createEvent", {}));
+            eventManager.dispatchEvent(eventEvents.request.create, {});
         },
 
         render: function () {

@@ -1,20 +1,29 @@
 (function () {
     "use strict";
-    var React = require("react");
+    var React = require("react"),
+        eventManager = require("../event/manager"),
+        eventEvents = require("../event/event-events");
 
     var EventForm = React.createClass({
+
         getInitialState: function() {
             return { style: { display: "none" }, event: {} };
         },
 
-        componentDidMount: function() {
-          document.addEventListener("eventEdited", this.edit);
-          document.addEventListener("createEvent", this.create);
+        setEventListeners: function (up)
+        {
+            var listeners = {};
+            listeners[eventEvents.request.update] = this.edit;
+            listeners[eventEvents.request.create] = this.create;
+            eventManager.setEventListeners(listeners, up);
         },
 
-        componentDidunMount: function() {
-          document.removeEventListener("eventEdited", this.edit);
-          document.removeEventListener("createEvent", this.create);
+        componentDidMount: function() {
+            this.setEventListeners(true);
+        },
+
+        componentWillUnmount: function () {
+            this.setEventListeners(false);
         },
 
         resetState: function () {
@@ -33,12 +42,12 @@
             e.preventDefault();
             var event = this.state.event;
             var eventName = event.id ? 
-                "eventUpdated" :
-                "eventCreated";
+                eventEvents.updated :
+                eventEvents.created;
 
             event.date = new Date(event.date);
 
-            document.dispatchEvent(new CustomEvent(eventName, { detail: event }));
+            eventManager.dispatchEvent(eventName, event);
             this.resetState();
         },
 

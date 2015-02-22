@@ -1,7 +1,7 @@
 (function () {
     "use strict";
     var React = require("react"),
-        Event = require("./event"),
+        Year = require("./year"),
         eventManager = require("../event/manager"),
         eventEvents = require("../event/event-events");
 
@@ -63,21 +63,31 @@
         },
 
         render: function() {
-            var eventNodes = this.state.events
+            var sortedEvents = this.state.events
                 .sort(function (e1, e2) {
                     if (e1.date === e2.date) { return 0; }
                     return e1.date < e2.date ? -1 : 1;
-                })
-                .map(function (event) {
-                    return (
-                        <Event event={event} key={event.id + '-' + event.title}/>
-                    );
                 });
+            var yearsHash = {};
 
+            sortedEvents.forEach(function (event) {
+                var year = event.date.getFullYear().toString();
+                if (!yearsHash[year]) {
+                    yearsHash[year] = [];
+                }
+                yearsHash[year].push(event);
+            });
+
+            var yearsNodes = [];
+            for (var i in yearsHash) {
+                yearsNodes.push((
+                    <Year key={"year-" + i} year={i} events={yearsHash[i]}/>
+                ));
+            }
             return (
             <div>
               <h1>Timeline</h1>
-                <div className="eventList"> {eventNodes} </div>
+                <div> {yearsNodes} </div>
             </div>
             );
         }

@@ -1,10 +1,38 @@
+.timeline {
+    width: 500px;
+    margin: auto;
+
+    .event {
+        &.closed {
+            .actions { display: none; }
+        }
+        header {
+            position: relative;
+            .title-bar {
+                cursor: pointer;
+            }
+            .actions {
+                position: absolute;
+                right: 1em;
+            }
+        }
+    }
+}
+
 #form {
     form {
         position: fixed;
+        top: 0;
         right: 0;
         height: 100%;
         width: 500px;
         background-color: white;
+    }
+}
+
+.toggle {
+    &.closed {
+        display: none;
     }
 }
 

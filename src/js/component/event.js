@@ -6,7 +6,10 @@
 
     var Event = React.createClass({
         getInitialState: function () {
-            return this.props;
+            return {
+                event: this.props.event,
+                open: false
+            };
         },
 
         setEventListeners: function (up)
@@ -22,6 +25,10 @@
 
         componentWillUnmount: function () {
             this.setEventListeners(false);
+        },
+
+        toggle: function () {
+            this.setState({ open: !this.state.open });
         },
 
         edit: function () {
@@ -40,13 +47,31 @@
         },
 
         render: function () {
+            var icon = "fa ";
+            switch (this.state.event.type) {
+                case "email":
+                    icon += "fa-envelope";
+                    break;
+                default:
+                    icon += "fa-question";
+                    break;
+            }
+
+            var classes = this.state.open ? "" : "closed";
+
             return (
-                <div>
-                    <a href="#" onClick={this.edit}>edit</a>&nbsp;
-                    <a href="#" onClick={this.remove}>delete</a>
-                    <h2>{this.state.event.title}</h2>
-                    <em>{this.state.event.date.toDateString()}</em>
-                    <p dangerouslySetInnerHTML={{__html: this.state.event.text.replace(/\n/g, "<br>")}}></p>
+                <div className={"event " + classes}>
+                    <header>
+                        <span className="title-bar" onClick={this.toggle}>
+                            <span><i className={icon}></i> {this.state.event.title}</span>
+                            <em>{this.state.event.date.toDateString()}</em>
+                        </span>
+                        <span className="actions">
+                            <a href="#" onClick={this.edit}><i className="fa fa-pencil"></i></a>&nbsp;
+                            <a href="#" onClick={this.remove}><i className="fa fa-times"></i></a>
+                        </span>
+                    </header>
+                    <p className={"toggle " + classes} dangerouslySetInnerHTML={{__html: this.state.event.text.replace(/\n/g, "<br>")}}></p>
                 </div>
             );
         }

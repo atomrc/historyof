@@ -85,9 +85,8 @@
                 ));
             }
             return (
-            <div>
-              <h1>Timeline</h1>
-                <div> {yearsNodes} </div>
+            <div className="timeline">
+                <div>{yearsNodes}</div>
             </div>
             );
         }

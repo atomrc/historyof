@@ -1,6 +1,7 @@
 (function () {
     "use strict";
     var React = require("react"),
+        moment = require("moment"),
         eventManager = require("../event/manager"),
         eventEvents = require("../event/event-events");
 
@@ -64,7 +65,7 @@
                     <header>
                         <span className="title-bar" onClick={this.toggle}>
                             <span><i className={icon}></i> {this.state.event.title}</span>
-                            <em>{this.state.event.date.toDateString()}</em>
+                            <em>{moment(this.state.event.date).format("d MMMM YYYY")}</em>
                         </span>
                         <span className="actions">
                             <a href="#" onClick={this.edit}><i className="fa fa-pencil"></i></a>&nbsp;

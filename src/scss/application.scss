@@ -2,6 +2,11 @@
     width: 500px;
     margin: auto;
 
+
+    .month {
+        padding: 1em 0;
+    }
+
     .event {
         &.closed {
             .actions { display: none; }

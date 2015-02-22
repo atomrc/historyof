@@ -43,9 +43,6 @@
 
 button.material {
     border: none;
-    position: fixed;
-    right: 1em;
-    bottom: 1em;
     box-shadow: 0 4px 4px #999;
     border-radius: 1.25em;
     width: 2.5em;
@@ -54,6 +51,11 @@ button.material {
     cursor: pointer;
 }
 
+#add-button-container {
+    position: fixed;
+    right: 1em;
+    bottom: 1em;
+}
 #add-button {
     font-size: 1.5em;
     background-color: red;

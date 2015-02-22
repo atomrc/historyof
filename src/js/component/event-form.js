@@ -30,8 +30,8 @@
             this.replaceState(this.getInitialState());
         },
 
-        create: function () {
-            this.setState({ style: { display: "block" },  event: { date: new Date() }});
+        create: function (e) {
+            this.setState({ style: { display: "block" },  event: { type: e.detail.type, date: new Date() }});
         },
 
         edit: function (e) {

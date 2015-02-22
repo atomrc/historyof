@@ -3,7 +3,8 @@
     var React = require("react"),
         moment = require("moment"),
         eventManager = require("../event/manager"),
-        eventEvents = require("../event/event-events");
+        eventEvents = require("../event/event-events"),
+        eventTypes = require("../config/event-types");
 
     var Event = React.createClass({
         getInitialState: function () {
@@ -48,15 +49,7 @@
         },
 
         render: function () {
-            var icon = "fa ";
-            switch (this.state.event.type) {
-                case "email":
-                    icon += "fa-envelope";
-                    break;
-                default:
-                    icon += "fa-question";
-                    break;
-            }
+            var icon = (eventTypes.getType(this.state.event.type) || {}).icon;
 
             var classes = this.state.open ? "" : "closed";
 
@@ -64,8 +57,11 @@
                 <div className={"event " + classes}>
                     <header>
                         <span className="title-bar" onClick={this.toggle}>
-                            <span><i className={icon}></i> {this.state.event.title}</span>
-                            <em>{moment(this.state.event.date).format("d MMMM YYYY")}</em>
+                            <span>
+                                <i className={"fa " + icon}></i>&nbsp;
+                                <em>{moment(this.state.event.date).format("DD-MM-YYYY")}</em> -&nbsp;
+                                <strong>{this.state.event.title}</strong>
+                            </span>
                         </span>
                         <span className="actions">
                             <a href="#" onClick={this.edit}><i className="fa fa-pencil"></i></a>&nbsp;

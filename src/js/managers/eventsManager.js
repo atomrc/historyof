@@ -13,17 +13,31 @@
         },
 
         get: function (id) {
+            return events.filter(function (e) {
+                return e.id === id;
+            })[0];
+        },
+
+        getIndex: function (id) {
+            return events.reduce(function (prev, e, index) {
+                return e.id === id ? index : prev;
+            }, -1);
         },
 
         update: function (id, data) {
+            var i = this.getIndex(id);
+            events[i] = JSON.parse(JSON.stringify(data));
+            events[i].date = new Date(events[i].date);
         },
 
         remove: function (id) {
+            events = events.filter(function (e) {
+                return e.id !== id;
+            });
         },
 
         add: function (event) {
             events = events.concat(event);
-            this.emitChange();
         },
 
         addChangeListener: function (callback) {
@@ -42,6 +56,17 @@
         switch (action) {
             case "create":
                 this.add(payload);
+                this.emitChange();
+                break;
+
+            case "update":
+                this.update(payload.id, payload);
+                this.emitChange();
+                break;
+
+            case "remove":
+                this.remove(payload);
+                this.emitChange();
                 break;
         }
     }.bind(eventsManager));

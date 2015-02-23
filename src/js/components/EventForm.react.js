@@ -9,6 +9,12 @@
             return { event: {} };
         },
 
+        componentDidMount: function () {
+            document.addEventListener("edit", function (e) {
+                this.setState({ event: e.detail });
+            }.bind(this));
+        },
+
         componentWillReceiveProps: function (nextProp) {
             this.setState({ event: nextProp.event });
         },
@@ -24,7 +30,13 @@
             var event = this.state.event;
             event.date = new Date(event.date);
             this.replaceState(this.getInitialState());
-            appDispatcher.dispatch("create", event);
+
+            var action = event.id ? "update" : "create";
+            appDispatcher.dispatch(action, event);
+        },
+
+        cancel: function () {
+            this.replaceState(this.getInitialState());
         },
 
         render: function () {
@@ -34,7 +46,7 @@
             }
 
             return (
-                <form style={style} onSubmit={this.save}>
+                <form id="event-form" style={style} onSubmit={this.save}>
                     <input type="text" name="title" value={this.state.event.title || ""} onChange={this.onChange}/>
                     <br/>
                     <input type="date" name="date" value={this.state.event.date} onChange={this.onChange}/>

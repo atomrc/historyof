@@ -14,6 +14,14 @@
             this.setState({ open: !this.state.open });
         },
 
+        remove: function (e) {
+            appDispatcher.dispatch("remove", this.props.event.id);
+        },
+
+        edit: function () {
+            document.dispatchEvent(new CustomEvent("edit", { detail: this.props.event }));
+        },
+
         render: function () {
             var event = this.props.event,
                 classes = this.state.open ? "" : "closed",
@@ -30,8 +38,8 @@
                             </span>
                         </span>
                         <span className="actions">
-                            <a href="#" onClick={this.edit}><i className="fa fa-pencil"></i></a>&nbsp;
-                            <a href="#" onClick={this.remove}><i className="fa fa-times"></i></a>
+                            <a href="javascript:void(0)" onClick={this.edit}><i className="fa fa-pencil"></i></a>&nbsp;
+                            <a href="javascript:void(0)" onClick={this.remove}><i className="fa fa-times"></i></a>
                         </span>
                     </header>
                     <p className={"toggle " + classes} dangerouslySetInnerHTML={{__html: event.text.replace(/\n/g, "<br>")}}></p>

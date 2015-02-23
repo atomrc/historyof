@@ -2,8 +2,6 @@
     "use strict";
     var React = require("react"),
         Timeline = require("./Timeline.react"),
-        PureRenderMixin = require('react/addons').addons.PureRenderMixin,
-        //AddButton = require("./AddButton.react"),
         AddButton = require("./AddButton.react");
 
     /**
@@ -13,8 +11,6 @@
      * @return {undefined}
      */
     var HistoryOfApp = React.createClass({
-
-        mixins: [PureRenderMixin],
 
         render: function () {
             return (

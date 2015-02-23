@@ -2,7 +2,6 @@
     "use strict";
     var React = require("react"),
         Year = require("./Year.react"),
-        PureRenderMixin = require('react/addons').addons.PureRenderMixin,
         eventsManager = require("../managers/eventsManager");
 
     function getState() {
@@ -17,8 +16,6 @@
      * @return {undefined}
      */
     var Timeline = React.createClass({
-
-        mixins: [PureRenderMixin],
 
         getInitialState: function () {
             return getState();

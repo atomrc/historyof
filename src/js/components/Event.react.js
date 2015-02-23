@@ -2,9 +2,13 @@
     "use strict";
     var React = require("react"),
         moment = require("moment"),
+        appDispatcher = require("../dispatcher/appDispatcher"),
+        PureRenderMixin = require('react/addons').addons.PureRenderMixin,
         eventTypes = require("../config/eventTypes");
 
     var Event = React.createClass({
+
+        mixins: [PureRenderMixin],
 
         getInitialState: function () {
             return { open: false };

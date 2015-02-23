@@ -2,20 +2,21 @@
 (function () {
     "use strict";
     var React = require("react"),
-        eventManager = require("../event/manager"),
-        eventEvents = require("../event/event-events"),
-        eventTypes = require("../config/event-types").getTypes();
+        EventForm = require("./EventForm.react"),
+        eventTypes = require("../config/eventTypes").getTypes();
 
     var AddButton = React.createClass({
 
-        createType: function (type) {
-            return function () {
-                this.sendAddEvent({ type: type });
-            }.bind(this);
+        getInitialState: function () {
+            return {
+                event: {}
+            };
         },
 
-        sendAddEvent: function (data) {
-            eventManager.dispatchEvent(eventEvents.request.create, data);
+        createType: function (type) {
+            return function () {
+                this.setState({ event: { type: type, date: new Date() }});
+            }.bind(this);
         },
 
         render: function () {
@@ -24,12 +25,16 @@
                     <button key={type.name} onClick={this.createType(type.name)}><i className={"fa " + type.icon}></i></button>
                 );
             }.bind(this));
+
             return (
-                <div id="add-button-container">
-                    <div>
-                        {creationButtons}
+                <div>
+                    <EventForm event={this.state.event}/>
+                    <div id="add-button-container">
+                        <div>
+                            {creationButtons}
+                        </div>
+                        <button id="add-button" className="material" onClick={this.chooseEventType}>+</button>
                     </div>
-                    <button id="add-button" className="material" onClick={this.chooseEventType}>+</button>
                 </div>
             );
         }

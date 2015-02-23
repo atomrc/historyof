@@ -1,10 +1,8 @@
 (function () {
     "use strict";
     var React = require("react"),
-        Event = require("./event"),
-        moment = require("moment"),
-        eventManager = require("../event/manager"),
-        eventEvents = require("../event/event-events");
+        Event = require("./Event.react"),
+        moment = require("moment");
 
     var Year = React.createClass({
         getInitialState: function () {
@@ -16,24 +14,29 @@
         },
 
         render: function () {
-            var monthHash = {},
-                months = [];
-            this.props.events.forEach(function (event) {
-                var key = moment(event.date).format("MMMM");
-                if (!monthHash[key]) {
-                    monthHash[key] = [];
-                }
-                monthHash[key].push(event);
-            });
+            var monthNodes = [],
+                groupedEvents = this
+                    .props
+                    .events
+                    .sort(function (e1, e2) {
+                        if (e1.date === e2.date) { return 0; }
+                        return e1.date < e2.date ? -1 : 1;
+                    })
+                    .reduce(function (obj, e) {
+                        var key = moment(e.date).format("MMMM");
+                        if (!obj[key]) { obj[key] = [] }
+                        obj[key].push(e);
+                        return obj;
+                    }, {});
 
-            for (var i in monthHash) {
-                var events = monthHash[i].map(function (event) {
+            for (var i in groupedEvents) {
+                var events = groupedEvents[i].map(function (event) {
                     return (
                         <Event event={event} key={event.id}/>
                     );
                 });
 
-                months.push((
+                monthNodes.push((
                     <div key={i}>
                         <div className="month">{i} ({events.length})</div>
                         <div>{events}</div>
@@ -41,13 +44,12 @@
                 ));
             }
 
-
             var classes = this.state.open ? "toggle" : "toggle closed";
 
             return (
                 <div>
                     <h2 onClick={this.toggle}>{this.props.year} <em>({this.props.events.length})</em></h2>
-                    <div className={classes}>{months}</div>
+                    <div className={classes}>{monthNodes}</div>
                 </div>
             );
         }

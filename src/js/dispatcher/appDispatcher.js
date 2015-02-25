@@ -13,6 +13,10 @@
         },
 
         dispatch: function (action, payload) {
+            if (!action) {
+                console.error("[dispatcher]action cannot be null");
+                return;
+            }
             callbacks.forEach(function (callback) {
                 callback(action, payload);
             });

@@ -3,6 +3,7 @@
     var React = require("react"),
         moment = require("moment"),
         appDispatcher = require("../dispatcher/appDispatcher"),
+        eventActions = require("../dispatcher/eventActions"),
         PureRenderMixin = require('react/addons').addons.PureRenderMixin,
         eventTypes = require("../config/eventTypes");
 
@@ -19,7 +20,7 @@
         },
 
         remove: function (e) {
-            appDispatcher.dispatch("remove", this.props.event.id);
+            appDispatcher.dispatch(eventActions.remove, this.props.event);
         },
 
         edit: function () {
@@ -30,6 +31,10 @@
             var event = this.props.event,
                 classes = this.state.open ? "" : "closed",
                 icon = (eventTypes.getType(this.props.event.type) || {}).icon;
+
+            if (event.frontId) {
+                classes += " saving";
+            }
 
             return (
                 <div className={"event " + classes}>

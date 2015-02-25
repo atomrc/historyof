@@ -32,7 +32,7 @@
             for (var i in groupedEvents) {
                 var events = groupedEvents[i].map(function (event) {
                     return (
-                        <Event event={event} key={event.id}/>
+                        <Event event={event} key={event.id || event.frontId}/>
                     );
                 });
 
@@ -44,12 +44,14 @@
                 ));
             }
 
-            var classes = this.state.open ? "toggle" : "toggle closed";
+            var monthsNode = this.state.open ?
+                (<div>{monthNodes}</div>) :
+                "";
 
             return (
                 <div>
                     <h2 onClick={this.toggle}>{this.props.year} <em>({this.props.events.length})</em></h2>
-                    <div className={classes}>{monthNodes}</div>
+                    {monthsNode}
                 </div>
             );
         }

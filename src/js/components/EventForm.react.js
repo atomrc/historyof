@@ -1,6 +1,7 @@
 (function () {
     "use strict";
     var React = require("react"),
+        eventActions = require("../dispatcher/eventActions"),
         appDispatcher = require("../dispatcher/appDispatcher");
 
     var EventForm = React.createClass({
@@ -31,7 +32,7 @@
             event.date = new Date(event.date);
             this.replaceState(this.getInitialState());
 
-            var action = event.id ? "update" : "create";
+            var action = event.id ? eventActions.update : eventActions.create;
             appDispatcher.dispatch(action, event);
         },
 

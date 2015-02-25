@@ -2,7 +2,7 @@
     "use strict";
     var React = require("react"),
         Year = require("./Year.react"),
-        eventsManager = require("../managers/eventsManager");
+        eventsManager = require("../stores/eventStore");
 
     function getState() {
         return {

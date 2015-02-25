@@ -1,26 +1,36 @@
-/*global require, fetch*/
+/*global require, module*/
 (function () {
     "use strict";
     var appDispatcher = require("../dispatcher/appDispatcher"),
-        fetchPolyfill = require("whatwg-fetch");
+        eventActions = require("../dispatcher/eventActions"),
+        hash = require("string-hash");
 
     var listeners = [],
         events = [];
 
+    function getFrontId(event) {
+        return "front-" + hash(event.title) + hash(event.date.getTime());
+    }
+
     var eventsManager = {
+
+        setEvents: function (es) {
+            events = es;
+        },
+
         getAll: function () {
             return events;
         },
 
         get: function (id) {
             return events.filter(function (e) {
-                return e.id === id;
+                return e.id === id || e.frontId === id;
             })[0];
         },
 
         getIndex: function (id) {
             return events.reduce(function (prev, e, index) {
-                return e.id === id ? index : prev;
+                return e.id === id || e.frontId === id ? index : prev;
             }, -1);
         },
 
@@ -30,13 +40,14 @@
             events[i].date = new Date(events[i].date);
         },
 
-        remove: function (id) {
+        remove: function (event) {
             events = events.filter(function (e) {
-                return e.id !== id;
+                return e.id !== event.id;
             });
         },
 
         add: function (event) {
+            event.frontId = getFrontId(event);
             events = events.concat(event);
         },
 
@@ -54,36 +65,36 @@
 
     appDispatcher.register(function (action, payload) {
         switch (action) {
-            case "create":
+            case eventActions.updateAll:
+                this.setEvents(payload);
+                this.emitChange();
+                break;
+
+            case eventActions.create:
                 this.add(payload);
                 this.emitChange();
                 break;
 
-            case "update":
+            case eventActions.update:
                 this.update(payload.id, payload);
                 this.emitChange();
                 break;
 
-            case "remove":
+            case eventActions.confirmCreate:
+                var frontId = getFrontId(payload);
+                this.update(frontId, payload);
+                this.emitChange();
+                break;
+
+            case eventActions.remove:
                 this.remove(payload);
                 this.emitChange();
                 break;
+
+            default:
+                break;
         }
     }.bind(eventsManager));
-
-    (function loadEvents() {
-        fetch("//127.0.0.1:1337/events")
-            .then(function (response) {
-                return response.json();
-            })
-            .then(function (json) {
-                events = json.map(function (e) {
-                    e.date = new Date(e.date);
-                    return e;
-                });
-                eventsManager.emitChange();
-            });
-    }());
 
     module.exports = eventsManager;
 }());

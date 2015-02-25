@@ -4,13 +4,12 @@
     "use strict";
 
     module.exports = {
-        request: {
-            update: "event.request.update",
-            remove: "event.request.remove",
-            create: "event.request.create"
-        },
-        created: "event.created",
-        removed: "event.removed",
-        updated: "event.updated"
+        updateAll: "events.updateAll",
+        create: "event.create",
+        confirmCreate: "event.confirmCreate",
+        update: "event.update",
+        confirmUpdate: "event.confirmUpdate",
+        remove: "event.remove",
+        confirmRemove: "event.confirmRemove"
     };
 }());

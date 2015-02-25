@@ -8,6 +8,9 @@
     }
 
     .event {
+        &.saving {
+            color: gray;
+        }
         &.closed {
             .actions { display: none; }
         }

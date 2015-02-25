@@ -36,3 +36,5 @@ gulp.task("watch", function () {
     gulp.watch("src/scss/*.scss", ["sass"]);
     gulp.watch("src/index.jade", ["jade"]);
 });
+
+gulp.task("default", ["js", "jade", "sass"]);

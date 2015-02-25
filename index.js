@@ -33,9 +33,31 @@
         return next();
     });
 
+    server.post("/events", function (req, res, next) {
+        var event = new Event(JSON.parse(req.body));
+        event.save(function (err, data) {
+            res.send(data);
+        });
+        return next();
+    });
+
     server.get("/events/:id", function (req, res, next) {
         Event.findById(req.params.id, function (err, event) {
             res.send(event);
+        });
+        return next();
+    });
+
+    server.del("/events/:id", function (req, res, next) {
+        Event.remove({ _id: req.params.id }, function (err, nb, msg) {
+            res.send(msg);
+        });
+        return next();
+    });
+
+    server.put("/events/:id", function (req, res, next) {
+        Event.where({ _id: req.params.id }).update(JSON.parse(req.body), function (err, nb, msg) {
+            res.send(msg);
         });
         return next();
     });

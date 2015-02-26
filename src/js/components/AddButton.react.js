@@ -22,8 +22,8 @@
         render: function () {
             var creationButtons = eventTypes.map(function (type) {
                 return (
-                    <span>
-                        <button className="material " key={type.name} onClick={this.createType(type.name)}><i className={"fa " + type.icon}></i></button>
+                    <span key={"button-add-" + type.name}>
+                        <button className="material " onClick={this.createType(type.name)}><i className={"fa " + type.icon}></i></button>
                         <br/>
                     </span>
                 );

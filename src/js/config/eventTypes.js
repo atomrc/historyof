@@ -16,6 +16,10 @@
             icon: "fa-home"
         },
         {
+            name: "travel",
+            icon: "fa-globe"
+        },
+        {
             name: "love",
             icon: "fa-heart"
         },

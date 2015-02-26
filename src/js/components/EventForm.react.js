@@ -2,7 +2,8 @@
     "use strict";
     var React = require("react"),
         eventActions = require("../dispatcher/eventActions"),
-        appDispatcher = require("../dispatcher/appDispatcher");
+        appDispatcher = require("../dispatcher/appDispatcher"),
+        eventTypes = require("../config/eventTypes");
 
     var EventForm = React.createClass({
 
@@ -41,22 +42,28 @@
         },
 
         render: function () {
-            var style = { display: "none" };
-            if (Object.keys(this.state.event).length !== 0) {
-                style.display = "block";
-            }
+            var style = { display: "none" },
+                event = this.state.event,
+                type = eventTypes.getType(event.type);
+
+            if (!type) { return (<span></span>); }
 
             return (
-                <form id="event-form" style={style} onSubmit={this.save}>
-                    <input type="text" name="title" value={this.state.event.title || ""} onChange={this.onChange}/>
-                    <br/>
-                    <input type="date" name="date" value={this.state.event.date} onChange={this.onChange}/>
-                    <br/>
-                    <textarea name="text" value={this.state.event.text || ""} onChange={this.onChange}/>
-                    <br/>
-                    <button>add</button>
-                    <button type="button" onClick={this.cancel}>cancel</button>
-                </form>
+                <div id="event-form">
+                    <div className="header">
+                        <i className={"fa " + type.icon}></i> {event.title}
+                        <button type="button" onClick={this.cancel} className="cancel-button"><i className="fa fa-times"></i></button>
+                    </div>
+                    <form onSubmit={this.save}>
+                        <input type="text" placeholder="Titre" name="title" value={event.title || ""} onChange={this.onChange}/>
+                        <br/>
+                        <input type="date" placeholder="Date" name="date" value={event.date} onChange={this.onChange}/>
+                        <br/>
+                        <textarea name="text" placeholder="Description" value={event.text || ""} onChange={this.onChange}/>
+                        <br/>
+                        <button>add</button>
+                    </form>
+                </div>
             );
         }
     });

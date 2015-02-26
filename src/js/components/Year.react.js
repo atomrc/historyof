@@ -49,7 +49,7 @@
                 "";
 
             return (
-                <div>
+                <div className="year">
                     <h2 onClick={this.toggle}>{this.props.year} <em>({this.props.events.length})</em></h2>
                     {monthsNode}
                 </div>

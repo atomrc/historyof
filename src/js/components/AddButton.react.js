@@ -22,18 +22,21 @@
         render: function () {
             var creationButtons = eventTypes.map(function (type) {
                 return (
-                    <button key={type.name} onClick={this.createType(type.name)}><i className={"fa " + type.icon}></i></button>
+                    <span>
+                        <button className="material " key={type.name} onClick={this.createType(type.name)}><i className={"fa " + type.icon}></i></button>
+                        <br/>
+                    </span>
                 );
             }.bind(this));
 
             return (
-                <div>
+                <div id="edit-section">
                     <EventForm event={this.state.event}/>
                     <div id="add-button-container">
-                        <div>
+                        <div className="action-buttons">
                             {creationButtons}
                         </div>
-                        <button id="add-button" className="material" onClick={this.chooseEventType}>+</button>
+                        <button id="add-button" className="material"><i className="fa fa-plus"></i></button>
                     </div>
                 </div>
             );

@@ -1,7 +1,20 @@
+body {
+    color: #222;
+}
+
+button {
+    cursor: pointer;
+}
+
 .timeline {
     width: 500px;
     margin: auto;
 
+    .year {
+        h2 {
+            cursor: pointer;
+        }
+    }
 
     .month {
         padding: 1em 0;
@@ -27,15 +40,6 @@
     }
 }
 
-#event-form {
-    position: fixed;
-    top: 0;
-    right: 0;
-    height: 100%;
-    width: 500px;
-    background-color: white;
-}
-
 .toggle {
     &.closed {
         display: none;
@@ -48,17 +52,72 @@ button.material {
     border-radius: 1.25em;
     width: 2.5em;
     height: 2.5em;
-    line-height: 2.5em;
+    line-height: 0;
     cursor: pointer;
 }
 
-#add-button-container {
+#edit-section {
     position: fixed;
-    right: 1em;
-    bottom: 1em;
-}
-#add-button {
-    font-size: 1.5em;
-    background-color: red;
-    color: white;
+    right: 0;
+    bottom: 0;
+    text-align: center;
+    #add-button-container:hover {
+        .action-buttons {
+            opacity: 1;
+        }
+    }
+    .action-buttons {
+        opacity: 0;
+        button {
+            margin-bottom: 1em;
+            font-size: 1.05em;
+            background-color: #E77B20;
+            color: white;
+        }
+    }
+
+    #event-form {
+        position: absolute;
+        bottom: 0;
+        right: 8em;
+        width: 300px;
+        background-color: white;
+        box-shadow: 1px 1px 10px #666;
+        border-radius: 5px 5px 0 0;
+        .header {
+            border-radius: 5px 5px 0 0;
+            padding: 0.5em;
+            background-color: #666;
+            color: #EEE;
+            text-align: left;
+            font-family: Arial;
+
+            .cancel-button {
+                position: absolute;
+                right: 0;
+                top: 0;
+                border: none;
+                background: none;
+                color: inherit;
+                font-size: 1em;
+            }
+        }
+        form {
+            input, textarea {
+                font-size: 1em;
+                padding: 0.75em 0;
+                width: 90%;
+                box-sizing: border-box;
+                border: none;
+                border-bottom: solid 1px #AAA;
+            }
+        }
+    }
+
+    #add-button {
+        margin: 0 1em 1em 1em;
+        font-size: 1.5em;
+        background-color: #3F6BD4;
+        color: white;
+    }
 }

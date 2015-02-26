@@ -2,6 +2,7 @@
     "use strict";
     var React = require("react"),
         Event = require("./Event.react"),
+        eventTypes = require("./../config/eventTypes"),
         moment = require("moment");
 
     var Year = React.createClass({
@@ -29,6 +30,20 @@
                         return obj;
                     }, {});
 
+            var eventByTypes = this
+                .props
+                .events
+                .sort(function (e1, e2) {
+                    if (e1.type === e2.type) { return 0; }
+                    return e1.type < e2.type ? -1 : 1;
+                })
+                .reduce(function (obj, e) {
+                    var key = e.type;
+                    obj[key] = obj[key] ? obj[key] : [];
+                    obj[key].push(e);
+                    return obj;
+                }, {});
+
             for (var i in groupedEvents) {
                 var events = groupedEvents[i].map(function (event) {
                     return (
@@ -44,13 +59,24 @@
                 ));
             }
 
+            var stats = [];
+            for (var i in eventByTypes) {
+                stats.push((
+                    <span key={"stats-" + i}>
+                        {eventByTypes[i].length} <i className={"fa " + eventTypes.getType(i).icon}></i>&nbsp;
+                    </span>
+                ));
+            }
+
             var monthsNode = this.state.open ?
                 (<div>{monthNodes}</div>) :
                 "";
 
             return (
                 <div className="year">
-                    <h2 onClick={this.toggle}>{this.props.year} <em>({this.props.events.length})</em></h2>
+                    <h2 onClick={this.toggle}>
+                        {this.props.year} <em className="year-statistics">({stats})</em>
+                    </h2>
                     {monthsNode}
                 </div>
             );

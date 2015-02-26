@@ -19,6 +19,17 @@ button {
     .year {
         h2 {
             cursor: pointer;
+            border-bottom: solid 1px #DDD;
+            &:hover {
+                .year-statistics {
+                    opacity: 1;
+                }
+            }
+            .year-statistics {
+                transition: opacity 0.3s;
+                opacity: 0;
+                font-size: 10pt;
+            }
         }
     }
 

@@ -20,7 +20,9 @@
         },
 
         remove: function (e) {
-            appDispatcher.dispatch(eventActions.remove, this.props.event);
+            if (window.confirm("confirm delete?")) {
+                appDispatcher.dispatch(eventActions.remove, this.props.event);
+            }
         },
 
         edit: function () {

@@ -13,6 +13,7 @@ mongoose.connect("mongodb://localhost/historyofus");
 datas.forEach(function (data) {
     var event = new Event();
     event.title = data.title;
+    event.user = data.user;
     event.date = new Date(data.date);
     event.text = data.text;
     event.type = data.type;

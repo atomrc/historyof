@@ -45,7 +45,7 @@
                             <span>
                                 <i className={"fa " + icon}></i>&nbsp;
                                 <em>{moment(event.date).format("DD-MM-YYYY")}</em> -&nbsp;
-                                <strong>{event.title || event.text.substr(0, 40).concat("...")}</strong>
+                                <strong>{event.title || (event.text || "").substr(0, 40).concat("...")}</strong>
                             </span>
                         </span>
                         <span className="actions">
@@ -53,7 +53,7 @@
                             <a href="javascript:void(0)" onClick={this.remove}><i className="fa fa-times"></i></a>
                         </span>
                     </header>
-                    <p className={"toggle " + classes} dangerouslySetInnerHTML={{__html: event.text.replace(/\n/g, "<br>")}}></p>
+                    <p className={"toggle " + classes} dangerouslySetInnerHTML={{__html: (event.text || "").replace(/\n/g, "<br>")}}></p>
                 </div>
             );
         }

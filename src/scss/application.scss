@@ -4,6 +4,12 @@ body {
 
 button {
     cursor: pointer;
+    border: none;
+    font-size: 1em;
+    background-color: #3F6BD4;
+    color: white;
+    border-radius: 0.2em;
+    padding: 0.5em;
 }
 
 .timeline {
@@ -60,8 +66,8 @@ button.material {
     position: fixed;
     right: 0;
     bottom: 0;
-    text-align: center;
     #add-button-container:hover {
+        text-align: center;
         .action-buttons {
             opacity: 1;
         }
@@ -80,7 +86,7 @@ button.material {
         position: absolute;
         bottom: 0;
         right: 8em;
-        width: 300px;
+        width: 350px;
         background-color: white;
         box-shadow: 1px 1px 10px #666;
         border-radius: 5px 5px 0 0;
@@ -103,13 +109,17 @@ button.material {
             }
         }
         form {
+            padding: 1em 0.25em;
             input, textarea {
+                font-family: Arial;
                 font-size: 1em;
-                padding: 0.75em 0;
-                width: 90%;
+                padding: 1em 0.5em;
+                width: 100%;
                 box-sizing: border-box;
                 border: none;
-                border-bottom: solid 1px #AAA;
+                border-bottom: solid 1px #CCC;
+            }
+            button {
             }
         }
     }

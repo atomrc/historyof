@@ -51,15 +51,15 @@
             return (
                 <div id="event-form">
                     <div className="header">
-                        <i className={"fa " + type.icon}></i> {event.title}
+                        <i className={"fa " + type.icon}></i> {event.title || "New Event"}
                         <button type="button" onClick={this.cancel} className="cancel-button"><i className="fa fa-times"></i></button>
                     </div>
                     <form onSubmit={this.save}>
-                        <input type="text" placeholder="Titre" name="title" value={event.title || ""} onChange={this.onChange}/>
+                        <input type="text" placeholder="Title" name="title" value={event.title || ""} onChange={this.onChange} autoComplete="off"/>
                         <br/>
-                        <input type="date" placeholder="Date" name="date" value={event.date} onChange={this.onChange}/>
+                        <input type="date" placeholder="Date" name="date" value={event.date} onChange={this.onChange} autoComplete="off"/>
                         <br/>
-                        <textarea name="text" placeholder="Description" value={event.text || ""} onChange={this.onChange}/>
+                        <textarea rows="8" name="text" placeholder="Description" value={event.text || ""} onChange={this.onChange}/>
                         <br/>
                         <button>add</button>
                     </form>

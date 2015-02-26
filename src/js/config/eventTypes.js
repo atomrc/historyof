@@ -12,6 +12,14 @@
             icon: "fa-mobile"
         },
         {
+            name: "situation",
+            icon: "fa-home"
+        },
+        {
+            name: "love",
+            icon: "fa-heart"
+        },
+        {
             name: "event",
             icon: "fa-bolt"
         }

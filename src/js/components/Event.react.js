@@ -43,7 +43,7 @@
                             <span>
                                 <i className={"fa " + icon}></i>&nbsp;
                                 <em>{moment(event.date).format("DD-MM-YYYY")}</em> -&nbsp;
-                                <strong>{event.title}</strong>
+                                <strong>{event.title || event.text.substr(0, 40).concat("...")}</strong>
                             </span>
                         </span>
                         <span className="actions">

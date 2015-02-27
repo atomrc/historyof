@@ -2,6 +2,8 @@
     "use strict";
     var React = require("react"),
         eventActions = require("../dispatcher/eventActions"),
+        DatePicker = require('react-datepicker-component/DatePicker.jsx'),
+        DatePickerInput = require('react-datepicker-component/DatePickerInput.jsx'),
         appDispatcher = require("../dispatcher/appDispatcher"),
         eventTypes = require("../config/eventTypes");
 
@@ -24,6 +26,12 @@
         onChange: function (e) {
             var changes = { event: this.state.event };
             changes.event[e.target.name] = e.target.value;
+            this.setState(changes);
+        },
+
+        dateChange: function (date) {
+            var changes = { event: this.state.event };
+            changes.event["date"] = date;
             this.setState(changes);
         },
 
@@ -57,7 +65,7 @@
                     <form onSubmit={this.save}>
                         <input type="text" placeholder="Title" name="title" value={event.title || ""} onChange={this.onChange} autoComplete="off"/>
                         <br/>
-                        <input type="date" placeholder="Date" name="date" value={event.date} onChange={this.onChange} autoComplete="off"/>
+                        <DatePickerInput classNamePrefix="wide-datepicker" date={event.date} onChangeDate={this.dateChange}/>
                         <br/>
                         <textarea rows="8" name="text" placeholder="Description" value={event.text || ""} onChange={this.onChange}/>
                         <br/>

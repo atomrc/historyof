@@ -50,8 +50,9 @@
             return (
                 <div className="year">
                     <h2 onClick={this.toggle}>
-                        {this.props.year} <EventsStats events={this.props.events}/>
+                        {this.props.year}
                     </h2>
+                    <EventsStats events={this.props.events}/>
                     <div>{monthNodes}</div>
                 </div>
             );

@@ -44,7 +44,7 @@
                         <span className="title-bar" onClick={this.toggle}>
                             <span>
                                 <i className={"fa " + icon}></i>&nbsp;
-                                <em>{moment(event.date).format("DD-MM-YYYY")}</em> -&nbsp;
+                                <em className="date">{moment(event.date).format("DD MMM")}&nbsp;-&nbsp;</em>
                                 <strong>{event.title || (event.text || "").substr(0, 40).concat("...")}</strong>
                             </span>
                         </span>

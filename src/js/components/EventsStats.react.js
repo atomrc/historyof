@@ -30,7 +30,7 @@
             }
 
             return (
-                <span className="events-stats">({stats})</span>
+                <div className="events-stats">({stats})</div>
             );
         }
     });

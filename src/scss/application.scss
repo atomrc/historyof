@@ -1,7 +1,10 @@
 @import "./partials/datepicker.scss";
+@import url(http://fonts.googleapis.com/css?family=Open+Sans:300);
+@import url(http://fonts.googleapis.com/css?family=Droid+Serif);
 
 body {
-    color: #222;
+    color: #333;
+    font-family: Serif;
 }
 
 button {
@@ -15,31 +18,42 @@ button {
 }
 
 .timeline {
-    width: 500px;
+    width: 550px;
     margin: auto;
 
     .year {
-        h2 {
-            cursor: pointer;
-            border-bottom: solid 1px #DDD;
-            &:hover {
-                .events-stats {
-                    opacity: 1;
-                }
-            }
+        position: relative;
+        &:hover {
             .events-stats {
-                transition: opacity 0.3s;
-                opacity: 0;
-                font-size: 10pt;
+                opacity: 1;
+                top: -1em;
             }
+        }
+        .events-stats {
+            transition: all 0.3s;
+            opacity: 0;
+            top: 0;
+            position: absolute;
+            text-align: center;
+            width: 100%;
+            font-size: 10pt;
+        }
+
+        h2 {
+            font-family: Open Sans, sans-serif;
+            font-weight: normal;
+            text-align: center;
+            cursor: pointer;
         }
     }
 
     .month {
-        padding: 1em 0;
+        border-bottom: solid 1px #AAA;
+        margin: 1em 0;
     }
 
     .event {
+        margin-bottom: 0.25em;
         &.saving {
             color: gray;
         }

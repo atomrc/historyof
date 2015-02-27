@@ -2,8 +2,11 @@
 @import url(http://fonts.googleapis.com/css?family=Open+Sans:300);
 @import url(http://fonts.googleapis.com/css?family=Droid+Serif);
 
+$coolblue: #3F6BD4;
+$lightcoolblue: #85A6F5;
+
 body {
-    color: #333;
+    color: #555;
     font-family: Serif;
 }
 
@@ -11,7 +14,7 @@ button {
     cursor: pointer;
     border: none;
     font-size: 1em;
-    background-color: #3F6BD4;
+    background-color: $coolblue;
     color: white;
     border-radius: 0.2em;
     padding: 0.5em;
@@ -54,11 +57,17 @@ button {
 
     .event {
         margin-bottom: 0.25em;
+        padding: 0 0.5em;
+        border-left: solid 5px transparent;
+
         &.saving {
             color: gray;
         }
         &.closed {
             .actions { display: none; }
+        }
+        &:hover {
+            border-left: solid 5px $lightcoolblue;
         }
         header {
             position: relative;
@@ -69,6 +78,11 @@ button {
                 position: absolute;
                 right: 1em;
             }
+        }
+
+        p {
+            padding: 1em 0.5em;
+            margin: 0;
         }
     }
 }

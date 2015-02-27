@@ -30,8 +30,12 @@
         },
 
         dateChange: function (date) {
-            var changes = { event: this.state.event };
+            var changes = { event: this.state.event },
+                prevDate = this.state.event.date;
+            date.setHours(prevDate.getHours());
+            date.setMinutes(prevDate.getMinutes());
             changes.event["date"] = date;
+
             this.setState(changes);
         },
 

@@ -21,11 +21,11 @@ button {
             cursor: pointer;
             border-bottom: solid 1px #DDD;
             &:hover {
-                .year-statistics {
+                .events-stats {
                     opacity: 1;
                 }
             }
-            .year-statistics {
+            .events-stats {
                 transition: opacity 0.3s;
                 opacity: 0;
                 font-size: 10pt;

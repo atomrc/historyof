@@ -9,13 +9,18 @@
 
         getInitialState: function () {
             return {
-                event: {}
+                event: {},
+                defaultDate: new Date()
             };
+        },
+
+        onEventCreated: function (newEvent) {
+            this.setState({defaultDate: newEvent.date, event: {}});
         },
 
         createType: function (type) {
             return function () {
-                this.setState({ event: { type: type, date: new Date() }});
+                this.setState({ event: { type: type, date: this.state.defaultDate }});
             }.bind(this);
         },
 
@@ -31,7 +36,7 @@
 
             return (
                 <div id="edit-section">
-                    <EventForm event={this.state.event}/>
+                    <EventForm event={this.state.event} onEventCreated={this.onEventCreated}/>
                     <div id="add-button-container">
                         <div className="action-buttons">
                             {creationButtons}

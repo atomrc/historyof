@@ -47,6 +47,8 @@
 
             var action = event.id ? eventActions.update : eventActions.create;
             appDispatcher.dispatch(action, event);
+
+            this.props.onEventCreated && this.props.onEventCreated(event);
         },
 
         cancel: function () {

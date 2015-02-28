@@ -1,7 +1,7 @@
 (function () {
     "use strict";
     var React = require("react"),
-        Event = require("./Event.react"),
+        Month = require("./Month.react"),
         EventsStats = require("./EventsStats.react"),
         moment = require("moment");
 
@@ -33,17 +33,8 @@
                         }, {});
 
             for (var i in groupedEvents) {
-                var events = groupedEvents[i].map(function (event) {
-                    return (
-                        <Event event={event} key={event.id || event.frontId}/>
-                    );
-                });
-
                 monthNodes.push((
-                    <div key={i}>
-                        <div className="month">{i} ({events.length})</div>
-                        <div>{events}</div>
-                    </div>
+                    <Month key={"month-" + i} events={groupedEvents[i]} month={i}/>
                 ));
             }
 

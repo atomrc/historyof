@@ -1,14 +1,7 @@
 (function () {
     "use strict";
     var React = require("react"),
-        Year = require("./Year.react"),
-        eventsManager = require("../stores/eventStore");
-
-    function getState() {
-        return {
-            events: eventsManager.getAll()
-        };
-    }
+        Year = require("./Year.react");
 
     /**
      * Will handle and display all the event of the timeline

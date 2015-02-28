@@ -9,27 +9,10 @@
      * @return {undefined}
      */
     var Timeline = React.createClass({
-
-        getInitialState: function () {
-            return getState();
-        },
-
-        componentDidMount: function() {
-            eventsManager.addChangeListener(this.onChange);
-        },
-
-        componentWillUnmount: function () {
-            eventsManager.removeChangeListener(this.onChange);
-        },
-
-        onChange: function () {
-            this.setState(getState());
-        },
-
         render: function() {
             var yearNodes = [],
                 groupedEvents = this
-                    .state
+                    .props
                     .events
                     .sort(function (e1, e2) {
                         if (e1.date === e2.date) { return 0; }

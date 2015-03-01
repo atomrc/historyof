@@ -15,6 +15,10 @@
             return { open: false };
         },
 
+        requestEdition: function () {
+            return this.props.onRequestEdition && this.props.onRequestEdition(this.props.event);
+        },
+
         toggle: function () {
             this.setState({ open: !this.state.open });
         },
@@ -23,10 +27,6 @@
             if (window.confirm("confirm delete?")) {
                 appDispatcher.dispatch(eventActions.remove, this.props.event);
             }
-        },
-
-        edit: function () {
-            document.dispatchEvent(new CustomEvent("edit", { detail: this.props.event }));
         },
 
         render: function () {
@@ -49,7 +49,7 @@
                             </span>
                         </span>
                         <span className="actions">
-                            <a href="javascript:void(0)" onClick={this.edit}><i className="fa fa-pencil"></i></a>&nbsp;
+                            <a href="javascript:void(0)" onClick={this.requestEdition}><i className="fa fa-pencil"></i></a>&nbsp;
                             <a href="javascript:void(0)" onClick={this.remove}><i className="fa fa-times"></i></a>
                         </span>
                     </header>

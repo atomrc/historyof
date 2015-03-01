@@ -10,6 +10,15 @@
             return { open: false };
         },
 
+        requestEdition: function (event) {
+            return this.props.onRequestEdition && this.props.onRequestEdition(event);
+        },
+
+        requestCreation: function (type, date) {
+            date.setYear(this.props.year);
+            return this.props.onRequestCreation && this.props.onRequestCreation("email", date);
+        },
+
         toggle: function () {
             this.setState({ open: !this.state.open });
         },
@@ -34,7 +43,13 @@
 
             for (var i in groupedEvents) {
                 monthNodes.push((
-                    <Month key={"month-" + i} events={groupedEvents[i]} month={i}/>
+                    <Month
+                        key={"month-" + i}
+                        events={groupedEvents[i]}
+                        month={i}
+                        onRequestEdition={this.requestEdition}
+                        onRequestCreation={this.requestCreation}
+                        />
                 ));
             }
 

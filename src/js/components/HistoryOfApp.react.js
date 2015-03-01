@@ -38,17 +38,25 @@
             this.setState({defaultDate: newEvent.date, editedEvent: {}});
         },
 
-        onRequestCreation: function (eventType) {
-            this.setState({ editedEvent: { type: eventType, date: this.state.defaultDate } });
+        create: function (eventType, date) {
+            this.setState({ editedEvent: { type: eventType, date: date || this.state.defaultDate } });
+        },
+
+        edit: function (event) {
+            this.setState({ editedEvent: event });
         },
 
         render: function () {
             return (
                 <div>
-                    <Timeline events={this.state.events}/>
+                    <Timeline
+                        events={this.state.events}
+                        onRequestCreation={this.create}
+                        onRequestEdition={this.edit}/>
+
                     <div id="edit-section">
                         <EventForm event={this.state.editedEvent} onEventCreated={this.onEventCreated}/>
-                        <AddButton onRequestCreation={this.onRequestCreation}/>
+                        <AddButton onRequestCreation={this.create}/>
                     </div>
                 </div>
             );

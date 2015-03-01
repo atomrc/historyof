@@ -9,6 +9,11 @@
      * @return {undefined}
      */
     var Timeline = React.createClass({
+
+        requestEdition: function (event) {
+            return this.props.onRequestEdition && this.props.onRequestEdition(event);
+        },
+
         render: function() {
             var yearNodes = [],
                 groupedEvents = this
@@ -27,7 +32,12 @@
 
             for (var i in groupedEvents) {
                 yearNodes.push((
-                    <Year key={"year-" + i} year={i} events={groupedEvents[i]}/>
+                    <Year
+                        key={"year-" + i}
+                        year={i}
+                        events={groupedEvents[i]}
+                        onRequestEdition={this.requestEdition}
+                        onRequestCreation={this.props.onRequestCreation}/>
                 ));
             }
             return (

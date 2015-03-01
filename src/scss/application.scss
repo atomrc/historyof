@@ -54,6 +54,7 @@ button {
         border-bottom: solid 1px #AAA;
         margin: 1em 0;
         .add-button-container {
+            float: right;
             font-size: 0.75em;
             display: inline;
             &:hover {

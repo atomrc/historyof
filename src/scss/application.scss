@@ -53,6 +53,22 @@ button {
     .month {
         border-bottom: solid 1px #AAA;
         margin: 1em 0;
+        .add-button-container {
+            font-size: 0.75em;
+            display: inline;
+            &:hover {
+                .action-buttons {
+                    opacity: 1;
+                }
+            }
+            .action-buttons {
+                opacity: 0;
+                display: inline;
+                button {
+                    background-color: #E77B20;
+                }
+            }
+        }
     }
 
     .event {
@@ -107,7 +123,7 @@ button.material {
     position: fixed;
     right: 0;
     bottom: 0;
-    #add-button-container:hover {
+    .add-button-container:hover {
         text-align: center;
         .action-buttons {
             opacity: 1;
@@ -116,10 +132,12 @@ button.material {
     .action-buttons {
         opacity: 0;
         button {
+            margin: auto;
             margin-bottom: 1em;
             font-size: 1.05em;
             background-color: #E77B20;
             color: white;
+            display: block;
         }
     }
 
@@ -160,12 +178,10 @@ button.material {
                 border: none;
                 border-bottom: solid 1px #CCC;
             }
-            button {
-            }
         }
     }
 
-    #add-button {
+    .add-button {
         margin: 0 1em 1em 1em;
         font-size: 1.5em;
         background-color: #3F6BD4;

@@ -16,7 +16,7 @@
 
         requestCreation: function (type, date) {
             date.setYear(this.props.year);
-            return this.props.onRequestCreation && this.props.onRequestCreation("email", date);
+            return this.props.onRequestCreation && this.props.onRequestCreation(type, date);
         },
 
         toggle: function () {

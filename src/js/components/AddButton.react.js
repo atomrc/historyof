@@ -7,27 +7,27 @@
     var AddButton = React.createClass({
 
         createType: function (type) {
-            return function () {
-                this.props.onRequestCreation && this.props.onRequestCreation(type);
-            }.bind(this);
+            this.props.onRequestCreation && this.props.onRequestCreation(type);
         },
 
         render: function () {
             var creationButtons = eventTypes.map(function (type) {
                 return (
-                    <span key={"button-add-" + type.name}>
-                        <button className="material " onClick={this.createType(type.name)}><i className={"fa " + type.icon}></i></button>
-                        <br/>
-                    </span>
+                    <button
+                        key={"button-add-" + type.name}
+                        className="material"
+                        onClick={this.createType.bind(this, type.name)}>
+                            <i className={"fa " + type.icon}></i>
+                    </button>
                 );
             }.bind(this));
 
             return (
-                <div id="add-button-container">
+                <div className="add-button-container">
                     <div className="action-buttons">
                         {creationButtons}
                     </div>
-                    <button id="add-button" className="material"><i className="fa fa-plus"></i></button>
+                    <button className="material add-button"><i className="fa fa-plus"></i></button>
                 </div>
         );
         }

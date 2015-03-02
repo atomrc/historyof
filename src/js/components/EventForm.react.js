@@ -58,9 +58,15 @@
         render: function () {
             var style = { display: "none" },
                 event = this.state.event,
-                type = eventTypes.getType(event.type);
+                type = eventTypes.getType(event.type) || {};
 
-            if (!type) { return (<span></span>); }
+            if (!this.state.event.date) { return (<span></span>); }
+
+            var typeOptions = eventTypes.getTypes().map(function (type) {
+                return ((
+                    <option value={type.name}>{type.name}</option>
+                ));
+            });
 
             return (
                 <div id="event-form">
@@ -70,6 +76,7 @@
                     </div>
                     <form onSubmit={this.save}>
                         <input type="text" placeholder="Title" name="title" value={event.title || ""} onChange={this.onChange} autoComplete="off"/>
+                        <select value={event.type} name="type" onChange={this.onChange}>{typeOptions}</select>
                         <br/>
                         <DatePickerInput classNamePrefix="wide-datepicker" date={event.date} onChangeDate={this.dateChange}/>
                         <br/>

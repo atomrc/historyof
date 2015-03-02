@@ -27,7 +27,7 @@
                     <div className="action-buttons">
                         {creationButtons}
                     </div>
-                    <button className="material add-button"><i className="fa fa-plus"></i></button>
+                    <button className="material add-button" onClick={this.createType}><i className="fa fa-plus"></i></button>
                 </div>
         );
         }

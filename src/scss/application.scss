@@ -174,7 +174,7 @@ button.material {
         }
         form {
             padding: 1em 0.25em;
-            input, textarea {
+            input, textarea, select {
                 font-family: Arial;
                 font-size: 1em;
                 padding: 1em 0.5em;
@@ -182,6 +182,7 @@ button.material {
                 box-sizing: border-box;
                 border: none;
                 border-bottom: solid 1px #CCC;
+                color: inherit;
             }
         }
     }

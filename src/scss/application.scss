@@ -54,9 +54,15 @@ button {
         border-bottom: solid 1px #AAA;
         margin: 1em 0;
         .add-button-container {
-            float: right;
+            margin-left: auto;
             font-size: 0.75em;
             display: inline;
+            direction: rtl;
+            button, .action-buttons button {
+                color: inherit;
+                background-color: transparent;
+                box-shadow: none;
+            }
             &:hover {
                 .action-buttons {
                     opacity: 1;
@@ -65,9 +71,7 @@ button {
             .action-buttons {
                 opacity: 0;
                 display: inline;
-                button {
-                    background-color: #E77B20;
-                }
+                color: #E77B20;
             }
         }
     }

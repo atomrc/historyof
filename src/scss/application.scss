@@ -7,6 +7,7 @@ $lightcoolblue: #85A6F5;
 
 body {
     color: #555;
+    background-color: #EEE;
     font-family: Serif;
 }
 
@@ -27,6 +28,7 @@ button {
     .nav-container {
         display: table-cell;
         position: relative;
+        padding: 0 1em;
 
         &, nav {
             width: 200px;
@@ -34,13 +36,14 @@ button {
 
         nav {
             position: fixed;
+            background-color: white;
+            box-shadow: 1px 1px 2px #CCC;
 
             .nav-element {
                 font-family: Open Sans, sans-serif;
-                height: 2em;
-                text-align: center;
-                font-size: 1em;
+                padding: 0.75em 1em;
                 position: relative;
+                border-bottom: solid 1px #EEE;
 
                 &:hover {
                     .events-stats {
@@ -70,6 +73,7 @@ button {
             h2 {
                 font-family: Open Sans, sans-serif;
                 font-weight: normal;
+                text-shadow: 1px 1px 0px white;
                 text-align: center;
             }
         }

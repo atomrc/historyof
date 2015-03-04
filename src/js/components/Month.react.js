@@ -33,7 +33,7 @@
             return (
                 <div>
                     <div className="month">
-                        {month} ({this.props.events.length}) |&nbsp;
+                        {month} ({this.props.events.length})
                         <AddButton onRequestCreation={this.requestCreation}/>
                         <div style={{clear: "both"}}></div>
                     </div>

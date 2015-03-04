@@ -21,89 +21,124 @@ button {
 }
 
 .timeline {
-    width: 550px;
+    width: 80%;
     margin: auto;
 
-    .year {
+    .nav-container {
+        display: table-cell;
         position: relative;
-        &:hover {
-            .events-stats {
-                opacity: 1;
-                top: -1em;
-            }
-        }
-        .events-stats {
-            transition: all 0.3s;
-            opacity: 0;
-            top: 0;
-            position: absolute;
-            text-align: center;
-            width: 100%;
-            font-size: 10pt;
+
+        &, nav {
+            width: 200px;
         }
 
-        h2 {
-            font-family: Open Sans, sans-serif;
-            font-weight: normal;
-            text-align: center;
-            cursor: pointer;
-        }
-    }
+        nav {
+            position: fixed;
 
-    .month {
-        border-bottom: solid 1px #AAA;
-        margin: 1em 0;
-        .add-button-container {
-            margin-left: auto;
-            font-size: 0.75em;
-            display: inline;
-            direction: rtl;
-            button, .action-buttons button {
-                color: inherit;
-                background-color: transparent;
-                box-shadow: none;
-            }
-            &:hover {
-                .action-buttons {
-                    opacity: 1;
+            .nav-element {
+                font-family: Open Sans, sans-serif;
+                height: 2em;
+                text-align: center;
+                font-size: 1em;
+                position: relative;
+
+                &:hover {
+                    .events-stats {
+                        opacity: 1;
+                        top: -1em;
+                    }
+                }
+                .events-stats {
+                    transition: all 0.3s;
+                    opacity: 0;
+                    top: 0;
+                    position: absolute;
+                    text-align: center;
+                    width: 100%;
+                    font-size: 10pt;
                 }
             }
-            .action-buttons {
-                opacity: 0;
-                display: inline;
-                color: #E77B20;
-            }
         }
     }
 
-    .event {
-        margin-bottom: 0.25em;
-        padding: 0 0.5em;
-        border-left: solid 5px transparent;
+    .events-container {
+        display: table-cell;
 
-        &.saving {
-            color: gray;
-        }
-        &.closed {
-            .actions { display: none; }
-        }
-        &:hover {
-            border-left: solid 5px $lightcoolblue;
-        }
-        header {
+        .year {
             position: relative;
-            .title-bar {
-                cursor: pointer;
-            }
-            .actions {
-                position: absolute;
-                right: 1em;
+
+            h2 {
+                font-family: Open Sans, sans-serif;
+                font-weight: normal;
+                text-align: center;
             }
         }
 
-        p {
-            padding: 1em 0.5em;
-            margin: 0;
+        .month {
+            border-bottom: solid 1px #AAA;
+            margin: 1em 0;
+
+            .add-button-container {
+                margin-left: auto;
+                font-size: 0.75em;
+                float: right;
+                width: 2em;
+                position: relative;
+                button, .action-buttons button {
+                    color: inherit;
+                    background-color: transparent;
+                    box-shadow: none;
+                }
+                &:hover {
+                    .action-buttons {
+                        max-height: 400px;
+                    }
+                }
+                .action-buttons {
+                    z-index: 1;
+                    transition: 0.3s;
+                    width: 100%;
+                    background-color: white;
+                    max-height: 0px;
+                    overflow: hidden;
+                    position: absolute;
+                    margin-top: 2em;
+                    display: block;
+                    color: #E77B20;
+                }
+            }
+
+        }
+
+        .event {
+            margin-bottom: 0.25em;
+            padding: 0 0.5em;
+            border-left: solid 5px transparent;
+
+            &.saving {
+                color: gray;
+            }
+            &.closed {
+                .actions { display: none; }
+            }
+            &:hover {
+                border-left: solid 5px $lightcoolblue;
+            }
+            header {
+                position: relative;
+                .title-bar {
+                    cursor: pointer;
+                }
+                .actions {
+                    position: absolute;
+                    right: 1em;
+                }
+            }
+
+            p {
+                padding: 1em 0.5em;
+                margin: 0;
+            }
         }
     }
 }
@@ -113,6 +148,7 @@ button {
         display: none;
     }
 }
+
 
 button.material {
     border: none;

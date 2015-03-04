@@ -5,6 +5,6 @@
         backendManager = require("./managers/backendManager"),
         HistoryOfApp = require("./components/HistoryOfApp.react");
 
-    React.render(<HistoryOfApp/>, document.getElementById("historyof"));
+    React.render(<HistoryOfApp/>, document.getElementById("main"));
     backendManager.fetchAll();
 }());

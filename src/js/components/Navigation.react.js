@@ -1,7 +1,7 @@
 (function () {
     "use strict";
     var React = require("react"),
-        Navigation = require("./Navigation.react"),
+        EventsStats = require("./EventsStats.react"),
         Year = require("./Year.react");
 
     /**
@@ -9,11 +9,7 @@
      *
      * @return {undefined}
      */
-    var Timeline = React.createClass({
-
-        requestEdition: function (event) {
-            return this.props.onRequestEdition && this.props.onRequestEdition(event);
-        },
+    var Navigation = React.createClass({
 
         render: function() {
             var yearNodes = [],
@@ -33,22 +29,19 @@
 
             for (var i in groupedEvents) {
                 yearNodes.push((
-                    <Year
-                        key={"year-" + i}
-                        year={i}
-                        events={groupedEvents[i]}
-                        onRequestEdition={this.requestEdition}
-                        onRequestCreation={this.props.onRequestCreation}/>
+                    <div key={"year-" + i} className="nav-element">
+                        <a href={"#year/" + i}>{i}</a>
+                        <EventsStats events={groupedEvents[i]}/>
+                    </div>
                 ));
             }
             return (
-                <div className="timeline">
-                    <Navigation events={this.props.events}/>
-                    <div className="events-container">{yearNodes}</div>
+                <div className="nav-container">
+                    <nav>{yearNodes}</nav>
                 </div>
             );
         }
     });
 
-    module.exports = Timeline;
+    module.exports = Navigation;
 }());

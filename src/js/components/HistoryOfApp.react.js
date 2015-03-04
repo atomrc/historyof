@@ -48,7 +48,7 @@
 
         render: function () {
             return (
-                <div>
+                <div id="historyof">
                     <Timeline
                         events={this.state.events}
                         onRequestCreation={this.create}

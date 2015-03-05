@@ -4,7 +4,8 @@
   "description": "Don't forget any of what has made you",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "install": "gulp"
   },
   "author": "Thomas Belin",
   "license": "ISC",

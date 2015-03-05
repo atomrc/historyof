@@ -6,7 +6,7 @@
         restify = require("restify"),
         Event = require("./model/Event");
 
-    mongoose.connect("mongodb://localhost/historyofus");
+    mongoose.connect("mongodb://" + process.env["MONGODB_ADDON_USER"] + ":" + process.env["MONGODB_ADDON_PASSWORD"] + "@" + process.env["MONGODB_ADDON_HOST"] + "/" + process.env["MONGODB_ADDON_DB"]);
 
     var server = restify.createServer({
         name: "historyof.us",

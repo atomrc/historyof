@@ -48,21 +48,17 @@ button {
                 }
 
                 .events-stats {
-                    transition: all 0.3s;
-                    opacity: 0;
-                    top: 0;
                     position: absolute;
-                    text-align: center;
-                    width: 100%;
-                    font-size: 10pt;
+                    font-size: 8pt;
+                    right: 1em;
+                    bottom: 1em;
+                    display: inline-block;
+                    border-radius: 1em;
+                    padding: 0.5em;
+                    font-weight: bold;
+                    box-shadow: 1px 1px 1px grey inset;
                 }
 
-                &:hover {
-                    .events-stats {
-                        opacity: 1;
-                        top: -1em;
-                    }
-                }
             }
         }
     }
@@ -254,7 +250,7 @@ button.material {
 .soft-box {
     border-radius: 1px;
     background-color: white;
-    box-shadow: 1px 1px 2px #CCC;
+    box-shadow: 2px 2px 1px #CCC;
 }
 
 .table {

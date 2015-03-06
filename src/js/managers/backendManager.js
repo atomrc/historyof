@@ -25,7 +25,7 @@
     var backendManager = {
 
         fetchAll: function () {
-            fetch(generateUrl(config.urlPattern))
+            return fetch(generateUrl(config.urlPattern))
                 .then(function (response) {
                     return response.json();
                 })

@@ -6,5 +6,9 @@
         HistoryOfApp = require("./components/HistoryOfApp.react");
 
     React.render(<HistoryOfApp/>, document.getElementById("main"));
-    backendManager.fetchAll();
+    backendManager
+        .fetchAll()
+        .then(function () {
+            window.location.hash = window.location.hash;
+        });
 }());

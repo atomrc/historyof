@@ -23,22 +23,20 @@ button {
 }
 
 .timeline {
-    width: 80%;
+    width: 90%;
     margin: auto;
 
     .nav-container {
         display: table-cell;
         position: relative;
-        padding: 0 1em;
+        padding: 0 1.5em;
 
         &, nav {
-            width: 200px;
+            width: 150px;
         }
 
         nav {
             position: fixed;
-            background-color: white;
-            box-shadow: 1px 1px 2px #CCC;
 
             .nav-element {
                 font-family: Open Sans, sans-serif;
@@ -80,8 +78,6 @@ button {
         }
 
         .month {
-            border-bottom: solid 1px #AAA;
-            margin: 1em 0;
 
             .add-button-container {
                 margin-left: auto;
@@ -89,16 +85,19 @@ button {
                 float: right;
                 width: 2em;
                 position: relative;
+
                 button, .action-buttons button {
                     color: inherit;
                     background-color: transparent;
                     box-shadow: none;
                 }
+
                 &:hover {
                     .action-buttons {
                         max-height: 400px;
                     }
                 }
+
                 .action-buttons {
                     z-index: 1;
                     transition: 0.3s;
@@ -116,33 +115,51 @@ button {
         }
 
         .event {
-            margin-bottom: 0.25em;
-            padding: 0 0.5em;
             border-left: solid 5px transparent;
+            border-bottom: solid 1px #EEE;
 
             &.saving {
                 color: gray;
             }
-            &.closed {
-                .actions { display: none; }
-            }
+
             &:hover {
                 border-left: solid 5px $lightcoolblue;
             }
+
             header {
+                cursor: pointer;
+                padding: 0.70em 1em;
                 position: relative;
-                .title-bar {
-                    cursor: pointer;
-                }
-                .actions {
-                    position: absolute;
-                    right: 1em;
+                .infos {
+                    display: table;
+                    width: 100%;
+                    >div {
+                        display: table-cell;
+                    }
+                    :nth-child(1) {
+                        width: 5%;
+                    }
+                    :nth-child(2) {
+                        width: 10%
+                    }
+                    :nth-child(3) {
+                        width: 80%;
+                    }
+                    .actions {
+                        opacity: 0;
+                    }
+                    &:hover {
+                        .actions {
+                            opacity: 1;
+                        }
+                    }
                 }
             }
 
             p {
-                padding: 1em 0.5em;
+                padding: 1em 1em;
                 margin: 0;
+                margin-bottom: 1em;
             }
         }
     }
@@ -153,7 +170,6 @@ button {
         display: none;
     }
 }
-
 
 button.material {
     border: none;
@@ -234,4 +250,10 @@ button.material {
         background-color: #3F6BD4;
         color: white;
     }
+}
+
+.soft-box {
+    border-radius: 1px;
+    background-color: white;
+    box-shadow: 1px 1px 2px #CCC;
 }

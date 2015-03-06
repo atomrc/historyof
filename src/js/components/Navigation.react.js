@@ -30,14 +30,15 @@
             for (var i in groupedEvents) {
                 yearNodes.push((
                     <div key={"year-" + i} className="nav-element">
-                        <a href={"#year/" + i}>{i}</a>
+                        <a href={"#years/" + i}>{i}</a>
                         <EventsStats events={groupedEvents[i]}/>
                     </div>
                 ));
             }
+
             return (
                 <div className="nav-container">
-                    <nav>{yearNodes}</nav>
+                    <nav className="soft-box">{yearNodes}</nav>
                 </div>
             );
         }

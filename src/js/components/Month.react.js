@@ -37,7 +37,7 @@
                         <AddButton onRequestCreation={this.requestCreation}/>
                         <div style={{clear: "both"}}></div>
                     </div>
-                    <div>{nodes}</div>
+                    <div className="soft-box">{nodes}</div>
                 </div>
             );
         }

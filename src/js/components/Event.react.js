@@ -15,7 +15,8 @@
             return { open: false };
         },
 
-        requestEdition: function () {
+        requestEdition: function (e) {
+            e.stopPropagation();
             return this.props.onRequestEdition && this.props.onRequestEdition(this.props.event);
         },
 
@@ -24,6 +25,7 @@
         },
 
         remove: function (e) {
+            e.stopPropagation();
             if (window.confirm("confirm delete?")) {
                 appDispatcher.dispatch(eventActions.remove, this.props.event);
             }
@@ -40,18 +42,26 @@
 
             return (
                 <div className={"event " + classes}>
-                    <header>
-                        <span className="title-bar" onClick={this.toggle}>
-                            <span>
-                                <i className={"fa " + icon}></i>&nbsp;
-                                <em className="date">{moment(event.date).format("DD MMM")}&nbsp;-&nbsp;</em>
+                    <header onClick={this.toggle}>
+                        <div className="infos">
+                            <div>
+                                <a name={ "events/" + event.id }>
+                                    <i className={"fa " + icon}></i>
+                                </a>
+                            </div>
+                            <div>
+                                <em className="date">
+                                    {moment(event.date).format("DD MMM")}
+                                </em>
+                            </div>
+                            <div>
                                 <strong>{event.title || (event.text || "").substr(0, 40).concat("...")}</strong>
-                            </span>
-                        </span>
-                        <span className="actions">
-                            <a href="javascript:void(0)" onClick={this.requestEdition}><i className="fa fa-pencil"></i></a>&nbsp;
-                            <a href="javascript:void(0)" onClick={this.remove}><i className="fa fa-times"></i></a>
-                        </span>
+                            </div>
+                            <div className="actions">
+                                <a onClick={this.requestEdition}>E</a>&nbsp;
+                                <a onClick={this.remove}>R</a>
+                            </div>
+                        </div>
                     </header>
                     <p className={"toggle " + classes} dangerouslySetInnerHTML={{__html: (event.text || "").replace(/\n/g, "<br>")}}></p>
                 </div>

@@ -46,7 +46,7 @@
 
             return (
                 <div className="year">
-                    <h2><a name={"year/" + this.props.year}></a>{this.props.year}</h2>
+                    <h2><a name={"years/" + this.props.year}></a>{this.props.year}</h2>
                     <div>{monthNodes}</div>
                 </div>
             );

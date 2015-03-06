@@ -37,7 +37,7 @@
             }
 
             return (
-                <div className="nav-container">
+                <div className="nav-container cell">
                     <nav className="soft-box">{yearNodes}</nav>
                 </div>
             );

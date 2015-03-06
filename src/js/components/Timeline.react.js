@@ -42,9 +42,9 @@
                 ));
             }
             return (
-                <div className="timeline">
+                <div className="timeline table">
                     <Navigation events={this.props.events}/>
-                    <div className="events-container">{yearNodes}</div>
+                    <div className="events-container cell">{yearNodes}</div>
                 </div>
             );
         }

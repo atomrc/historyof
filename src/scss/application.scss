@@ -27,7 +27,6 @@ button {
     margin: auto;
 
     .nav-container {
-        display: table-cell;
         position: relative;
         padding: 0 1.5em;
 
@@ -44,12 +43,10 @@ button {
                 position: relative;
                 border-bottom: solid 1px #EEE;
 
-                &:hover {
-                    .events-stats {
-                        opacity: 1;
-                        top: -1em;
-                    }
+                a {
+                    color: #F06;
                 }
+
                 .events-stats {
                     transition: all 0.3s;
                     opacity: 0;
@@ -59,13 +56,18 @@ button {
                     width: 100%;
                     font-size: 10pt;
                 }
+
+                &:hover {
+                    .events-stats {
+                        opacity: 1;
+                        top: -1em;
+                    }
+                }
             }
         }
     }
 
     .events-container {
-        display: table-cell;
-
         .year {
             position: relative;
 
@@ -74,6 +76,7 @@ button {
                 font-weight: normal;
                 text-shadow: 1px 1px 0px white;
                 text-align: center;
+                color: #F06;
             }
         }
 
@@ -131,11 +134,7 @@ button {
                 padding: 0.70em 1em;
                 position: relative;
                 .infos {
-                    display: table;
                     width: 100%;
-                    >div {
-                        display: table-cell;
-                    }
                     :nth-child(1) {
                         width: 5%;
                     }
@@ -256,4 +255,12 @@ button.material {
     border-radius: 1px;
     background-color: white;
     box-shadow: 1px 1px 2px #CCC;
+}
+
+.table {
+    display: table;
+}
+
+.cell {
+    display: table-cell;
 }

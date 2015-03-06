@@ -43,21 +43,21 @@
             return (
                 <div className={"event " + classes}>
                     <header onClick={this.toggle}>
-                        <div className="infos">
-                            <div>
+                        <div className="infos table">
+                            <div className="cell">
                                 <a name={ "events/" + event.id }>
                                     <i className={"fa " + icon}></i>
                                 </a>
                             </div>
-                            <div>
+                            <div className="cell">
                                 <em className="date">
                                     {moment(event.date).format("DD MMM")}
                                 </em>
                             </div>
-                            <div>
+                            <div className="cell">
                                 <strong>{event.title || (event.text || "").substr(0, 40).concat("...")}</strong>
                             </div>
-                            <div className="actions">
+                            <div className="actions cell">
                                 <a onClick={this.requestEdition}>E</a>&nbsp;
                                 <a onClick={this.remove}>R</a>
                             </div>

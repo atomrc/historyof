@@ -6,7 +6,22 @@
         restify = require("restify"),
         Event = require("./model/Event");
 
-    mongoose.connect("mongodb://" + process.env["MONGODB_ADDON_USER"] + ":" + process.env["MONGODB_ADDON_PASSWORD"] + "@" + process.env["MONGODB_ADDON_HOST"] + "/" + process.env["MONGODB_ADDON_DB"]);
+    var mongoConfig = {
+            host: process.env["MONGODB_ADDON_HOST"] || "localhost",
+            port: process.env["MONGODB_ADDON_PORT"] || "27017",
+            user: process.env["MONGODB_ADDON_USER"] || "",
+            password: process.env["MONGODB_ADDON_PASSWORD"] || "",
+            db: process.env["MONGODB_ADDON_DB"] || "historyofus"
+        },
+        mongoUrl = "mongodb://{user}:{password}@{host}/{db}"
+            .replace("{host}", mongoConfig.host)
+            .replace("{user}", mongoConfig.user)
+            .replace("{port}", mongoConfig.port)
+            .replace("{password}", mongoConfig.password)
+            .replace("{db}", mongoConfig.db)
+        ;
+
+    mongoose.connect(mongoUrl);
 
     var server = restify.createServer({
         name: "historyof.us",
@@ -62,7 +77,7 @@
         return next();
     });
 
-    server.listen(process.env["PORT"] || 8080, function () {
+    server.listen(process.env["PORT"] || 1337, function () {
         console.log("%s listening at %s", server.name, server.url);
     });
 }());

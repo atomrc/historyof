@@ -10,6 +10,7 @@
   "author": "Thomas Belin",
   "license": "ISC",
   "dependencies": {
+    "express": "^4.12.2",
     "flux": "^2.0.1",
     "moment": "^2.9.0",
     "mongoose": "^3.8.23",

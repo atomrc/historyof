@@ -6,7 +6,7 @@
         fetchPolyfill = require("whatwg-fetch");
 
     var config = {
-        urlPattern: "/api/events/:id"
+        urlPattern: "/events/:id"
     };
 
     function generateUrl(url, data) {

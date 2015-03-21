@@ -1,15 +1,18 @@
-/*global require*/
+/*eslint-env node */
 
 (function () {
     "use strict";
     var bodyParser = require("body-parser"),
         mongoose = require("mongoose"),
         express = require("express"),
-        Event = require("./model/Event");
+        jwt = require("express-jwt"),
+        User = require("./model/User"),
+        TimelineController = require("./controllers/TimelineController"),
+        UserController = require("./controllers/UserController"),
+        EventController = require("./controllers/EventController");
 
-    var app = express();
-
-    var mongoConfig = {
+    var app = express(),
+        mongoConfig = {
             host: process.env["MONGODB_ADDON_HOST"] || "localhost",
             port: process.env["MONGODB_ADDON_PORT"] || "27017",
             user: process.env["MONGODB_ADDON_USER"] || "",
@@ -29,36 +32,25 @@
     app.use(express.static("public", {}));
     app.use(bodyParser.json());
 
-    app.get("/events", function (req, res) {
-        Event.find().sort({date: "asc"}).exec(function (err, events) {
-            res.send(events);
+    //Json Web Token for logged part of the app
+    app.use("/u", jwt({ secret: "tochange" }), function authenticate(req, res, next) {
+        User.find(req.user, function (err, user) {
+            req.user = user;
+            console.log(req.user);
+            next();
         });
     });
 
-    app.post("/events", function (req, res) {
-        var event = new Event(req.body);
-        event.save(function (err, data) {
-            res.send(data);
-        });
-    });
+    app.post("/login", UserController.login);
 
-    app.get("/events/:id", function (req, res) {
-        Event.findById(req.params.id, function (err, event) {
-            res.send(event);
-        });
-    });
 
-    app.delete("/events/:id", function (req, res) {
-        Event.remove({ _id: req.params.id }, function (err, nb, msg) {
-            res.send(msg);
-        });
-    });
-
-    app.put("/events/:id", function (req, res) {
-        Event.where({ _id: req.params.id }).update(req.body, function (err, nb, msg) {
-            res.send(msg);
-        });
-    });
+    app.get("/u/timelines", TimelineController.getAll);
+    app.get("/u/timelines/:id", TimelineController.get);
+    app.get("/u/timelines/:tid/events", EventController.getAll);
+    app.post("/u/timelines/:tid/events", EventController.create);
+    app.get("/u/timelines/:tid/events/:id", EventController.get);
+    app.delete("/u/timelines/:tid/events/:id", EventController.remove);
+    app.put("/u/timelines/:tid/events/:id", EventController.update);
 
     var server = app.listen(process.env["PORT"] || 1337, function () {
         console.log("%s listening at %s", app.name, app.url);

@@ -35,6 +35,7 @@
     //Json Web Token for logged part of the app
     app.use("/u", jwt({ secret: "tochange" }), function authenticate(req, res, next) {
         User.find(req.user, function (err, user) {
+            if (err) { return next(err); }
             req.user = user;
             console.log(req.user);
             next();
@@ -44,6 +45,7 @@
     app.post("/login", UserController.login);
 
 
+    app.get("/u", function (req, res) { res.send(req.user); });
     app.get("/u/timelines", TimelineController.getAll);
     app.get("/u/timelines/:id", TimelineController.get);
     app.get("/u/timelines/:tid/events", EventController.getAll);

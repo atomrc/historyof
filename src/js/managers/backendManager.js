@@ -37,7 +37,11 @@
         save: function (event) {
             fetch(generateUrl(config.urlPattern), {
                 method: "POST",
-                body: JSON.stringify(event)
+                body: JSON.stringify(event),
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json"
+                }
             }).then(function (response) {
                 return response.json();
             }).then(function (savedEvent) {
@@ -48,7 +52,11 @@
         update: function (event) {
             fetch(generateUrl(config.urlPattern, { id: event.id }), {
                 method: "PUT",
-                body: JSON.stringify(event)
+                body: JSON.stringify(event),
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json"
+                }
             }).then(function (response) {
                 return response.json();
             }).then(function () {

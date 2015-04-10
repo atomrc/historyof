@@ -2,7 +2,8 @@
 
 (function () {
     "use strict";
-    var mongoose = require("mongoose"),
+    var bodyParser = require("body-parser"),
+        mongoose = require("mongoose"),
         express = require("express"),
         Event = require("./model/Event");
 
@@ -25,7 +26,8 @@
 
     mongoose.connect(mongoUrl);
 
-    app.use(express.static('public', {}));
+    app.use(express.static("public", {}));
+    app.use(bodyParser.json());
 
     app.get("/events", function (req, res) {
         Event.find().sort({date: "asc"}).exec(function (err, events) {
@@ -34,7 +36,7 @@
     });
 
     app.post("/events", function (req, res) {
-        var event = new Event(JSON.parse(req.body));
+        var event = new Event(req.body);
         event.save(function (err, data) {
             res.send(data);
         });
@@ -53,7 +55,7 @@
     });
 
     app.put("/events/:id", function (req, res) {
-        Event.where({ _id: req.params.id }).update(JSON.parse(req.body), function (err, nb, msg) {
+        Event.where({ _id: req.params.id }).update(req.body, function (err, nb, msg) {
             res.send(msg);
         });
     });

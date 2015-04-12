@@ -1,4 +1,4 @@
-/*global require*/
+/*global require, document*/
 (function () {
     "use strict";
     var React = require("react"),

@@ -1,60 +1,69 @@
-/*global require, fetch*/
+/*global require, module, fetch*/
 (function () {
     "use strict";
-    var fetchPolyfill = require("whatwg-fetch");
+    var assign = require("object-assign"),
+        fetchPolyfill = require("whatwg-fetch");
 
     var config = {
-        urlPattern: "/events/:id"
+        urlPattern: "/u/timelines/:tid/events/:eid"
     };
+
+    function request(url, userToken, params) {
+        var conf = assign({}, {
+            method: "GET",
+            headers: {
+                "Authorization": "Bearer " + userToken,
+                "Content-Type": "application/json"
+            }
+        }, params);
+
+        return fetch(url, conf)
+            .then(function (response) {
+                return response.json();
+            });
+    }
 
     function generateUrl(url, data) {
         data = data || {};
         for (var i in data) {
             url = url.replace(":" + i, data[i]);
         }
-        return url.replace(/\/:[^\/]*/g, "");
+        //cut the end of the pattern to remove unbinded datas
+        return url.replace(/\/:.*/g, "");
+    }
+
+    function initEvent(event) {
+        event.date = new Date(event.date);
+        return event;
     }
 
     var api = {
 
-        fetchAll: function () {
-            return fetch(generateUrl(config.urlPattern))
-                .then(function (response) {
-                    return response.json();
-                });
+        getUser: function (userToken) {
+            return request(generateUrl(config.urlPattern), userToken);
         },
 
-        create: function (event) {
-            return fetch(generateUrl(config.urlPattern), {
+        save: function (event) {
+            request(generateUrl(config.urlPattern), {
                 method: "POST",
-                body: JSON.stringify(event),
-                headers: {
-                    "Accept": "application/json",
-                    "Content-Type": "application/json"
-                }
-            }).then(function (response) {
-                return response.json();
+                body: JSON.stringify(event)
             });
         },
 
         update: function (event) {
-            fetch(generateUrl(config.urlPattern, { id: event.id }), {
+            request(generateUrl(config.urlPattern, { id: event.id }), {
                 method: "PUT",
                 body: JSON.stringify(event),
                 headers: {
                     "Accept": "application/json",
                     "Content-Type": "application/json"
                 }
-            }).then(function (response) {
-                return response.json();
             });
         },
 
         remove: function (event) {
-            fetch(generateUrl(config.urlPattern, { id: event.id }), {
+            request(generateUrl(config.urlPattern, { id: event.id }), {
                 method: "DELETE"
-            }).then(function (response) {
-                return response.json();
             });
         }
     };

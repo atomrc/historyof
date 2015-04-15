@@ -6,16 +6,6 @@
         moment = require("moment");
 
     var Year = React.createClass({
-
-        requestEdition: function (event) {
-            return this.props.onRequestEdition && this.props.onRequestEdition(event);
-        },
-
-        requestCreation: function (type, date) {
-            date.setYear(this.props.year);
-            return this.props.onRequestCreation && this.props.onRequestCreation(type, date);
-        },
-
         render: function () {
             var monthNodes = [],
                 groupedEvents = this
@@ -38,8 +28,6 @@
                         key={"month-" + i}
                         events={groupedEvents[i]}
                         month={i}
-                        onRequestEdition={this.requestEdition}
-                        onRequestCreation={this.requestCreation}
                         />
                 ));
             }

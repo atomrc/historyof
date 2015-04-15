@@ -2,14 +2,20 @@
 (function () {
     "use strict";
     var appDispatcher = require("../dispatcher/appDispatcher"),
-        eventActions = require("../dispatcher/eventActions"),
+        eventActions = require("../constants/constants").actions,
         hash = require("string-hash");
 
     var listeners = [],
-        events = [];
+        events = [],
+        editedEvent = {};
 
     function getFrontId(event) {
         return "front-" + hash(event.title) + hash(event.date.getTime());
+    }
+
+    function initEvent(event) {
+        event.date = new Date(event.date);
+        return event;
     }
 
     var eventsManager = {
@@ -20,6 +26,14 @@
 
         getAll: function () {
             return events;
+        },
+
+        getEditedEvent: function () {
+            return editedEvent;
+        },
+
+        setEditedEvent: function (event) {
+            editedEvent = event;
         },
 
         get: function (id) {

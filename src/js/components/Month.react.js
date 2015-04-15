@@ -7,15 +7,6 @@
 
     var Month = React.createClass({
 
-        requestEdition: function (event) {
-            return this.props.onRequestEdition && this.props.onRequestEdition(event);
-        },
-
-        requestCreation: function (type) {
-            var m = moment().month(this.props.month);
-            return this.props.onRequestCreation && this.props.onRequestCreation(type, m.toDate());
-        },
-
         render: function () {
             var nodes = this
                 .props
@@ -34,7 +25,7 @@
                 <div>
                     <div className="month">
                         {month}
-                        <AddButton onRequestCreation={this.requestCreation}/>
+                        <AddButton/>
                         <div style={{clear: "both"}}></div>
                     </div>
                     <div className="soft-box">{nodes}</div>

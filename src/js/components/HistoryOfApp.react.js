@@ -16,9 +16,7 @@
 
         getInitialState: function () {
             return {
-                editedEvent: {},
-                events: eventStore.getAll(),
-                defaultDate: new Date()
+                events: eventStore.getAll()
             };
         },
 
@@ -34,29 +32,13 @@
             eventStore.removeChangeListener(this.onEventsChange);
         },
 
-        onEventCreated: function (newEvent) {
-            this.setState({defaultDate: newEvent.date, editedEvent: {}});
-        },
-
-        create: function (eventType, date) {
-            this.setState({ editedEvent: { type: eventType, date: date || this.state.defaultDate } });
-        },
-
-        edit: function (event) {
-            this.setState({ editedEvent: event });
-        },
-
         render: function () {
             return (
                 <div id="historyof">
-                    <Timeline
-                        events={this.state.events}
-                        onRequestCreation={this.create}
-                        onRequestEdition={this.edit}/>
-
+                    <Timeline events={this.state.events}/>
                     <div id="edit-section">
-                        <EventForm event={this.state.editedEvent} onEventCreated={this.onEventCreated}/>
-                        <AddButton onRequestCreation={this.create}/>
+                        <EventForm/>
+                        <AddButton/>
                     </div>
                 </div>
             );

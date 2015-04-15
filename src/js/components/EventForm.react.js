@@ -1,26 +1,24 @@
 (function () {
     "use strict";
     var React = require("react"),
-        eventActions = require("../dispatcher/eventActions"),
         DatePicker = require('react-datepicker-component/DatePicker.jsx'),
         DatePickerInput = require('react-datepicker-component/DatePickerInput.jsx'),
-        appDispatcher = require("../dispatcher/appDispatcher"),
+        eventActions = require("../actions/eventActions"),
+        eventStore = require("../stores/eventStore"),
         eventTypes = require("../config/eventTypes");
 
     var EventForm = React.createClass({
 
         getInitialState: function() {
-            return { event: {} };
+            return { event: eventStore.getEditedEvent() };
         },
 
         componentDidMount: function () {
-            document.addEventListener("edit", function (e) {
-                this.setState({ event: e.detail });
-            }.bind(this));
+            eventStore.addChangeListener(this.onEditedEventChange);
         },
 
-        componentWillReceiveProps: function (nextProp) {
-            this.setState({ event: nextProp.event });
+        onEditedEventChange: function () {
+            this.setState(this.getInitialState());
         },
 
         onChange: function (e) {
@@ -45,10 +43,9 @@
             event.date = new Date(event.date);
             this.replaceState(this.getInitialState());
 
-            var action = event.id ? eventActions.update : eventActions.create;
-            appDispatcher.dispatch(action, event);
-
-            this.props.onEventCreated && this.props.onEventCreated(event);
+            return event.id ?
+                eventActions.update(event) :
+                eventActions.save(event);
         },
 
         cancel: function () {

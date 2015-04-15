@@ -37,7 +37,7 @@
             this.setState(changes);
         },
 
-        save: function (e) {
+        create: function (e) {
             e.preventDefault();
             var event = this.state.event;
             event.date = new Date(event.date);
@@ -45,11 +45,11 @@
 
             return event.id ?
                 eventActions.update(event) :
-                eventActions.save(event);
+                eventActions.create(event);
         },
 
         cancel: function () {
-            this.replaceState(this.getInitialState());
+            eventActions.cancelEdit();
         },
 
         render: function () {
@@ -71,7 +71,7 @@
                         <i className={"fa " + type.icon}></i> {event.title || "New Event"}
                         <button type="button" onClick={this.cancel} className="cancel-button"><i className="fa fa-times"></i></button>
                     </div>
-                    <form onSubmit={this.save}>
+                    <form onSubmit={this.create}>
                         <input type="text" placeholder="Title" name="title" value={event.title || ""} onChange={this.onChange} autoComplete="off"/>
                         <select value={event.type} name="type" onChange={this.onChange}>{typeOptions}</select>
                         <br/>

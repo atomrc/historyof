@@ -29,7 +29,7 @@
                 });
         },
 
-        save: function (event) {
+        create: function (event) {
             fetch(generateUrl(config.urlPattern), {
                 method: "POST",
                 body: JSON.stringify(event),

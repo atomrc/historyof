@@ -89,6 +89,7 @@
 
             case eventActions.CREATE_EVENT:
                 this.add(data.event);
+                this.setEditedEvent({});
                 this.emitChange();
                 break;
 
@@ -97,8 +98,14 @@
                 this.emitChange();
                 break;
 
+            case eventActions.CANCEL_EDIT_EVENT:
+                this.setEditedEvent({});
+                this.emitChange();
+                break;
+
             case eventActions.UPDATE_EVENT:
                 this.update(data.event.id, data.event);
+                this.setEditedEvent({});
                 this.emitChange();
                 break;
 

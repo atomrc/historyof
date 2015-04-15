@@ -8,7 +8,11 @@
     var AddButton = React.createClass({
 
         createType: function (type) {
-            eventActions.create(type, new Date());
+            var event = {
+                type: type,
+                date: new Date()
+            };
+            eventActions.edit(event);
         },
 
         render: function () {

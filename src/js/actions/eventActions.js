@@ -21,12 +21,17 @@
             dispatcher.dispatch(actions.EDIT_EVENT, { event: event });
         },
 
-        create: function (type, date) {
-            dispatcher.dispatch(actions.CREATE_EVENT, { type: type, date: date });
+        cancelEdit: function (event) {
+            dispatcher.dispatch(actions.END_EDIT_EVENT);
         },
 
-        save: function (event) {
-            dispatcher.dispatch(actions.SAVE_EVENT, { event: event });
+        create: function (event) {
+            dispatcher.dispatch(actions.CREATE_EVENT, { event: event });
+            historyOfApi
+                .create(event)
+                .then(function (e) {
+                    dispatcher.dispatch(actions.RECEIVE_EVENT, { event: e });
+                });
         },
 
         update: function (event) {

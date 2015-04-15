@@ -40,6 +40,7 @@
 
         remove: function (event) {
             dispatcher.dispatch(actions.REMOVE_EVENT, { event: event });
+            historyOfApi.remove(event);
         }
     };
 }());

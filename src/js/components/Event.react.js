@@ -25,7 +25,7 @@
         remove: function (e) {
             e.stopPropagation();
             if (window.confirm("confirm delete?")) {
-                eventActions.remove(e);
+                eventActions.remove(this.props.event);
             }
         },
 

@@ -63,31 +63,39 @@
         }
     };
 
-    appDispatcher.register(function (action, payload) {
+    appDispatcher.register(function (payload) {
+        var action = payload.action,
+            data = payload.data;
+
         switch (action) {
-            case eventActions.updateAll:
-                this.setEvents(payload);
+            case eventActions.RECEIVE_EVENTS:
+                this.setEvents(data.events.map(initEvent));
                 this.emitChange();
                 break;
 
-            case eventActions.create:
-                this.add(payload);
+            case eventActions.CREATE_EVENT:
+                this.add(data.event);
                 this.emitChange();
                 break;
 
-            case eventActions.update:
-                this.update(payload.id, payload);
+            case eventActions.EDIT_EVENT:
+                this.setEditedEvent(data.event);
                 this.emitChange();
                 break;
 
-            case eventActions.confirmCreate:
-                var frontId = getFrontId(payload);
-                this.update(frontId, payload);
+            case eventActions.UPDATE_EVENT:
+                this.update(data.event.id, data.event);
                 this.emitChange();
                 break;
 
-            case eventActions.remove:
-                this.remove(payload);
+            case eventActions.RECEIVE_EVENTS:
+                var frontId = getFrontId(data.event);
+                this.update(frontId, data.event);
+                this.emitChange();
+                break;
+
+            case eventActions.REMOVE_EVENT:
+                this.remove(data.event);
                 this.emitChange();
                 break;
 

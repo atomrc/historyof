@@ -4,17 +4,17 @@
         DatePicker = require('react-datepicker-component/DatePicker.jsx'),
         DatePickerInput = require('react-datepicker-component/DatePickerInput.jsx'),
         eventActions = require("../actions/eventActions"),
-        eventStore = require("../stores/eventStore"),
+        editedEventStore = require("../stores/editedEventStore"),
         eventTypes = require("../config/eventTypes");
 
     var EventForm = React.createClass({
 
         getInitialState: function() {
-            return { event: eventStore.getEditedEvent() };
+            return { event: editedEventStore.getEditedEvent() };
         },
 
         componentDidMount: function () {
-            eventStore.addChangeListener(this.onEditedEventChange);
+            editedEventStore.addChangeListener(this.onEditedEventChange);
         },
 
         onEditedEventChange: function () {

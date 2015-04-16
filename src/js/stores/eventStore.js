@@ -6,8 +6,7 @@
         hash = require("string-hash");
 
     var listeners = [],
-        events = [],
-        editedEvent = {};
+        events = [];
 
     function getFrontId(event) {
         return "front-" + hash(event.title) + hash(event.date.getTime());
@@ -26,14 +25,6 @@
 
         getAll: function () {
             return events;
-        },
-
-        getEditedEvent: function () {
-            return editedEvent;
-        },
-
-        setEditedEvent: function (event) {
-            editedEvent = event;
         },
 
         get: function (id) {
@@ -89,23 +80,11 @@
 
             case eventActions.CREATE_EVENT:
                 this.add(data.event);
-                this.setEditedEvent({});
-                this.emitChange();
-                break;
-
-            case eventActions.EDIT_EVENT:
-                this.setEditedEvent(data.event);
-                this.emitChange();
-                break;
-
-            case eventActions.CANCEL_EDIT_EVENT:
-                this.setEditedEvent({});
                 this.emitChange();
                 break;
 
             case eventActions.UPDATE_EVENT:
                 this.update(data.event.id, data.event);
-                this.setEditedEvent({});
                 this.emitChange();
                 break;
 

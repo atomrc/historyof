@@ -30,7 +30,7 @@
             historyOfApi
                 .create(event)
                 .then(function (e) {
-                    dispatcher.dispatch(actions.RECEIVE_EVENT, { event: e });
+                    dispatcher.dispatch(actions.RECEIVE_CREATED_EVENT, { event: e });
                 });
         },
 

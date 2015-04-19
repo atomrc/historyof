@@ -9,7 +9,7 @@
         events = [];
 
     function getFrontId(event) {
-        return "front-" + hash(event.title) + hash(event.date.getTime());
+        return "front-" + hash(event.title);
     }
 
     function initEvent(event) {
@@ -88,9 +88,11 @@
                 this.emitChange();
                 break;
 
-            case eventActions.RECEIVE_EVENTS:
-                var frontId = getFrontId(data.event);
-                this.update(frontId, data.event);
+            case eventActions.RECEIVE_CREATED_EVENT:
+                var e = initEvent(data.event),
+                    frontId = getFrontId(e);
+
+                this.update(frontId, e);
                 this.emitChange();
                 break;
 

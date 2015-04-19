@@ -15,11 +15,6 @@
         return url.replace(/\/:[^\/]*/g, "");
     }
 
-    function initEvent(event) {
-        event.date = new Date(event.date);
-        return event;
-    }
-
     var api = {
 
         fetchAll: function () {

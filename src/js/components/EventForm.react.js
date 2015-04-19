@@ -62,7 +62,7 @@
 
             var typeOptions = eventTypes.getTypes().map(function (type) {
                 return ((
-                    <option value={type.name}>{type.name}</option>
+                    <option value={type.name} key={type.name}>{type.name}</option>
                 ));
             });
 

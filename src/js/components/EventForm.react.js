@@ -1,11 +1,11 @@
 (function () {
     "use strict";
     var React = require("react"),
-        DatePicker = require('react-datepicker-component/DatePicker.jsx'),
-        DatePickerInput = require('react-datepicker-component/DatePickerInput.jsx'),
+        DatePicker = require("react-datepicker"),
         eventActions = require("../actions/eventActions"),
         editedEventStore = require("../stores/editedEventStore"),
-        eventTypes = require("../config/eventTypes");
+        eventTypes = require("../config/eventTypes"),
+        moment = require("moment");
 
     var EventForm = React.createClass({
 
@@ -30,6 +30,7 @@
         dateChange: function (date) {
             var changes = { event: this.state.event },
                 prevDate = this.state.event.date;
+            date = date.toDate();
             date.setHours(prevDate.getHours());
             date.setMinutes(prevDate.getMinutes());
             changes.event["date"] = date;
@@ -37,7 +38,7 @@
             this.setState(changes);
         },
 
-        create: function (e) {
+        save: function (e) {
             e.preventDefault();
             var event = this.state.event;
             event.date = new Date(event.date);
@@ -71,11 +72,11 @@
                         <i className={"fa " + type.icon}></i> {event.title || "New Event"}
                         <button type="button" onClick={this.cancel} className="cancel-button"><i className="fa fa-times"></i></button>
                     </div>
-                    <form onSubmit={this.create}>
+                    <form onSubmit={this.save}>
                         <input type="text" placeholder="Title" name="title" value={event.title || ""} onChange={this.onChange} autoComplete="off"/>
                         <select value={event.type} name="type" onChange={this.onChange}>{typeOptions}</select>
                         <br/>
-                        <DatePickerInput classNamePrefix="wide-datepicker" date={event.date} onChangeDate={this.dateChange}/>
+                        <DatePicker onChange={this.dateChange} selected={moment(this.state.event.date)}/>
                         <br/>
                         <textarea rows="8" name="text" placeholder="Description" value={event.text || ""} onChange={this.onChange}/>
                         <br/>

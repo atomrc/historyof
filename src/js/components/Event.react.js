@@ -14,12 +14,12 @@
             return { open: false };
         },
 
-        edit: function (e) {
-            eventActions.edit(this.props.event);
-        },
-
         toggle: function () {
             this.setState({ open: !this.state.open });
+        },
+
+        edit: function (e) {
+            eventActions.edit(this.props.event);
         },
 
         remove: function (e) {

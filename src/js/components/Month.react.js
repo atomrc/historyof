@@ -13,10 +13,7 @@
                 .events
                 .map(function (event) {
                     return (
-                        <Event
-                            event={event}
-                            key={event.id || event.frontId}
-                            onRequestEdition={this.requestEdition}/>
+                        <Event event={event} key={event.id || event.frontId}/>
                     );
                 }.bind(this));
 

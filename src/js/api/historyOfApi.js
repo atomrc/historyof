@@ -30,7 +30,7 @@
         },
 
         create: function (event) {
-            fetch(generateUrl(config.urlPattern), {
+            return fetch(generateUrl(config.urlPattern), {
                 method: "POST",
                 body: JSON.stringify(event),
                 headers: {

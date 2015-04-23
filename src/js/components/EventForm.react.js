@@ -1,26 +1,24 @@
 (function () {
     "use strict";
     var React = require("react"),
-        eventActions = require("../dispatcher/eventActions"),
-        DatePicker = require('react-datepicker-component/DatePicker.jsx'),
-        DatePickerInput = require('react-datepicker-component/DatePickerInput.jsx'),
-        appDispatcher = require("../dispatcher/appDispatcher"),
-        eventTypes = require("../config/eventTypes");
+        DatePicker = require("react-datepicker"),
+        eventActions = require("../actions/eventActions"),
+        editedEventStore = require("../stores/editedEventStore"),
+        eventTypes = require("../config/eventTypes"),
+        moment = require("moment");
 
     var EventForm = React.createClass({
 
         getInitialState: function() {
-            return { event: {} };
+            return { event: editedEventStore.getEditedEvent() };
         },
 
         componentDidMount: function () {
-            document.addEventListener("edit", function (e) {
-                this.setState({ event: e.detail });
-            }.bind(this));
+            editedEventStore.addChangeListener(this.onEditedEventChange);
         },
 
-        componentWillReceiveProps: function (nextProp) {
-            this.setState({ event: nextProp.event });
+        onEditedEventChange: function () {
+            this.setState(this.getInitialState());
         },
 
         onChange: function (e) {
@@ -32,6 +30,7 @@
         dateChange: function (date) {
             var changes = { event: this.state.event },
                 prevDate = this.state.event.date;
+            date = date.toDate();
             date.setHours(prevDate.getHours());
             date.setMinutes(prevDate.getMinutes());
             changes.event["date"] = date;
@@ -45,14 +44,13 @@
             event.date = new Date(event.date);
             this.replaceState(this.getInitialState());
 
-            var action = event.id ? eventActions.update : eventActions.create;
-            appDispatcher.dispatch(action, event);
-
-            this.props.onEventCreated && this.props.onEventCreated(event);
+            return event.id ?
+                eventActions.update(event) :
+                eventActions.create(event);
         },
 
         cancel: function () {
-            this.replaceState(this.getInitialState());
+            eventActions.cancelEdit();
         },
 
         render: function () {
@@ -64,7 +62,7 @@
 
             var typeOptions = eventTypes.getTypes().map(function (type) {
                 return ((
-                    <option value={type.name}>{type.name}</option>
+                    <option value={type.name} key={type.name}>{type.name}</option>
                 ));
             });
 
@@ -78,7 +76,7 @@
                         <input type="text" placeholder="Title" name="title" value={event.title || ""} onChange={this.onChange} autoComplete="off"/>
                         <select value={event.type} name="type" onChange={this.onChange}>{typeOptions}</select>
                         <br/>
-                        <DatePickerInput classNamePrefix="wide-datepicker" date={event.date} onChangeDate={this.dateChange}/>
+                        <DatePicker onChange={this.dateChange} selected={moment(this.state.event.date)}/>
                         <br/>
                         <textarea rows="8" name="text" placeholder="Description" value={event.text || ""} onChange={this.onChange}/>
                         <br/>

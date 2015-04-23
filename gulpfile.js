@@ -5,14 +5,14 @@ var gulp = require("gulp"),
     browserify = require("gulp-browserify"),
     uglify = require("gulp-uglify"),
     jade = require("gulp-jade"),
-    sass = require("gulp-sass"),
-    reactify = require("reactify");
+    babelify = require("babelify"),
+    sass = require("gulp-sass");
 
 gulp.task("js", function() {
     gulp
         .src("./src/js/application.js")
         .pipe(browserify({
-            transform: [reactify]
+            transform: [babelify]
         }))
         //.pipe(uglify())
         .pipe(gulp.dest("./public/js"));

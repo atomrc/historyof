@@ -1,25 +1,19 @@
-/*global module*/
+/*global require, module*/
 
 (function () {
     "use strict";
 
-    var callbacks = [];
+    var Dispatcher = require("flux").Dispatcher,
+        assign = require("object-assign");
 
-    module.exports = {
-
-        register: function (callback) {
-            callbacks.push(callback);
-            return callback.length - 1;
-        },
-
-        dispatch: function (action, payload) {
-            if (!action) {
-                console.error("[dispatcher]action cannot be null");
-                return;
-            }
-            callbacks.forEach(function (callback) {
-                callback(action, payload);
+    var appDispatcher = assign(new Dispatcher(), {
+        dispatch: function (action, data) {
+            return Dispatcher.prototype.dispatch.call(this, {
+                action: action,
+                data: data
             });
         }
-    };
+    });
+
+    module.exports = appDispatcher;
 }());

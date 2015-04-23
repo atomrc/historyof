@@ -2,8 +2,7 @@
     "use strict";
     var React = require("react"),
         moment = require("moment"),
-        appDispatcher = require("../dispatcher/appDispatcher"),
-        eventActions = require("../dispatcher/eventActions"),
+        eventActions = require("../actions/eventActions"),
         PureRenderMixin = require('react/addons').addons.PureRenderMixin,
         eventTypes = require("../config/eventTypes");
 
@@ -15,19 +14,18 @@
             return { open: false };
         },
 
-        requestEdition: function (e) {
-            e.stopPropagation();
-            return this.props.onRequestEdition && this.props.onRequestEdition(this.props.event);
-        },
-
         toggle: function () {
             this.setState({ open: !this.state.open });
+        },
+
+        edit: function (e) {
+            eventActions.edit(this.props.event);
         },
 
         remove: function (e) {
             e.stopPropagation();
             if (window.confirm("confirm delete?")) {
-                appDispatcher.dispatch(eventActions.remove, this.props.event);
+                eventActions.remove(this.props.event);
             }
         },
 
@@ -58,7 +56,7 @@
                                 <strong>{event.title || (event.text || "").substr(0, 40).concat("...")}</strong>
                             </div>
                             <div className="actions cell">
-                                <a onClick={this.requestEdition}>E</a>&nbsp;
+                                <a onClick={this.edit}>E</a>&nbsp;
                                 <a onClick={this.remove}>R</a>
                             </div>
                         </div>

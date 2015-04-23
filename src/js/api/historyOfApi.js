@@ -1,9 +1,7 @@
 /*global require, fetch*/
 (function () {
     "use strict";
-    var appDispatcher = require("../dispatcher/appDispatcher"),
-        eventActions = require("../dispatcher/eventActions"),
-        fetchPolyfill = require("whatwg-fetch");
+    var fetchPolyfill = require("whatwg-fetch");
 
     var config = {
         urlPattern: "/events/:id"
@@ -17,25 +15,17 @@
         return url.replace(/\/:[^\/]*/g, "");
     }
 
-    function initEvent(event) {
-        event.date = new Date(event.date);
-        return event;
-    }
-
-    var backendManager = {
+    var api = {
 
         fetchAll: function () {
             return fetch(generateUrl(config.urlPattern))
                 .then(function (response) {
                     return response.json();
-                })
-                .then(function (events) {
-                    appDispatcher.dispatch(eventActions.updateAll, events.map(initEvent));
                 });
         },
 
-        save: function (event) {
-            fetch(generateUrl(config.urlPattern), {
+        create: function (event) {
+            return fetch(generateUrl(config.urlPattern), {
                 method: "POST",
                 body: JSON.stringify(event),
                 headers: {
@@ -44,8 +34,6 @@
                 }
             }).then(function (response) {
                 return response.json();
-            }).then(function (savedEvent) {
-                appDispatcher.dispatch(eventActions.confirmCreate, initEvent(savedEvent));
             });
         },
 
@@ -59,8 +47,6 @@
                 }
             }).then(function (response) {
                 return response.json();
-            }).then(function () {
-                appDispatcher.dispatch(eventActions.confirmUpdate, event);
             });
         },
 
@@ -69,31 +55,9 @@
                 method: "DELETE"
             }).then(function (response) {
                 return response.json();
-            }).then(function (removedEvent) {
-                appDispatcher.dispatch(eventActions.confirmRemove, initEvent(removedEvent));
             });
         }
     };
 
-    appDispatcher.register(function (action, payload) {
-        switch (action) {
-            case eventActions.create:
-                this.save(payload);
-                break;
-
-            case eventActions.remove:
-                this.remove(payload);
-                break;
-
-            case eventActions.update:
-                this.update(payload);
-                break;
-
-            default:
-                break;
-
-        }
-    }.bind(backendManager));
-
-    module.exports = backendManager;
+    module.exports = api;
 }());

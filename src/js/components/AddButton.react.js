@@ -2,12 +2,17 @@
 (function () {
     "use strict";
     var React = require("react"),
+        eventActions = require("../actions/eventActions"),
         eventTypes = require("../config/eventTypes").getTypes();
 
     var AddButton = React.createClass({
 
         createType: function (type) {
-            this.props.onRequestCreation && this.props.onRequestCreation(type);
+            var event = {
+                type: type,
+                date: new Date()
+            };
+            eventActions.edit(event);
         },
 
         render: function () {

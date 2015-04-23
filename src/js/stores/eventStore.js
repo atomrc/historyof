@@ -2,14 +2,19 @@
 (function () {
     "use strict";
     var appDispatcher = require("../dispatcher/appDispatcher"),
-        eventActions = require("../dispatcher/eventActions"),
+        eventActions = require("../constants/constants").actions,
         hash = require("string-hash");
 
     var listeners = [],
         events = [];
 
     function getFrontId(event) {
-        return "front-" + hash(event.title) + hash(event.date.getTime());
+        return "front-" + hash(event.title);
+    }
+
+    function initEvent(event) {
+        event.date = new Date(event.date);
+        return event;
     }
 
     var eventsManager = {
@@ -63,31 +68,36 @@
         }
     };
 
-    appDispatcher.register(function (action, payload) {
+    appDispatcher.register(function (payload) {
+        var action = payload.action,
+            data = payload.data;
+
         switch (action) {
-            case eventActions.updateAll:
-                this.setEvents(payload);
+            case eventActions.RECEIVE_EVENTS:
+                this.setEvents(data.events.map(initEvent));
                 this.emitChange();
                 break;
 
-            case eventActions.create:
-                this.add(payload);
+            case eventActions.CREATE_EVENT:
+                this.add(data.event);
                 this.emitChange();
                 break;
 
-            case eventActions.update:
-                this.update(payload.id, payload);
+            case eventActions.UPDATE_EVENT:
+                this.update(data.event.id, data.event);
                 this.emitChange();
                 break;
 
-            case eventActions.confirmCreate:
-                var frontId = getFrontId(payload);
-                this.update(frontId, payload);
+            case eventActions.RECEIVE_CREATED_EVENT:
+                var e = initEvent(data.event),
+                    frontId = getFrontId(e);
+
+                this.update(frontId, e);
                 this.emitChange();
                 break;
 
-            case eventActions.remove:
-                this.remove(payload);
+            case eventActions.REMOVE_EVENT:
+                this.remove(data.event);
                 this.emitChange();
                 break;
 

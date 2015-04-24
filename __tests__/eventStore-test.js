@@ -16,10 +16,57 @@ describe("eventStore", function () {
         callback({
             action: actions.RECEIVE_EVENTS,
             data: {
-                events: [{}]
+                events: [{
+                    id: 1,
+                    type: "email",
+                    date: new Date()
+                }]
             }
         });
 
         expect(eventStore.getAll().length).toBe(1);
+    });
+
+    it("create and remove an event", function () {
+        var newEvent = {
+                id: 12,
+                type: "email",
+                date: new Date
+            },
+            createAction = {
+                action: actions.CREATE_EVENT,
+                data: { event: newEvent }
+            },
+            removeAction = {
+                action: actions.REMOVE_EVENT,
+                data: {
+                    event: newEvent
+                }
+            };
+
+        callback(createAction);
+        expect(eventStore.getAll().length).toBe(2);
+
+        callback(removeAction);
+        expect(eventStore.getAll().length).toBe(1);
+    });
+
+    it("update event", function () {
+        var updated = {
+                id: 1,
+                type: "newtype"
+            },
+            updateAction = {
+                action: actions.UPDATE_EVENT,
+                data: {
+                    event: updated
+                }
+            };
+
+        console.log(eventStore.getAll());
+        expect(eventStore.getAll()[0].type).toBe("email");
+        callback(updateAction);
+        expect(eventStore.getAll()[0].type).toBe("newtype");
+
     });
 });

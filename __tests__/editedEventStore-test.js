@@ -11,17 +11,22 @@ describe("eeditedEventStore", function () {
         editedEventStore = require(APP_PATH + "/stores/editedEventStore"),
         callback = dispatcher.register.mock.calls[0][0];
 
-
-    it("edit an event", function () {
-        var editAction = {
-            action: actions.EDIT_EVENT,
-            data: {
-                event: { id: 12, title: "edited event", date: new Date() }
-            }
-        };
+    function setEditing() {
+        var event = { id: 12, title: "edited event", date: new Date() },
+            editAction = {
+                action: actions.EDIT_EVENT,
+                data: {
+                    event: event
+                }
+            };
 
         callback(editAction);
-        expect(editedEventStore.getEditedEvent()).toBe(editAction.data.event);
+        return event;
+    }
+
+    it("edit an event", function () {
+        var event = setEditing();
+        expect(editedEventStore.getEditedEvent()).toBe(event);
     });
 
     it("should end editing when user cancels", function () {
@@ -30,25 +35,24 @@ describe("eeditedEventStore", function () {
         };
 
         callback(endEditAction);
-        expect(editedEventStore.getEditedEvent()).toEqual({});
+        expect(editedEventStore.getEditedEvent()).toBeUndefined();
     });
 
     it("should end editing when event is created", function () {
-        var editAction = {
-            action: actions.EDIT_EVENT,
-            data: {
-                event: { id: 12, title: "edited event", date: new Date() }
-            }
-        };
-
-        callback(editAction);
-        expect(editedEventStore.getEditedEvent()).toBe(editAction.data.event);
+        var event = setEditing();
+        expect(editedEventStore.getEditedEvent()).toBe(event);
 
         var createAction = {
             action: actions.CREATE_EVENT
         };
 
         callback(createAction);
-        expect(editedEventStore.getEditedEvent()).toEqual({});
+        expect(editedEventStore.getEditedEvent()).toBeUndefined();
+    });
+
+    it("should give the current state of edition", function () {
+        expect(editedEventStore.isEditing()).toBeFalsy();
+        setEditing();
+        expect(editedEventStore.isEditing()).toBeTruthy();
     });
 });

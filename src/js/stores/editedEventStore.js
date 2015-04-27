@@ -5,7 +5,7 @@
         eventActions = require("../constants/constants").actions;
 
     var listeners = [],
-        editedEvent = {};
+        editedEvent;
 
     var editedEventStore = {
 
@@ -13,8 +13,8 @@
             return editedEvent;
         },
 
-        setEditedEvent: function (event) {
-            editedEvent = event;
+        isEditing: function () {
+            return editedEvent !== undefined;
         },
 
         addChangeListener: function (callback) {
@@ -35,22 +35,22 @@
 
         switch (action) {
             case eventActions.CREATE_EVENT:
-                this.setEditedEvent({});
+                editedEvent = undefined;
                 this.emitChange();
                 break;
 
             case eventActions.EDIT_EVENT:
-                this.setEditedEvent(data.event);
+                editedEvent = data.event;
                 this.emitChange();
                 break;
 
             case eventActions.END_EDIT_EVENT:
-                this.setEditedEvent({});
+                editedEvent = undefined;
                 this.emitChange();
                 break;
 
             case eventActions.UPDATE_EVENT:
-                this.setEditedEvent({});
+                editedEvent = undefined;
                 this.emitChange();
                 break;
 

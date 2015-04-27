@@ -6,13 +6,17 @@
         EventEmitter = require("events").EventEmitter,
         assign = require("object-assign");
 
-    var userToken,
+    var token,
         user;
 
     var userStore = assign({}, EventEmitter.prototype, {
 
         get: function () {
             return user;
+        },
+
+        hasToken: function () {
+            return token !== undefined;
         },
 
         addChangeListener: function (callback) {
@@ -39,7 +43,7 @@
                 break;
 
             case actions.RECEIVE_USER_TOKEN:
-                userToken = data.userToken;
+                token = data.token;
                 this.emitChange();
                 break;
 

@@ -3,6 +3,10 @@
     "use strict";
     module.exports = {
         actions: {
+            USER_LOGIN: "USER_LOGIN", //log the user with his credentials
+            RECEIVE_USER: "RECEIVE_USER", //the user has been retreived from the server
+            RECEIVE_USER_TOKEN: "RECEIVE_USER_TOKEN", //the app received the user's token
+
             LOAD_EVENTS: "LOAD_EVENTS",
             CREATE_EVENT: "CREATE_EVENT",
             SAVE_EVENT: "SAVE_EVENT",

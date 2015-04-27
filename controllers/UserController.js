@@ -32,7 +32,8 @@
                     return res.status(401).send("The login or password don't match");
                 }
                 res.status(201).send({
-                    token: createToken(user)
+                    token: createToken(user),
+                    user: user
                 });
             });
 

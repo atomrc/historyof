@@ -24,12 +24,13 @@ describe("eventStore", function () {
                     id: 1,
                     title: "event",
                     type: "email",
-                    date: new Date()
+                    date: "2015-04-27T18:45:01.995Z"
                 }]
             }
         });
 
         expect(eventStore.getAll().length).toBe(1);
+        expect(eventStore.getAll()[0].date.getFullYear()).toBe(2015);
     });
 
     it("create and update with the server's response", function () {

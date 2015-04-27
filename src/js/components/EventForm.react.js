@@ -1,3 +1,4 @@
+/*global module, require*/
 (function () {
     "use strict";
     var React = require("react"),
@@ -10,7 +11,10 @@
     var EventForm = React.createClass({
 
         getInitialState: function() {
-            return { event: editedEventStore.getEditedEvent() };
+            return {
+                event: editedEventStore.getEditedEvent(),
+                isEditing: editedEventStore.isEditing()
+            };
         },
 
         componentDidMount: function () {
@@ -33,7 +37,7 @@
             date = date.toDate();
             date.setHours(prevDate.getHours());
             date.setMinutes(prevDate.getMinutes());
-            changes.event["date"] = date;
+            changes.event.date = date;
 
             this.setState(changes);
         },
@@ -54,15 +58,14 @@
         },
 
         render: function () {
-            var style = { display: "none" },
-                event = this.state.event,
+            if (!this.state.isEditing) { return (<span></span>); }
+
+            var event = this.state.event,
                 type = eventTypes.getType(event.type) || {};
 
-            if (!this.state.event.date) { return (<span></span>); }
-
-            var typeOptions = eventTypes.getTypes().map(function (type) {
+            var typeOptions = eventTypes.getTypes().map(function (eventType) {
                 return ((
-                    <option value={type.name} key={type.name}>{type.name}</option>
+                    <option value={eventType.name} key={eventType.name}>{eventType.name}</option>
                 ));
             });
 

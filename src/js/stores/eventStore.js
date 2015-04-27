@@ -85,7 +85,7 @@
     }
 
 
-    var eventsManager = {
+    var eventStore = {
         getAll: function () {
             return events;
         },
@@ -138,7 +138,7 @@
             default:
                 break;
         }
-    }.bind(eventsManager));
+    }.bind(eventStore));
 
-    module.exports = eventsManager;
+    module.exports = eventStore;
 }());

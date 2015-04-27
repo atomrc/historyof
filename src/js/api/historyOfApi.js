@@ -5,6 +5,7 @@
         fetchPolyfill = require("whatwg-fetch");
 
     var config = {
+        loginUrl: "/login",
         urlPattern: "/u/timelines/:tid/events/:eid"
     };
 
@@ -12,10 +13,13 @@
         var conf = assign({}, {
             method: "GET",
             headers: {
-                "Authorization": "Bearer " + userToken,
+                "Accept": "application/json",
+                "Authorization": userToken ? "Bearer " + userToken : null,
                 "Content-Type": "application/json"
             }
         }, params);
+
+        conf.body = conf.body ? JSON.stringify(conf.body) : undefined;
 
         return fetch(url, conf)
             .then(function (response) {
@@ -39,6 +43,16 @@
 
     var api = {
 
+        login: function (login, password) {
+            return request(config.loginUrl, null, {
+                method: "POST",
+                body: {
+                    login: login,
+                    password: password
+                }
+            });
+        },
+
         getUser: function (userToken) {
             return request(generateUrl(config.urlPattern), userToken);
         },
@@ -46,18 +60,14 @@
         save: function (event) {
             request(generateUrl(config.urlPattern), {
                 method: "POST",
-                body: JSON.stringify(event)
+                body: event
             });
         },
 
         update: function (event) {
             request(generateUrl(config.urlPattern, { id: event.id }), {
                 method: "PUT",
-                body: JSON.stringify(event),
-                headers: {
-                    "Accept": "application/json",
-                    "Content-Type": "application/json"
-                }
+                body: event
             });
         },
 

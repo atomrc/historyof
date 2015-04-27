@@ -1,9 +1,11 @@
+/*global require, module*/
 (function () {
     "use strict";
     var React = require("react"),
         Timeline = require("./Timeline.react"),
         EventForm = require("./EventForm.react"),
         AddButton = require("./AddButton.react"),
+        userStore = require("../stores/userStore"),
         eventStore = require("../stores/eventStore");
 
     /**
@@ -16,23 +18,30 @@
 
         getInitialState: function () {
             return {
-                events: eventStore.getAll()
+                events: eventStore.getAll(),
+                hasToken: userStore.hasToken()
             };
         },
 
-        onEventsChange: function () {
-            this.setState({ events: eventStore.getAll() });
+        onChange: function () {
+            this.setState(this.getInitialState());
         },
 
         componentDidMount: function() {
-            eventStore.addChangeListener(this.onEventsChange);
+            eventStore.addChangeListener(this.onChange);
+            userStore.addChangeListener(this.onChange);
         },
 
         componentWillUnmount: function () {
-            eventStore.removeChangeListener(this.onEventsChange);
+            eventStore.removeChangeListener(this.onChange);
+            userStore.removeChangeListener(this.onChange);
         },
 
         render: function () {
+            if (!this.state.hasToken) {
+                return (<span>you are not logged. Please log in</span>);
+            }
+
             return (
                 <div id="historyof">
                     <Timeline events={this.state.events}/>
@@ -47,4 +56,4 @@
     });
 
     module.exports = HistoryOfApp;
-}())
+}());

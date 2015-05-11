@@ -32,14 +32,7 @@
     app.use(bodyParser.json());
 
     //Json Web Token for logged part of the app
-    app.use("/u", jwt({ secret: "tochange" }), function authenticate(req, res, next) {
-        User.find(req.user, function (err, user) {
-            if (err) { return next(err); }
-            req.user = user;
-            console.log(req.user);
-            next();
-        });
-    });
+    app.use("/u", jwt({ secret: "tochange" }), UserController.authenticate);
 
     app.post("/login", UserController.login);
 

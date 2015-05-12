@@ -38,16 +38,17 @@ app.get("/u", function (req, res) { res.send(req.user); });
 
 app.get("/u/timelines", TimelineController.getAll);
 app.post("/u/timelines", TimelineController.create);
-app.use("/u/timelines/:id", TimelineController.middlewares.find);
-app.get("/u/timelines/:id", TimelineController.get);
-app.put("/u/timelines/:id", TimelineController.update);
-app.delete("/u/timelines/:id", TimelineController.remove);
+app.use("/u/timelines/:tid", TimelineController.middlewares.find);
+app.get("/u/timelines/:tid", TimelineController.get);
+app.put("/u/timelines/:tid", TimelineController.update);
+app.delete("/u/timelines/:tid", TimelineController.remove);
 
 app.get("/u/timelines/:tid/events", EventController.getAll);
 app.post("/u/timelines/:tid/events", EventController.create);
-app.get("/u/timelines/:tid/events/:id", EventController.get);
-app.delete("/u/timelines/:tid/events/:id", EventController.remove);
-app.put("/u/timelines/:tid/events/:id", EventController.update);
+app.use("/u/timelines/:tid/events/:eid", EventController.middlewares.find);
+app.get("/u/timelines/:tid/events/:eid", EventController.get);
+app.delete("/u/timelines/:tid/events/:eid", EventController.remove);
+app.put("/u/timelines/:tid/events/:eid", EventController.update);
 
 app.listen(process.env.PORT || 1337, function () {
     console.log("listening at %s", process.env.PORT || 1337);

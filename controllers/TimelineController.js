@@ -9,7 +9,7 @@ module.exports = {
             req.timeline = req
                 .user
                 .timelines
-                .id(req.params.id);
+                .id(req.params.tid);
 
             next();
         }
@@ -34,7 +34,12 @@ module.exports = {
     },
 
     get: function (req, res) {
-        res.send(req.timeline);
+        Timeline.populate(req.timeline, "events", function (err, data) {
+            if (err) {
+                return res.status(500).send(err);
+            }
+            return res.send(data);
+        });
     },
 
     update: function (req, res, next) {

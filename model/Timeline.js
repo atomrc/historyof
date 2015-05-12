@@ -1,22 +1,24 @@
-/*global require, module*/
+/*eslint-env node */
+
 "use strict";
-var mongoose = require("mongoose"),
-    Event = require("./Event");
+var mongoose = require("mongoose");
 
 var TimelineSchema = new mongoose.Schema({
     owner: mongoose.Schema.Types.ObjectId,
     title: String,
-    events: [Event.schema]
+    events: [{ type: mongoose.Schema.Types.ObjectId, ref: "Event"}]
 });
 
 var Timeline = mongoose.model("Timeline", TimelineSchema);
 
-// Duplicate the ID field.
 TimelineSchema.virtual("id").get(function(){
     return this._id.toHexString();
 });
 
-// Ensure virtual fields are serialised.
+TimelineSchema.virtual("created").get(function(){
+    return this._id.getTimestamp();
+});
+
 TimelineSchema.set("toJSON", {
     transform: function (doc, ret) {
         delete ret._id;

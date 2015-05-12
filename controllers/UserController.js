@@ -11,12 +11,14 @@
 
     module.exports = {
 
-        authenticate: function authenticate(req, res, next) {
-            collection.find(req.user, function (err, user) {
-                if (err) { return next(err); }
-                req.user = user;
-                next();
-            });
+        middlewares: {
+            authenticate: function authenticate(req, res, next) {
+                User.findOne(req.user, function (err, user) {
+                    if (err) { return next(err); }
+                    req.user = user;
+                    next();
+                });
+            }
         },
 
         create: function (req, res) {

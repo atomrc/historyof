@@ -1,39 +1,60 @@
-/* global module, require*/
-(function () {
-    "use strict";
+/*eslint-env node */
 
-    var Timeline = require("../model/Timeline");
+"use strict";
+var Timeline = require("../model/Timeline");
 
-    module.exports = {
-        getAll: function (req, res) {
-            Timeline.find().sort({date: "asc"}).select("-events").exec(function (err, timelines) {
-                res.send(timelines);
-            });
-        },
+module.exports = {
+    middlewares: {
+        find: function (req, res, next) {
+            req.timeline = req
+                .user
+                .timelines
+                .id(req.params.id);
 
-        create: function (req, res) {
-            var timeline = new Timeline(JSON.parse(req.body));
-            timeline.save(function (err, data) {
-                res.send(data);
-            });
-        },
-
-        get: function (req, res) {
-            Timeline.findById(req.params.id, function (err, timeline) {
-                res.send(timeline);
-            });
-        },
-
-        remove: function (req, res) {
-            Timeline.remove({ _id: req.params.id }, function (err, nb, msg) {
-                res.send(msg);
-            });
-        },
-
-        update: function (req, res) {
-            Timeline.where({ _id: req.params.id }).update(JSON.parse(req.body), function (err, nb, msg) {
-                res.send(msg);
-            });
+            next();
         }
-    };
-}());
+    },
+
+    getAll: function (req, res) {
+        res.send(req.user.timelines);
+    },
+
+    create: function (req, res, next) {
+        var timeline = new Timeline(req.body),
+            user = req.user;
+
+        user.timelines.push(timeline);
+        user.save(function (err, data) {
+            if (err) {
+                next(new Error(err));
+            }
+            //send the last create timeline
+            res.send(data.timelines.pop());
+        });
+    },
+
+    get: function (req, res) {
+        res.send(req.timeline);
+    },
+
+    update: function (req, res, next) {
+        req.timeline.title = req.body.title;
+
+        req.user.save(function (err) {
+            if (err) {
+                next(err);
+            }
+            res.send(req.timeline);
+        });
+    },
+
+    remove: function (req, res, next) {
+        req.timeline.remove();
+
+        req.user.save(function (err) {
+            if (err) { next(err); }
+            res.status(204).send();
+        });
+
+    }
+};

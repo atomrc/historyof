@@ -10,7 +10,6 @@ var EventSchema = new mongoose.Schema({
     text: String,
     place: String,
     comment: String,
-    created: Date,
     updated: Date
 });
 
@@ -28,6 +27,10 @@ EventSchema.pre("save", function (next) {
 // Duplicate the ID field.
 EventSchema.virtual("id").get(function(){
     return this._id.toHexString();
+});
+
+EventSchema.virtual("created").get(function(){
+    return this._id.getTimestamp();
 });
 
 // Ensure virtual fields are serialised.

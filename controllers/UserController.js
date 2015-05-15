@@ -21,10 +21,16 @@
             }
         },
 
-        create: function (req, res) {
-            var user = new User(JSON.parse(req.body));
-            user.save(function (err, data) {
-                res.send(data);
+        create: function (req, res, next) {
+            var user = new User(req.body);
+            user.save(function (err, userdata) {
+                if (err) {
+                    return next(err);
+                }
+                res.send({
+                    user: userdata,
+                    token: createToken(user)
+                });
             });
         },
 

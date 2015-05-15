@@ -1,6 +1,6 @@
 /*global expect, it, jest, describe, require*/
 
-var APP_PATH = "../src/js";
+var APP_PATH = "../..";
 jest.dontMock(APP_PATH + "/stores/editedEventStore");
 jest.dontMock("object-assign");
 

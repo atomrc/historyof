@@ -6,12 +6,18 @@ var Timeline = require("../model/Timeline");
 module.exports = {
     middlewares: {
         find: function (req, res, next) {
-            req.timeline = req
+            var timeline = req
                 .user
                 .timelines
                 .id(req.params.tid);
 
-            next();
+            Timeline.populate(timeline, "events", function (err, data) {
+                if (err) {
+                    return res.status(500).send(err);
+                }
+                req.timeline = data;
+                next();
+            });
         }
     },
 
@@ -34,12 +40,7 @@ module.exports = {
     },
 
     get: function (req, res) {
-        Timeline.populate(req.timeline, "events", function (err, data) {
-            if (err) {
-                return res.status(500).send(err);
-            }
-            return res.send(data);
-        });
+        res.send(req.timeline);
     },
 
     update: function (req, res, next) {

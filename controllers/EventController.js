@@ -10,15 +10,16 @@ module.exports = {
             var event = req
                 .timeline
                 .events
-                .filter(function (eventId) {
-                    return eventId.toString() === req.params.eid;
+                .filter(function (event) {
+                    return event.id.toString() === req.params.eid;
                 });
 
             if (event.length === 0) {
                 return res.status(404).send();
             }
-            console.log(req.event);
-            res.send("ok");
+
+            req.event = event[0];
+            next();
         }
     },
 
@@ -62,8 +63,13 @@ module.exports = {
     },
 
     update: function (req, res) {
-        Event.where({ _id: req.params.id }).update(JSON.parse(req.body), function (err, nb, msg) {
-            res.send(msg);
+        var e = req.event;
+        e.title = req.body.title;
+        e.save(function (err, event) {
+            if (err) {
+                return res.status(500).send(err);
+            }
+            res.send(event);
         });
     }
 };

@@ -131,6 +131,26 @@ describe("API", function () {
             });
     });
 
+    it("should update newly created event", function (done) {
+        request(app)
+            .put("/u/timelines/" + timeline.id + "/events/" + event.id)
+            .set("Authorization", "Bearer " + userToken)
+            .send({ title: "new title" })
+            .expect(200)
+            .end(function (err, res) {
+                if (err) { return done(err); }
+
+                var e = res.body;
+                expect(e.title).toBe("new title");
+                expect(e.id).toBe(event.id);
+                expect(e.date).toBe(event.date);
+                event = e;
+
+                done();
+            });
+    });
+
+
     it("should update timeline", function (done) {
         request(app)
             .put("/u/timelines/" + timeline.id)
@@ -157,8 +177,7 @@ describe("API", function () {
             .end(function (err, res) {
                 if (err) { return done(err); }
                 expect(res.body.length).toBe(1);
-                expect(res.body[0].title).toBe("new event");
-                expect(res.body[0].id).toBeDefined();
+                expect(res.body[0]).toEqual(event);
 
                 done();
             });

@@ -2,10 +2,23 @@
 /*eslint-env node */
 
 "use strict";
-var frisby = require("frisby"),
+var request = require("supertest"),
+    app = require("../app"),
     setup = require("./setup");
 
 var isInit = false;
+/**
+ * Override the finishCallback so we can add some cleanup methods.
+ * This is run after all tests have been completed.
+ */
+var _finishCallback = jasmine.Runner.prototype.finishCallback;
+jasmine.Runner.prototype.finishCallback = function () {
+    // Run the old finishCallback
+    _finishCallback.bind(this)();
+
+    setup.teardown();
+    // add your cleanup code here...
+};
 
 beforeEach(function (done) {
     if (isInit) { return done(); }
@@ -14,106 +27,93 @@ beforeEach(function (done) {
     isInit = true;
 });
 
-frisby.globalSetup({
-    request: {
-        json: true,
-        baseUri: "http://localhost:1337"
-    }
-});
 
-
-//all tests on the timeline model
-function timelineTests(timeline, userToken) {
-    //retreive the newly created timeline
-    frisby
-        .create("get timeline with id")
-        .get("/u/timelines/" + timeline.id, {
-            json: false,
-            headers: {
-                "Authorization": "Bearer " + userToken
-            }
-        })
-        .expectStatus(200)
-        .expectJSON({
-            id: timeline.id,
-            title: timeline.title,
-            events: []
-        })
-        .toss();
-
-    frisby
-        .create("get user's timeline")
-        .get("/u/timelines", {
-            json: false,
-            headers: {
-                "Authorization": "Bearer " + userToken
-            }
-        })
-        .afterJSON(function (response) {
-            expect(response.length).toBe(1);
-        })
-        .toss();
-
-}
-
-//all tests on the user model
-function userTests(response) {
-    //keep the token for future requests
-    var userToken = response.token;
-
-    //retreive freshly created user
-    frisby
-        .create("get user from token")
-        .get("/u", {
-            json: false,
-            headers: {
-                "Authorization": "Bearer " + userToken
-            }
-        })
-        .expectStatus(200)
-        .expectJSON({
+describe("API", function () {
+    var userToken,
+        user = {
             login: "felix@felix.fr",
-            password: undefined
-        })
-        .toss();
-
-
-    //create a new timeline
-    frisby
-        .create("create new timeline")
-        .post("/u/timelines", {
-            title: "new timeline"
-        }, {
-            headers: {
-                "Authorization": "Bearer " + userToken
-            }
-        })
-        .expectJSON({
-            id: function (val) { expect(val).toBeDefined(); },
-            title: "new timeline",
-            events: []
-        })
-        .afterJSON(function (timeline) {
-            timelineTests(timeline, userToken);
-        })
-        .toss();
-}
-
-frisby
-    .create("user create")
-    .post("/user/create", {
-        login: "felix@felix.fr",
-        password: "felix"
-    })
-    .expectStatus(200)
-    .expectJSON({
-        user: {
-            id: function (val) { expect(val).toBeDefined(); },
-            created: function (val) { expect(val).toBeDefined(); },
-            login: "felix@felix.fr",
-            password: undefined
+            password: "felix"
         },
-        token: function (val) { expect(val).toBeDefined(); }
-    })
-    .afterJSON(userTests)
-    .toss();
+        timeline;
+
+    it("should create a new user", function (done) {
+        request(app)
+            .post("/user/create")
+            .send(user)
+            .expect(200)
+            .end(function (err, res) {
+                if (err) { return done(err); }
+                var u = res.body.user;
+                expect(u.id).toBeDefined();
+                expect(u.password).not.toBeDefined();
+                expect(u.created).toBeDefined();
+                expect(u.login).toBe(user.login);
+                userToken = res.body.token;
+                done();
+            });
+    });
+
+    it("should return logged user", function (done) {
+        request(app)
+            .get("/u")
+            .set("Authorization", "Bearer " + userToken)
+            .expect(200)
+            .end(function (err, res) {
+                if (err) { return done(err); }
+                var u = res.body;
+                expect(u.id).toBeDefined();
+                expect(u.password).not.toBeDefined();
+                expect(u.created).toBeDefined();
+                expect(u.login).toBe(user.login);
+                done();
+            });
+    });
+
+    it("should create a new timeline for user", function (done) {
+        request(app)
+            .post("/u/timelines")
+            .set("Authorization", "Bearer " + userToken)
+            .send({
+                title: "new timeline"
+            })
+            .expect(200)
+            .end(function (err, res) {
+                if (err) { return done(err); }
+                timeline = res.body;
+                expect(timeline.id).toBeDefined();
+                expect(timeline.title).toBe("new timeline");
+                done();
+            });
+    });
+
+    it("should return all user's timelines", function (done) {
+        request(app)
+            .get("/u/timelines")
+            .set("Authorization", "Bearer " + userToken)
+            .expect(200)
+            .end(function (err, res) {
+                if (err) { return done(err); }
+                expect(res.body.length).toBe(1);
+                expect(res.body[0]).toEqual(timeline);
+
+                done();
+            });
+    });
+
+    it("should return timeline with id", function (done) {
+        request(app)
+            .get("/u/timelines/" + timeline.id)
+            .set("Authorization", "Bearer " + userToken)
+            .expect(200)
+            .end(function (err, res) {
+                if (err) { return done(err); }
+                var tl = res.body;
+                expect(tl).toEqual(timeline);
+
+                done();
+            });
+    });
+
+    return;
+
+});

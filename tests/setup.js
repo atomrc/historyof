@@ -20,9 +20,11 @@ module.exports = {
         mongoose.connect(mongoUrl, function () {
             mongoose.connection.db.dropDatabase(function () {
                 callback();
-                mongoose.connection.close();
             });
         });
+    },
 
+    teardown: function () {
+        mongoose.connection.close();
     }
 };

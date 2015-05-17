@@ -2,9 +2,9 @@
   "name": "historyof.us",
   "version": "1.0.0",
   "description": "Don't forget any of what has made you",
-  "main": "app.js",
+  "main": "index.js",
   "scripts": {
-    "test": "jest; MONGODB_ADDON_DB=historyoftest node app.js & jasmine-node tests/api_spec.js; killall node",
+    "test": "jest; jasmine-node tests/api_spec.js",
     "install": "gulp"
   },
   "author": "Thomas Belin",
@@ -13,9 +13,9 @@
     "body-parser": "^1.12.2",
     "es6-promise": "^2.0.1",
     "express": "^4.12.2",
-    "express-jwt": "^2.1.0",
+    "express-jwt": "^3.0.1",
     "flux": "^2.0.1",
-    "jsonwebtoken": "^4.2.1",
+    "jsonwebtoken": "^5.0.0",
     "moment": "^2.9.0",
     "mongoose": "^4.0.2",
     "object-assign": "^2.0.0",
@@ -27,7 +27,6 @@
   },
   "devDependencies": {
     "babelify": "^5.0.4",
-    "frisby": "^0.8.5",
     "gulp": "^3.8.11",
     "gulp-browserify": "^0.5.1",
     "gulp-jade": "^1.0.0",
@@ -35,6 +34,7 @@
     "gulp-uglify": "^1.1.0",
     "jasmine-node": "^1.14.5",
     "jest-cli": "^0.4.0",
-    "reactify": "^1.1.0"
+    "reactify": "^1.1.0",
+    "supertest": "^1.0.1"
   }
 }

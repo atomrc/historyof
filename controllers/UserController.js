@@ -27,6 +27,7 @@
                 if (err) {
                     return next(err);
                 }
+
                 res.send({
                     user: userdata,
                     token: createToken(user)

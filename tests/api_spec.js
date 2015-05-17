@@ -34,7 +34,8 @@ describe("API", function () {
             login: "felix@felix.fr",
             password: "felix"
         },
-        timeline;
+        timeline,
+        event;
 
     it("should create a new user", function (done) {
         request(app)
@@ -109,6 +110,66 @@ describe("API", function () {
                 if (err) { return done(err); }
                 var tl = res.body;
                 expect(tl).toEqual(timeline);
+
+                done();
+            });
+    });
+
+    it("should add an event in a timeline", function (done) {
+        request(app)
+            .post("/u/timelines/" + timeline.id + "/events")
+            .set("Authorization", "Bearer " + userToken)
+            .send({ title: "new event", date: new Date() })
+            .expect(200)
+            .end(function (err, res) {
+                if (err) { return done(err); }
+                event = res.body;
+                expect(event.title).toBe("new event");
+                expect(event.id).toBeDefined();
+
+                done();
+            });
+    });
+
+    it("timeline events should have the new event", function (done) {
+        request(app)
+            .get("/u/timelines/" + timeline.id + "/events")
+            .set("Authorization", "Bearer " + userToken)
+            .expect(200)
+            .end(function (err, res) {
+                if (err) { return done(err); }
+                expect(res.body.length).toBe(1);
+                expect(res.body[0].title).toBe("new event");
+                expect(res.body[0].id).toBeDefined();
+
+                done();
+            });
+    });
+
+    it("timeline should have the new event", function (done) {
+        request(app)
+            .get("/u/timelines/" + timeline.id)
+            .set("Authorization", "Bearer " + userToken)
+            .expect(200)
+            .end(function (err, res) {
+                if (err) { return done(err); }
+                expect(res.body.events.length).toBe(1);
+                expect(res.body.events[0]).toEqual(event);
+
+                done();
+            });
+    });
+
+    it("user's timeline should have unpopulated reference to the new event", function (done) {
+        request(app)
+            .get("/u/timelines")
+            .set("Authorization", "Bearer " + userToken)
+            .expect(200)
+            .end(function (err, res) {
+                if (err) { return done(err); }
+                expect(res.body.length).toBe(1);
+                expect(res.body[0].events[0]).toEqual(event.id);
+                expect(res.body[0].events[0].title).toBeUndefined();
 
                 done();
             });

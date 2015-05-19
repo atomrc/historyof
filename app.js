@@ -4,8 +4,8 @@
 var bodyParser = require("body-parser"),
     express = require("express"),
     jwt = require("express-jwt"),
-    TimelineController = require("./controllers/TimelineController"),
     UserController = require("./controllers/UserController"),
+    TimelineController = require("./controllers/TimelineController"),
     EventController = require("./controllers/EventController");
 
 var app = express();
@@ -19,7 +19,7 @@ app.post("/login", UserController.login);
 //Json Web Token for logged part of the app
 app.post("/user/create", UserController.create);
 app.use("/u", jwt({ secret: "tochange" }), UserController.middlewares.authenticate);
-app.get("/u", function (req, res) { res.send(req.user); });
+app.get("/u", UserController.get);
 
 app.get("/u/timelines", TimelineController.getAll);
 app.post("/u/timelines", TimelineController.create);

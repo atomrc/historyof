@@ -1,4 +1,4 @@
-/*global expect, beforeEach*/
+/*global expect, beforeEach, it*/
 /*eslint-env node */
 
 "use strict";
@@ -23,7 +23,9 @@ jasmine.Runner.prototype.finishCallback = function () {
 beforeEach(function (done) {
     if (isInit) { return done(); }
     //clean the database before playing the tests
-    setup.init(done);
+    setup.init(function () {
+        done();
+    });
     isInit = true;
 });
 
@@ -32,7 +34,9 @@ describe("API", function () {
     var userToken,
         user = {
             login: "felix@felix.fr",
-            password: "felix"
+            password: "felix",
+            firstname: "Felix",
+            lastname: "Hello"
         },
         timeline,
         event;
@@ -50,6 +54,7 @@ describe("API", function () {
                 expect(u.created).toBeDefined();
                 expect(u.login).toBe(user.login);
                 userToken = res.body.token;
+                user = u;
                 done();
             });
     });
@@ -62,10 +67,7 @@ describe("API", function () {
             .end(function (err, res) {
                 if (err) { return done(err); }
                 var u = res.body;
-                expect(u.id).toBeDefined();
-                expect(u.password).not.toBeDefined();
-                expect(u.created).toBeDefined();
-                expect(u.login).toBe(user.login);
+                expect(u).toEqual(user);
                 done();
             });
     });
@@ -119,7 +121,7 @@ describe("API", function () {
         request(app)
             .post("/u/timelines/" + timeline.id + "/events")
             .set("Authorization", "Bearer " + userToken)
-            .send({ title: "new event", date: new Date() })
+            .send({ title: "new event", type: "event", date: new Date() })
             .expect(200)
             .end(function (err, res) {
                 if (err) { return done(err); }
@@ -150,7 +152,6 @@ describe("API", function () {
             });
     });
 
-
     it("should update timeline", function (done) {
         request(app)
             .put("/u/timelines/" + timeline.id)
@@ -162,7 +163,6 @@ describe("API", function () {
                 var tl = res.body;
                 expect(tl.id).toBe(timeline.id);
                 expect(tl.title).toBe("a new title");
-                expect(tl.events.length).toBe(1);
                 timeline = tl;
 
                 done();
@@ -183,34 +183,41 @@ describe("API", function () {
             });
     });
 
-    it("timeline should have the new event", function (done) {
+    it("should delete event from timeline", function (done) {
         request(app)
-            .get("/u/timelines/" + timeline.id)
+            .del("/u/timelines/" + timeline.id + "/events/" + event.id)
+            .set("Authorization", "Bearer " + userToken)
+            .expect(204, done);
+    });
+
+    it("should return empty timeline events array", function (done) {
+        request(app)
+            .get("/u/timelines/" + timeline.id + "/events")
             .set("Authorization", "Bearer " + userToken)
             .expect(200)
             .end(function (err, res) {
                 if (err) { return done(err); }
-                expect(res.body.events.length).toBe(1);
-                expect(res.body.events[0]).toEqual(event);
-
+                expect(res.body.length).toBe(0);
                 done();
             });
     });
 
-    it("user's timeline should have unpopulated reference to the new event", function (done) {
+    it("should delete timeline", function (done) {
+        request(app)
+            .del("/u/timelines/" + timeline.id)
+            .set("Authorization", "Bearer " + userToken)
+            .expect(204, done);
+    });
+
+    it("should return empty timelines for user", function (done) {
         request(app)
             .get("/u/timelines")
             .set("Authorization", "Bearer " + userToken)
             .expect(200)
             .end(function (err, res) {
                 if (err) { return done(err); }
-                expect(res.body.length).toBe(1);
-                expect(res.body[0].events[0]).toEqual(event.id);
-                expect(res.body[0].events[0].title).toBeUndefined();
-
+                expect(res.body.length).toBe(0);
                 done();
             });
     });
-
-
 });

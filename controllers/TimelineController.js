@@ -1,41 +1,42 @@
 /*eslint-env node */
 
 "use strict";
-var Timeline = require("../model/Timeline");
+var db = require("../db/db"),
+    assign = require("object-assign");
 
 module.exports = {
     middlewares: {
         find: function (req, res, next) {
-            var timeline = req
-                .user
-                .timelines
-                .id(req.params.tid);
-
-            Timeline.populate(timeline, "events", function (err, data) {
-                if (err) {
-                    return res.status(500).send(err);
-                }
-                req.timeline = data;
+            db.query({
+                text: "SELECT * FROM timelines WHERE user_id=$1 AND id=$2",
+                values: [req.user.id, req.params.tid]
+            }, function (err, result) {
+                if (err) { return next(err); }
+                req.timeline = result.rows[0];
                 next();
             });
         }
     },
 
-    getAll: function (req, res) {
-        res.send(req.user.timelines);
+    getAll: function (req, res, next) {
+        db.query({
+            text: "SELECT * FROM timelines WHERE user_id=$1",
+            values: [req.user.id]
+        }, function (err, result) {
+            if (err) { return next(err); }
+            res.send(result.rows);
+        });
     },
 
     create: function (req, res, next) {
-        var timeline = new Timeline(req.body),
-            user = req.user;
+        db.query({
+            text: "INSERT INTO timelines (user_id, title) VALUES ($1, $2) RETURNING *",
+            values: [req.user.id, req.body.title]
+        }, function (err, result) {
+            if (err) { return next(err); }
+            var timeline = result.rows[0];
 
-        user.timelines.push(timeline);
-        user.save(function (err, data) {
-            if (err) {
-                next(new Error(err));
-            }
-            //send the last create timeline
-            res.send(data.timelines.pop());
+            res.send(timeline);
         });
     },
 
@@ -44,23 +45,24 @@ module.exports = {
     },
 
     update: function (req, res, next) {
-        req.timeline.title = req.body.title;
+        var update = assign({}, req.timeline, req.body);
 
-        req.user.save(function (err) {
-            if (err) {
-                next(err);
-            }
-            res.send(req.timeline);
+        db.query({
+            text: "UPDATE timelines SET title=$1 WHERE id=$2 RETURNING *",
+            values: [update.title, req.params.tid]
+        }, function(err, result) {
+            if (err) { return next(err); }
+            res.send(result.rows[0]);
         });
     },
 
     remove: function (req, res, next) {
-        req.timeline.remove();
-
-        req.user.save(function (err) {
-            if (err) { next(err); }
+        db.query({
+            text: "DELETE FROM timelines WHERE id=$1",
+            values: [req.params.tid]
+        }, function(err) {
+            if (err) { return next(err); }
             res.status(204).send();
         });
-
     }
 };

@@ -32,7 +32,7 @@ module.exports = {
         var body = req.body;
         db.query({
             text: "INSERT INTO events (timeline_id, title, type, description, date) VALUES ($1, $2, $3, $4, $5) RETURNING *",
-            values: [req.timeline.id, body.title, body.type, body.description, body.date]
+            values: [req.params.tid, body.title, body.type, body.description, body.date]
         }, function (err, result) {
             if (err) { return next(err); }
 

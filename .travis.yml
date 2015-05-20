@@ -5,4 +5,7 @@ cache:
   directories:
       - node_modules
 services:
-  - mongodb
+  - postgres
+before_script:
+  - psql -c 'create database historyoftest;' -U postgres
+  - psql historyoftest < scripts/db/create.sql

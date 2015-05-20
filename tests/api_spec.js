@@ -117,6 +117,13 @@ describe("API", function () {
             });
     });
 
+    it("should not found an non existing timeline", function (done) {
+        request(app)
+            .get("/u/timelines/1337")
+            .set("Authorization", "Bearer " + userToken)
+            .expect(404, done);
+    });
+
     it("should add an event in a timeline", function (done) {
         request(app)
             .post("/u/timelines/" + timeline.id + "/events")
@@ -128,6 +135,19 @@ describe("API", function () {
                 event = res.body;
                 expect(event.title).toBe("new event");
                 expect(event.id).toBeDefined();
+
+                done();
+            });
+    });
+
+    it("should return created event", function (done) {
+        request(app)
+            .get("/u/timelines/" + timeline.id + "/events/" + event.id)
+            .set("Authorization", "Bearer " + userToken)
+            .expect(200)
+            .end(function (err, res) {
+                if (err) { return done(err); }
+                expect(res.body).toEqual(event);
 
                 done();
             });
@@ -150,6 +170,20 @@ describe("API", function () {
 
                 done();
             });
+    });
+
+    it("should not found an event not belonging to timeline", function (done) {
+        request(app)
+            .get("/u/timelines/1337/events/" + event.id)
+            .set("Authorization", "Bearer " + userToken)
+            .expect(404, done);
+    });
+
+    it("should not find an inexistant event", function (done) {
+        request(app)
+            .get("/u/timelines/" + timeline.id + "/events/1337")
+            .set("Authorization", "Bearer " + userToken)
+            .expect(404, done);
     });
 
     it("should update timeline", function (done) {

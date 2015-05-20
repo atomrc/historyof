@@ -12,6 +12,11 @@ module.exports = {
                 values: [req.params.tid, req.params.eid]
             }, function (err, result) {
                 if (err) { return next(err); }
+                if (result.rows.length === 0) {
+                    var error = new Error();
+                    error.status = 404;
+                    return next(error);
+                }
                 req.event = result.rows[0];
                 next();
             });

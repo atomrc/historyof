@@ -1,5 +1,7 @@
+CREATE EXTENSION "uuid-ossp";
+
 CREATE TABLE users (
-    id SERIAL PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v1(),
     login VARCHAR UNIQUE NOT NULL,
     password VARCHAR(128) NOT NULL,
     firstname VARCHAR(64),
@@ -8,15 +10,15 @@ CREATE TABLE users (
 );
 
 CREATE TABLE timelines (
-    id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users (id),
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v1(),
+    user_id UUID REFERENCES users (id),
     title VARCHAR(64) NOT NULL,
     created TIMESTAMP
 );
 
 CREATE TABLE events (
-    id SERIAL PRIMARY KEY,
-    timeline_id INTEGER REFERENCES timelines (id),
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v1(),
+    timeline_id UUID REFERENCES timelines (id),
     title VARCHAR(64) NOT NULL,
     type VARCHAR(30) NOT NULL,
     date TIMESTAMP NOT NULL,

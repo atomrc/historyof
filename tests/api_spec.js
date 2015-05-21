@@ -119,7 +119,7 @@ describe("API", function () {
 
     it("should not found an non existing timeline", function (done) {
         request(app)
-            .get("/u/timelines/1337")
+            .get("/u/timelines/eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee")
             .set("Authorization", "Bearer " + userToken)
             .expect(404, done);
     });
@@ -174,14 +174,14 @@ describe("API", function () {
 
     it("should not found an event not belonging to timeline", function (done) {
         request(app)
-            .get("/u/timelines/1337/events/" + event.id)
+            .get("/u/timelines/eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee/events/" + event.id)
             .set("Authorization", "Bearer " + userToken)
             .expect(404, done);
     });
 
     it("should not find an inexistant event", function (done) {
         request(app)
-            .get("/u/timelines/" + timeline.id + "/events/1337")
+            .get("/u/timelines/" + timeline.id + "/events/eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee")
             .set("Authorization", "Bearer " + userToken)
             .expect(404, done);
     });

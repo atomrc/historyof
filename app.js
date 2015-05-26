@@ -24,13 +24,13 @@ app.get("/u", UserController.get);
 app.get("/u/timelines", TimelineController.getAll);
 app.post("/u/timelines", TimelineController.create);
 app.get("/u/timelines/:tid", TimelineController.middlewares.find, TimelineController.get);
-app.put("/u/timelines/:tid", TimelineController.update);
-app.delete("/u/timelines/:tid", TimelineController.remove);
+app.put("/u/timelines/:tid", TimelineController.middlewares.find, TimelineController.update);
+app.delete("/u/timelines/:tid", TimelineController.middlewares.find, TimelineController.remove);
 
-app.get("/u/timelines/:tid/events", EventController.getAll);
+app.get("/u/timelines/:tid/events", TimelineController.middlewares.find, EventController.getAll);
 app.post("/u/timelines/:tid/events", EventController.create);
 app.get("/u/timelines/:tid/events/:eid", EventController.middlewares.find, EventController.get);
-app.delete("/u/timelines/:tid/events/:eid", EventController.remove);
+app.delete("/u/timelines/:tid/events/:eid", EventController.middlewares.find, EventController.remove);
 app.put("/u/timelines/:tid/events/:eid", EventController.middlewares.find, EventController.update);
 
 module.exports = app;

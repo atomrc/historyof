@@ -51,8 +51,9 @@ describe("API", function () {
                 var u = res.body.user;
                 expect(u.id).toBeDefined();
                 expect(u.password).not.toBeDefined();
-                expect(u.created).toBeDefined();
+                expect(u.createdAt).toBeDefined();
                 expect(u.login).toBe(user.login);
+                expect(u.timelines).toEqual([]);
                 userToken = res.body.token;
                 user = u;
                 done();
@@ -68,6 +69,23 @@ describe("API", function () {
                 if (err) { return done(err); }
                 var u = res.body;
                 expect(u).toEqual(user);
+                done();
+            });
+    });
+
+    it("should return user's token", function (done) {
+        request(app)
+            .post("/login")
+            .send({
+                login: user.login,
+                password: "felix"
+            })
+            .expect(200)
+            .end(function (err, res) {
+                if (err) { return done(err); }
+                var body = res.body;
+                expect(body.token).toBeDefined();
+                expect(body.user).toEqual(user);
                 done();
             });
     });
@@ -97,7 +115,7 @@ describe("API", function () {
             .end(function (err, res) {
                 if (err) { return done(err); }
                 expect(res.body.length).toBe(1);
-                expect(res.body[0]).toEqual(timeline);
+                expect(res.body[0].id).toEqual(timeline.id);
 
                 done();
             });
@@ -165,6 +183,7 @@ describe("API", function () {
                 var e = res.body;
                 expect(e.title).toBe("new title");
                 expect(e.id).toBe(event.id);
+                expect(e.timelineId).toBe(event.timelineId);
                 expect(e.date).toBe(event.date);
                 event = e;
 
@@ -242,6 +261,8 @@ describe("API", function () {
             .set("Authorization", "Bearer " + userToken)
             .expect(204, done);
     });
+
+    return;
 
     it("should return empty timelines for user", function (done) {
         request(app)

@@ -7,67 +7,58 @@ var db = require("../db/db"),
 module.exports = {
     middlewares: {
         find: function (req, res, next) {
-            db.query({
-                text: "SELECT * FROM events WHERE timeline_id=$1 and id=$2",
-                values: [req.params.tid, req.params.eid]
-            }, function (err, result) {
-                if (err) { return next(err); }
-                if (result.rows.length === 0) {
-                    var error = new Error();
-                    error.status = 404;
-                    return next(error);
-                }
-                req.event = result.rows[0];
-                next();
-            });
+            db
+                .model("event")
+                .findOne({
+                    where: { timelineId: req.params.tid, id: req.params.eid }
+                })
+                .then(function (event) {
+                    if (!event) {
+                        var error = new Error("Event not found");
+                        error.status = 404;
+                        return next(error);
+                    }
+                    req.event = event;
+                    next();
+                });
         }
     },
 
-    getAll: function (req, res, next) {
-        db.query({
-            text: "SELECT * FROM events WHERE timeline_id=$1",
-            values: [req.params.tid]
-        }, function (err, result) {
-            if (err) { return next(err); }
-            res.send(result.rows);
-        });
+    getAll: function (req, res) {
+        res.send(req.timeline.get("events"));
     },
 
-    create: function (req, res, next) {
-        var body = req.body;
-        db.query({
-            text: "INSERT INTO events (timeline_id, title, type, description, date) VALUES ($1, $2, $3, $4, $5) RETURNING *",
-            values: [req.params.tid, body.title, body.type, body.description, body.date]
-        }, function (err, result) {
-            if (err) { return next(err); }
+    create: function (req, res) {
+        req.body.timelineId = req.params.tid;
 
-            var event = result.rows[0];
-            res.send(event);
-        });
+        db
+            .model("event")
+            .create(req.body)
+            .then(function (event) {
+                res.send(event.toJSON());
+            });
     },
 
     get: function (req, res) {
-        res.send(req.event);
+        res.send(req.event.toJSON());
     },
 
-    remove: function (req, res, next) {
-        db.query({
-            text: "DELETE FROM events WHERE id=$1",
-            values: [req.params.eid]
-        }, function(err) {
-            if (err) { return next(err); }
-            res.status(204).send();
-        });
+    remove: function (req, res) {
+        req
+            .event
+            .destroy()
+            .then(function () {
+                res.status(204).send();
+            });
+
     },
 
     update: function (req, res, next) {
-        var update = assign({}, req.event, req.body);
-        db.query({
-            text: "UPDATE events SET title=$1, type=$2, description=$3, date=$4 WHERE id=$5 RETURNING *",
-            values: [update.title, update.type, update.description, update.date, req.params.eid]
-        }, function(err, result) {
-            if (err) { return next(err); }
-            res.send(result.rows[0]);
-        });
+        req
+            .event
+            .update(req.body)
+            .then(function (event) {
+                res.send(event.toJSON());
+            });
     }
 };

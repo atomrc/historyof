@@ -12,61 +12,61 @@ module.exports = {
 
     middlewares: {
         authenticate: function authenticate(req, res, next) {
-            db.query({
-                text: "SELECT * FROM users WHERE id=$1",
-                values: [req.user]
-            }, function (err, result) {
-                if (err) { return next(err); }
-                req.user = result.rows[0];
-                delete req.user.password;
-                next();
-            });
+            db
+                .model("user")
+                .findOne({
+                    where: { id: req.user },
+                    include: [db.model("timeline")]
+                })
+                .then(function (data) {
+                    req.user = data;
+                    next();
+                });
         }
     },
 
     get: function (req, res) {
-        res.send(req.user);
+        res.send(req.user.toJSON());
     },
 
-    create: function (req, res, next) {
-        db.query({
-            text: "INSERT INTO users (login, password, firstname, lastname) VALUES ($1, $2, $3, $4) RETURNING *",
-            values: [req.body.login, req.body.password, req.body.firstname, req.body.lastname]
-        }, function (err, result) {
-            if (err) { return next(err); }
-            var user = result.rows[0];
-            delete user.password;
+    create: function (req, res) {
+        db
+            .model("user")
+            .create(req.body)
+            .then(function (data) {
+                var user = data.toJSON(),
+                    token = createToken(user);
 
-            res.send({
-                user: user,
-                token: createToken(user)
+                user.timelines = [];
+
+                res.send({
+                    token: token,
+                    user: user
+                });
             });
-        });
     },
 
-    login: function (req, res, next) {
+    login: function (req, res) {
 
         if (!req.body.login || !req.body.password) {
             return res.status(400).send("You must send the login and the password");
         }
 
-        db.query({
-            text: "SELECT * FROM users WHERE login=$1",
-            values: [req.body.login]
-        }, function (err, result) {
-            if (err) { return next(err); }
+        db
+            .model("user")
+            .findOne({ where: { login: req.body.login }, include: [db.model("timeline")]})
+            .then(function (result) {
+                var user = result.dataValues;
 
-            var user = result.rows[0];
-            delete user.password;
+                if (!user || user.password !== req.body.password) {
+                    return res.status(401).send("The login or password don't match");
+                }
 
-            if (!user || user.password !== req.body.password) {
-                return res.status(401).send("The login or password don't match");
-            }
-
-            res.send({
-                token: createToken(user),
-                user: user
-            });
+                delete user.password;
+                res.send({
+                    token: createToken(user),
+                    user: user
+                });
         });
 
     }

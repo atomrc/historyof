@@ -262,8 +262,6 @@ describe("API", function () {
             .expect(204, done);
     });
 
-    return;
-
     it("should return empty timelines for user", function (done) {
         request(app)
             .get("/u/timelines")

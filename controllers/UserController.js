@@ -18,8 +18,13 @@ module.exports = {
                     where: { id: req.user },
                     include: [db.model("timeline")]
                 })
-                .then(function (data) {
-                    req.user = data;
+                .then(function (user) {
+                    if (!user) {
+                        var error = new Error("User not found");
+                        error.status = 404;
+                        return next(error);
+                    }
+                    req.user = user;
                     next();
                 });
         }
@@ -55,17 +60,15 @@ module.exports = {
         db
             .model("user")
             .findOne({ where: { login: req.body.login }, include: [db.model("timeline")]})
-            .then(function (result) {
-                var user = result.dataValues;
-
-                if (!user || user.password !== req.body.password) {
+            .then(function (user) {
+                if (!user || user.get("password") !== req.body.password) {
                     return res.status(401).send("The login or password don't match");
                 }
 
-                delete user.password;
+                var u = user.toJSON();
                 res.send({
-                    token: createToken(user),
-                    user: user
+                    token: createToken(u),
+                    user: u
                 });
         });
 

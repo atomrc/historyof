@@ -15,6 +15,6 @@ module.exports = {
         type: Sequelize.STRING,
         scopes: ["private"]
     },
-    firstName: Sequelize.STRING,
-    lastName: Sequelize.STRING
+    firstname: Sequelize.STRING,
+    lastname: Sequelize.STRING
 };

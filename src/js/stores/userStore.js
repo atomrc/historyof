@@ -6,7 +6,7 @@
         EventEmitter = require("events").EventEmitter,
         assign = require("object-assign");
 
-    var token = "eyJhbGciOiJIUzI1NiJ9.ZTM0MjZiM2UtMDNlYi0xMWU1LTlhMTctMDAxZDRmZjk4OTJl.NNBZIDYZPwjhzg4odn0atozpHtGd16piVv2SJ9Kk_lo",
+    var token,
         user;
 
     var userStore = assign({}, EventEmitter.prototype, {

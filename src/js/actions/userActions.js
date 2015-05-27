@@ -15,6 +15,17 @@
                     dispatcher.dispatch(actions.RECEIVE_USER_TOKEN, { token: data.token });
                     dispatcher.dispatch(actions.RECEIVE_USER, { user: data.user });
                 });
+        },
+
+        getUser: function (token) {
+            historyOfApi
+                .getUser(token)
+                .then(function (data) {
+                    dispatcher.dispatch(actions.RECEIVE_USER, { user: data });
+                })
+                .catch(function () {
+                    dispatcher.dispatch(actions.USER_LOGGED_OUT, {});
+                });
         }
     };
 }());

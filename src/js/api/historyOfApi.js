@@ -42,7 +42,6 @@
     }
 
     var api = {
-
         login: function (login, password) {
             return request(config.loginUrl, null, {
                 method: "POST",
@@ -54,7 +53,11 @@
         },
 
         getUser: function (userToken) {
-            return request(generateUrl(config.urlPattern), userToken);
+            return request("/u", userToken);
+        },
+
+        getTimeline: function (userToken, tid) {
+            console.log(arguments);
         },
 
         save: function (event) {

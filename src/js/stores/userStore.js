@@ -6,7 +6,7 @@
         EventEmitter = require("events").EventEmitter,
         assign = require("object-assign");
 
-    var token,
+    var token = "eyJhbGciOiJIUzI1NiJ9.ZTM0MjZiM2UtMDNlYi0xMWU1LTlhMTctMDAxZDRmZjk4OTJl.NNBZIDYZPwjhzg4odn0atozpHtGd16piVv2SJ9Kk_lo",
         user;
 
     var userStore = assign({}, EventEmitter.prototype, {
@@ -16,7 +16,11 @@
         },
 
         hasToken: function () {
-            return token !== undefined;
+            return !!token;
+        },
+
+        getToken: function () {
+            return token;
         },
 
         addChangeListener: function (callback) {
@@ -24,7 +28,7 @@
         },
 
         removeChangeListener: function (callback) {
-            this.removeListener("CHANGE_EVENT", callback);
+            this.removeListener("CHANGE", callback);
         },
 
         emitChange: function () {
@@ -44,6 +48,12 @@
 
             case actions.RECEIVE_USER_TOKEN:
                 token = data.token;
+                this.emitChange();
+                break;
+
+            case actions.USER_LOGGED_OUT:
+                token = null;
+                user = null;
                 this.emitChange();
                 break;
 

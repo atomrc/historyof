@@ -2,11 +2,11 @@
 (function () {
     "use strict";
     var React = require("react"),
-        Timeline = require("./Timeline.react"),
-        EventForm = require("./EventForm.react"),
-        AddButton = require("./AddButton.react"),
+        Router = require("react-router"),
+        RouteHandler = Router.RouteHandler,
+        Login = require("./Login.react"),
         userStore = require("../stores/userStore"),
-        eventStore = require("../stores/eventStore");
+        userActions = require("../actions/userActions");
 
     /**
      * Will handle and display all the event of the timeline
@@ -16,39 +16,39 @@
      */
     var HistoryOfApp = React.createClass({
 
+        mixins: [Router.Navigation],
+
         getInitialState: function () {
             return {
-                events: eventStore.getAll(),
-                hasToken: userStore.hasToken()
+                user: userStore.get()
             };
         },
 
-        onChange: function () {
+        componentWillMount: function () {
+            userStore.addChangeListener(this.userChange);
+            userActions.getUser(userStore.getToken());
+        },
+
+        userChange: function () {
             this.setState(this.getInitialState());
         },
 
-        componentDidMount: function() {
-            eventStore.addChangeListener(this.onChange);
-            userStore.addChangeListener(this.onChange);
-        },
-
-        componentWillUnmount: function () {
-            eventStore.removeChangeListener(this.onChange);
-            userStore.removeChangeListener(this.onChange);
-        },
-
         render: function () {
-            if (!this.state.hasToken) {
-                return (<span>you are not logged. Please log in</span>);
+
+            if (!userStore.hasToken()) {
+                return (<Login/>);
+            }
+
+            if (!this.state.user) {
+                return (<span> login in </span>);
             }
 
             return (
                 <div id="historyof">
-                    <Timeline events={this.state.events}/>
-                    <div id="edit-section">
-                        <EventForm/>
-                        <AddButton/>
-                    </div>
+                    <h1>HistoryOf {this.state.user.firstname}</h1>
+                    <a href="/#/">Dashboard</a>
+                    <a href="/#/timelines/felix">Timeline</a>
+                    <RouteHandler/>
                 </div>
             );
         }

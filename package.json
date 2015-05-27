@@ -4,7 +4,7 @@
   "description": "Don't forget any of what has made you",
   "main": "index.js",
   "scripts": {
-    "test": "jest; jasmine-node tests/api_spec.js",
+    "test": "jasmine-node tests/api_spec.js && jest",
     "install": "gulp"
   },
   "author": "Thomas Belin",

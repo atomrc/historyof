@@ -86,8 +86,8 @@
             });
         },
 
-        update: function (event) {
-            request(generateUrl(config.urlPattern, { id: event.id }), {
+        update: function (tid, event) {
+            request(generateUrl(config.urlPattern, { tid: tid, eid: event.id }), {
                 method: "PUT",
                 body: event
             });
@@ -112,7 +112,7 @@
             default:
                 break;
         }
-    }.bind(api));
+    });
 
     module.exports = api;
 }());

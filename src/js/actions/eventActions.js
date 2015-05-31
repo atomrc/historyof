@@ -34,9 +34,9 @@
                 });
         },
 
-        update: function (event) {
+        update: function (tid, event) {
             dispatcher.dispatch(actions.UPDATE_EVENT, { event: event });
-            historyOfApi.update(event);
+            historyOfApi.update(tid, event);
         },
 
         remove: function (event) {

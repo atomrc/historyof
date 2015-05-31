@@ -3,10 +3,11 @@
     "use strict";
     var appDispatcher = require("../dispatcher/appDispatcher"),
         eventActions = require("../constants/constants").actions,
+        EventEmitter = require("events").EventEmitter,
+        assign = require("object-assign"),
         hash = require("string-hash");
 
-    var listeners = [],
-        events = [];
+    var events = [];
 
     /**
      * getFrontId - generate an id specific to the frontend
@@ -85,22 +86,23 @@
     }
 
 
-    var eventStore = {
-        getAll: function () {
+    var eventStore = assign({}, EventEmitter.prototype, {
+        get: function () {
             return events;
         },
 
         addChangeListener: function (callback) {
-            listeners.push(callback);
-            return listeners.length - 1;
+            this.on("CHANGE", callback);
+        },
+
+        removeChangeListener: function (callback) {
+            this.removeListener("CHANGE", callback);
         },
 
         emitChange: function () {
-            listeners.forEach(function (listener) {
-                listener();
-            });
+            this.emit("CHANGE");
         }
-    };
+    });
 
     appDispatcher.register(function (payload) {
         var action = payload.action,

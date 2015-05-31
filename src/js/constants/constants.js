@@ -8,6 +8,10 @@
             RECEIVE_USER: "RECEIVE_USER", //the user has been retreived from the server
             RECEIVE_USER_TOKEN: "RECEIVE_USER_TOKEN", //the app received the user's token
 
+            RECEIVE_TIMELINES: "RECEIVE_TIMELINES",
+            CREATE_TIMELINE: "CREATE_TIMELINE",
+            RECEIVE_CREATED_TIMELINE: "RECEIVE_CREATED_TIMELINE",
+
             LOAD_EVENTS: "LOAD_EVENTS",
             CREATE_EVENT: "CREATE_EVENT",
             SAVE_EVENT: "SAVE_EVENT",

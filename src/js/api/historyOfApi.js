@@ -2,22 +2,28 @@
 (function () {
     "use strict";
     var assign = require("object-assign"),
+        appDispatcher = require("../dispatcher/appDispatcher"),
+        actions = require("../constants/constants").actions,
         fetchPolyfill = require("whatwg-fetch");
 
     var config = {
-        loginUrl: "/login",
-        urlPattern: "/u/timelines/:tid/events/:eid"
-    };
+            loginUrl: "/login",
+            urlPattern: "/u/timelines/:tid/events/:eid"
+        },
+        token;
 
-    function request(url, userToken, params) {
+    function request(url, params) {
         var conf = assign({}, {
             method: "GET",
             headers: {
                 "Accept": "application/json",
-                "Authorization": userToken ? "Bearer " + userToken : null,
                 "Content-Type": "application/json"
             }
         }, params);
+
+        if (token) {
+            conf.headers.Authorization = "Bearer " + token;
+        }
 
         conf.body = conf.body ? JSON.stringify(conf.body) : undefined;
 
@@ -52,16 +58,23 @@
             });
         },
 
-        getUser: function (userToken) {
-            return request("/u", userToken);
+        getUser: function () {
+            return request("/u");
         },
 
-        getTimeline: function (userToken, tid) {
-            console.log(arguments);
+        getTimeline: function (tid) {
+            return request("/u/timelines/" + tid);
         },
 
-        save: function (event) {
-            request(generateUrl(config.urlPattern), {
+        createTimeline: function (timeline) {
+            return request("/u/timelines", {
+                method: "POST",
+                body: timeline
+            });
+        },
+
+        createEvent: function (tid, event) {
+            return request("/u/timelines/" + tid + "/events", {
                 method: "POST",
                 body: event
             });
@@ -80,6 +93,20 @@
             });
         }
     };
+
+    appDispatcher.register(function (payload) {
+        var action = payload.action,
+            data = payload.data;
+
+        switch (action) {
+            case actions.RECEIVE_USER_TOKEN:
+                token = data.token;
+                break;
+
+            default:
+                break;
+        }
+    }.bind(api));
 
     module.exports = api;
 }());

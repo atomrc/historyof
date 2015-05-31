@@ -49,8 +49,8 @@
             this.replaceState(this.getInitialState());
 
             return event.id ?
-                eventActions.update(event) :
-                eventActions.create(event);
+                eventActions.update(this.props.timelineId, event) :
+                eventActions.create(this.props.timelineId, event);
         },
 
         cancel: function () {

@@ -26,7 +26,8 @@
 
         componentWillMount: function () {
             userStore.addChangeListener(this.userChange);
-            userActions.getUser(userStore.getToken());
+            userActions.getToken();
+            userActions.getUser();
         },
 
         userChange: function () {
@@ -46,8 +47,6 @@
             return (
                 <div id="historyof">
                     <h1>HistoryOf {this.state.user.firstname}</h1>
-                    <a href="/#/">Dashboard</a>
-                    <a href="/#/timelines/felix">Timeline</a>
                     <RouteHandler/>
                 </div>
             );

@@ -25,10 +25,10 @@
             dispatcher.dispatch(actions.END_EDIT_EVENT);
         },
 
-        create: function (event) {
+        create: function (tid, event) {
             dispatcher.dispatch(actions.CREATE_EVENT, { event: event });
             historyOfApi
-                .create(event)
+                .createEvent(tid, event)
                 .then(function (e) {
                     dispatcher.dispatch(actions.RECEIVE_CREATED_EVENT, { event: e });
                 });

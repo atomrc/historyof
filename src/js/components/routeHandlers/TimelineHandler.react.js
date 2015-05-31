@@ -2,15 +2,14 @@
 (function () {
     "use strict";
     var React = require("react"),
-        Timeline = require("./Timeline.react"),
-        EventForm = require("./EventForm.react"),
-        AddButton = require("./AddButton.react"),
-        userStore = require("../stores/userStore"),
-        eventStore = require("../stores/eventStore");
+        timelineActions = require("../../actions/timelineActions"),
+        Timeline = require("../Timeline.react"),
+        EventForm = require("../EventForm.react"),
+        AddButton = require("../AddButton.react"),
+        eventStore = require("../../stores/eventStore");
 
     /**
-     * Will handle and display all the event of the timeline
-     * Is also responsible for the global state of the application
+     * Will handle and display all the events of the timeline
      *
      * @return {undefined}
      */
@@ -18,8 +17,7 @@
 
         getInitialState: function () {
             return {
-                events: eventStore.getAll(),
-                hasToken: userStore.hasToken()
+                events: eventStore.get()
             };
         },
 
@@ -28,26 +26,21 @@
         },
 
         componentDidMount: function() {
+            timelineActions.get(this.props.params.id);
             eventStore.addChangeListener(this.onChange);
-            userStore.addChangeListener(this.onChange);
         },
 
         componentWillUnmount: function () {
             eventStore.removeChangeListener(this.onChange);
-            userStore.removeChangeListener(this.onChange);
         },
 
         render: function () {
-            if (!this.state.hasToken) {
-                return (<span>you are not logged. Please log in</span>);
-            }
-
             return (
-                <div id="historyof">
-                    <Timeline events={this.state.events}/>
+                <div>
+                    <Timeline timelineId={this.props.params.id} events={this.state.events}/>
                     <div id="edit-section">
-                        <EventForm/>
-                        <AddButton/>
+                        <EventForm timelineId={this.props.params.id}/>
+                        <AddButton timelineId={this.props.params.id}/>
                     </div>
                 </div>
             );

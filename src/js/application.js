@@ -5,24 +5,14 @@
     var Router = require("react-router"),
         Route = Router.Route,
         React = require("react"),
-        App = require("./components/HistoryOfApp.react");
-
-    var Dashboard = React.createClass({
-        render: function () {
-            return (<div>Dashboard</div>);
-        }
-    });
-
-    var Timeline = React.createClass({
-        render: function () {
-            return (<div>Timeline</div>);
-        }
-    });
+        App = require("./components/HistoryOfApp.react"),
+        DashboardHandler = require("./components/routeHandlers/DashboardHandler.react"),
+        TimelineHandler = require("./components/routeHandlers/TimelineHandler.react");
 
     var routes = (
         <Route handler={App}>
-            <Route path="/" handler={Dashboard}/>
-            <Route path="/timelines/:id" handler={Timeline}/>
+            <Route path="/" handler={DashboardHandler}/>
+            <Route name="timeline" path="/timelines/:id" handler={TimelineHandler}/>
         </Route>
     );
 

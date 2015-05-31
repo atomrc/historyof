@@ -47,7 +47,7 @@
                 this.emitChange();
                 break;
 
-            case eventActions.END_EDIT_EVENT:
+            case eventActions.CANCEL_EDIT_EVENT:
                 editedEvent = undefined;
                 this.emitChange();
                 break;

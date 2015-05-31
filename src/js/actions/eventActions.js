@@ -21,8 +21,8 @@
             dispatcher.dispatch(actions.EDIT_EVENT, { event: event });
         },
 
-        cancelEdit: function (event) {
-            dispatcher.dispatch(actions.END_EDIT_EVENT);
+        cancelEdit: function () {
+            dispatcher.dispatch(actions.CANCEL_EDIT_EVENT);
         },
 
         create: function (tid, event) {

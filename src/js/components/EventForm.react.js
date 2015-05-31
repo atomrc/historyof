@@ -87,7 +87,7 @@
                         <br/>
                         <textarea rows="8" name="description" placeholder="Description" value={event.description || ""} onChange={this.onChange}/>
                         <br/>
-                        <button>add</button>
+                        <button className="flat-button">add</button>
                     </form>
                 </div>
             );

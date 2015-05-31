@@ -73,6 +73,12 @@
             });
         },
 
+        removeTimeline: function (timeline) {
+            request("u/timelines/" + timeline.id, {
+                method: "DELETE"
+            });
+        },
+
         createEvent: function (tid, event) {
             return request("/u/timelines/" + tid + "/events", {
                 method: "POST",

@@ -7,7 +7,7 @@
         assign = require("object-assign"),
         hash = require("string-hash");
 
-    var events = [];
+    var events;
 
     /**
      * getFrontId - generate an id specific to the frontend
@@ -109,6 +109,11 @@
             data = payload.data;
 
         switch (action) {
+            case eventActions.LOAD_EVENTS:
+                events = null;
+                this.emitChange();
+                break;
+
             case eventActions.RECEIVE_EVENTS:
                 events = data.events.map(initEvent);
                 this.emitChange();

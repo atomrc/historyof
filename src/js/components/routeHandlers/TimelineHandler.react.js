@@ -25,9 +25,10 @@
             this.setState(this.getInitialState());
         },
 
-        componentDidMount: function() {
-            timelineActions.get(this.props.params.id);
+        componentWillMount: function() {
             eventStore.addChangeListener(this.onChange);
+
+            timelineActions.get(this.props.params.id);
         },
 
         componentWillUnmount: function () {
@@ -35,6 +36,10 @@
         },
 
         render: function () {
+            if (!this.state.events) {
+                return (<div>loading...</div>);
+            }
+
             return (
                 <div>
                     <Timeline timelineId={this.props.params.id} events={this.state.events}/>

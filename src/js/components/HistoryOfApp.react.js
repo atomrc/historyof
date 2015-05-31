@@ -26,6 +26,7 @@
 
         componentWillMount: function () {
             userStore.addChangeListener(this.userChange);
+
             userActions.getToken();
             userActions.getUser();
         },
@@ -41,7 +42,7 @@
             }
 
             if (!this.state.user) {
-                return (<span> login in </span>);
+                return (<span> login in... </span>);
             }
 
             return (

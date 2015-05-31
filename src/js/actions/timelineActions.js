@@ -16,7 +16,16 @@
                 });
         },
 
+        remove: function (timeline) {
+            dispatcher.dispatch(actions.REMOVE_TIMELINE, { timeline: timeline });
+
+            historyOfApi.removeTimeline(timeline);
+        },
+
         get: function (timelineId) {
+            dispatcher.dispatch(actions.LOAD_TIMELINE, { tid: timelineId });
+            dispatcher.dispatch(actions.LOAD_EVENTS);
+
             historyOfApi
                 .getTimeline(timelineId)
                 .then(function (timeline) {

@@ -75,6 +75,11 @@
                 this.emitChange();
                 break;
 
+            case actions.REMOVE_TIMELINE:
+                timelines = timelines.filter(t => t.id !== data.timeline.id);
+                this.emitChange();
+                break;
+
             case actions.RECEIVE_CREATED_TIMELINE:
                 var id = getFrontId(data.timeline);
                 update(id, data.timeline);

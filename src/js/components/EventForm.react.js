@@ -17,8 +17,12 @@
             };
         },
 
-        componentDidMount: function () {
+        componentWillMount: function () {
             editedEventStore.addChangeListener(this.onEditedEventChange);
+        },
+
+        componentWillUnmount: function () {
+            editedEventStore.removeChangeListener(this.onEditedEventChange);
         },
 
         onEditedEventChange: function () {

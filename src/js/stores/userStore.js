@@ -32,7 +32,12 @@
         },
 
         emitChange: function () {
-            this.emit("CHANGE");
+            //timeout hack to avoid having
+            //multiple disptatch at the same time
+            //see https://github.com/facebook/flux/issues/138
+            window.setTimeout(() => {
+                this.emit("CHANGE");
+            }, 0);
         }
     });
 

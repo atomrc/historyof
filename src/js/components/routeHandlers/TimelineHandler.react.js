@@ -27,8 +27,11 @@
 
         componentWillMount: function() {
             eventStore.addChangeListener(this.onChange);
-
             timelineActions.get(this.props.params.id);
+        },
+
+        componentWillReceiveProps: function (props) {
+            timelineActions.get(props.params.id);
         },
 
         componentWillUnmount: function () {

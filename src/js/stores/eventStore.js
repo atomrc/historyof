@@ -1,4 +1,4 @@
-/*global require, module*/
+/*global require, module, window*/
 (function () {
     "use strict";
     var appDispatcher = require("../dispatcher/appDispatcher"),
@@ -100,7 +100,9 @@
         },
 
         emitChange: function () {
-            this.emit("CHANGE");
+            window.setTimeout(() => {
+                this.emit("CHANGE");
+            }, 0);
         }
     });
 

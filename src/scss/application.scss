@@ -7,9 +7,22 @@ $lightcoolblue: #85A6F5;
 
 body {
     color: #555;
-    background-color: #EEE;
+    //background-color: #EEE;
     font-family: Serif;
     scroll-behavior: smooth;
+    margin: 0;
+}
+
+header {
+    font-family: Arial;
+    background-color: $coolblue;
+    font-size: 2em;
+    padding: 0.3em 1em;
+    color: white;
+
+    a {
+        color: inherit;
+    }
 }
 
 .flat-button {
@@ -20,6 +33,29 @@ body {
     color: white;
     border-radius: 0.2em;
     padding: 0.5em;
+}
+
+#timelines-menu {
+    width: 200px;
+    padding: 1em;
+    a {
+        color: inherit;
+    }
+    ul {
+        margin: 0;
+        list-style: none;
+        padding: 0;
+        li {
+            padding: 0.3em 0.3em;
+            border-bottom: solid 1px #DDD;
+            .actions {
+                display: none;
+            }
+            &:hover .actions {
+                //display: inline;
+            }
+        }
+    }
 }
 
 .timeline {

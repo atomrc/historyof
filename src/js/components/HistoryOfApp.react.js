@@ -6,6 +6,8 @@
         Link = require("react-router").Link,
         RouteHandler = Router.RouteHandler,
         Login = require("./Login.react"),
+        Timelines = require("./Timelines.react"),
+        timelineStore = require("../stores/timelineStore"),
         userStore = require("../stores/userStore"),
         userActions = require("../actions/userActions");
 
@@ -21,18 +23,25 @@
 
         getInitialState: function () {
             return {
-                user: userStore.get()
+                user: userStore.get(),
+                timelines: timelineStore.get()
             };
         },
 
         componentWillMount: function () {
-            userStore.addChangeListener(this.userChange);
+            userStore.addChangeListener(this.modelChange);
+            timelineStore.addChangeListener(this.modelChange);
 
             userActions.getToken();
             userActions.getUser();
         },
 
-        userChange: function () {
+        componentWillUnmount: function () {
+            timelineStore.removeChangeListener(this.modelChange);
+            userStore.removeChangeListener(this.modelChange);
+        },
+
+        modelChange: function () {
             this.setState(this.getInitialState());
         },
 
@@ -47,8 +56,14 @@
             }
 
             return (
-                <div id="historyof">
-                    <h1><Link to="dashboard">HistoryOf {this.state.user.firstname}</Link></h1>
+                <div>
+                    <header>
+                        <Link to="dashboard">HistoryOf </Link>
+                        <span className="user">{this.state.user.firstname}</span>
+                    </header>
+                    <div id="timelines-menu">
+                        <Timelines timelines={this.state.user.timelines}/>
+                    </div>
                     <RouteHandler/>
                 </div>
             );

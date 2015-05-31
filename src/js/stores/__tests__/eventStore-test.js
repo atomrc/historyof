@@ -13,7 +13,7 @@ describe("eventStore", function () {
         callback = dispatcher.register.mock.calls[0][0];
 
     it("should be empty at init", function () {
-        expect(eventStore.getAll().length).toBe(0);
+        expect(eventStore.get()).toBeUndefined();
     });
 
     it("loads event from the server", function () {
@@ -29,8 +29,8 @@ describe("eventStore", function () {
             }
         });
 
-        expect(eventStore.getAll().length).toBe(1);
-        expect(eventStore.getAll()[0].date.getFullYear()).toBe(2015);
+        expect(eventStore.get().length).toBe(1);
+        expect(eventStore.get()[0].date.getFullYear()).toBe(2015);
     });
 
     it("create and update with the server's response", function () {
@@ -51,16 +51,16 @@ describe("eventStore", function () {
             };
 
         callback(createAction);
-        newEvent = eventStore.getAll()[1];
-        expect(eventStore.getAll().length).toBe(2);
+        newEvent = eventStore.get()[1];
+        expect(eventStore.get().length).toBe(2);
         expect(newEvent.frontId).toBeDefined();
 
         callback(confirmCreateAction);
-        expect(eventStore.getAll().length).toBe(2);
+        expect(eventStore.get().length).toBe(2);
         //check that the event dont have the front id anymore
-        expect(eventStore.getAll()[1].frontId).toBeUndefined();
+        expect(eventStore.get()[1].frontId).toBeUndefined();
         //check that it has an id (corresponding to the id in the DB)
-        expect(eventStore.getAll()[1].id).toBe(15);
+        expect(eventStore.get()[1].id).toBe(15);
     });
 
     it("create and remove an event", function () {
@@ -80,10 +80,10 @@ describe("eventStore", function () {
             };
 
         callback(createAction);
-        expect(eventStore.getAll().length).toBe(3);
+        expect(eventStore.get().length).toBe(3);
 
         callback(removeAction);
-        expect(eventStore.getAll().length).toBe(2);
+        expect(eventStore.get().length).toBe(2);
     });
 
     it("update event", function () {
@@ -98,9 +98,9 @@ describe("eventStore", function () {
                 }
             };
 
-        expect(eventStore.getAll()[0].type).toBe("email");
+        expect(eventStore.get()[0].type).toBe("email");
         callback(updateAction);
-        expect(eventStore.getAll()[0].type).toBe("newtype");
+        expect(eventStore.get()[0].type).toBe("newtype");
 
     });
 });

@@ -73,6 +73,13 @@
             });
         },
 
+        updateTimeline: function (tid, timeline) {
+            return request("/u/timelines/" + tid, {
+                method: "PUT",
+                body: timeline
+            });
+        },
+
         removeTimeline: function (timeline) {
             request("u/timelines/" + timeline.id, {
                 method: "DELETE"
@@ -86,7 +93,7 @@
             });
         },
 
-        update: function (tid, event) {
+        updateEvent: function (tid, event) {
             request(generateUrl(config.urlPattern, { tid: tid, eid: event.id }), {
                 method: "PUT",
                 body: event

@@ -48,7 +48,8 @@
 
             return (
                 <div>
-                    <ul>{timelines}</ul>
+                    <h2>My Timelines</h2>
+                    <ul className="timeline-list">{timelines}</ul>
                     <form onSubmit={this.createTimeline}>
                         <input name="title" value={this.state.newTimeline.title} onChange={this.onChange}/>
                     </form>

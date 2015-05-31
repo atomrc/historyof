@@ -36,7 +36,7 @@
 
         update: function (tid, event) {
             dispatcher.dispatch(actions.UPDATE_EVENT, { event: event });
-            historyOfApi.update(tid, event);
+            historyOfApi.updateEvent(tid, event);
         },
 
         remove: function (event) {

@@ -32,6 +32,14 @@
                     dispatcher.dispatch(actions.RECEIVE_TIMELINE, { timeline: timeline });
                     dispatcher.dispatch(actions.RECEIVE_EVENTS, { events: timeline.events });
                 });
+        },
+
+        update: function (tid, timeline) {
+            historyOfApi
+                .updateTimeline(tid, timeline)
+                .then(tl => {
+                    dispatcher.dispatch(actions.RECEIVE_UPDATED_TIMELINE, { timeline: tl });
+                });
         }
     };
 }());

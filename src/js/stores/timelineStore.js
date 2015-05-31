@@ -75,6 +75,11 @@
                 this.emitChange();
                 break;
 
+            case actions.RECEIVE_UPDATED_TIMELINE:
+                update(data.timeline.id, data.timeline);
+                this.emitChange();
+                break;
+
             case actions.REMOVE_TIMELINE:
                 timelines = timelines.filter(t => t.id !== data.timeline.id);
                 this.emitChange();

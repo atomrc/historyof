@@ -11,7 +11,7 @@
 
     var routes = (
         <Route handler={App}>
-            <Route path="/" handler={DashboardHandler}/>
+            <Route name="dashboard" path="/" handler={DashboardHandler}/>
             <Route name="timeline" path="/timelines/:id" handler={TimelineHandler}/>
         </Route>
     );

@@ -1,4 +1,4 @@
-/*global require, module*/
+/*global require, module, window*/
 (function () {
     "use strict";
     var appDispatcher = require("../dispatcher/appDispatcher"),

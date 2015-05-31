@@ -3,6 +3,7 @@
     "use strict";
     var React = require("react"),
         Router = require("react-router"),
+        Link = require("react-router").Link,
         RouteHandler = Router.RouteHandler,
         Login = require("./Login.react"),
         userStore = require("../stores/userStore"),
@@ -47,7 +48,7 @@
 
             return (
                 <div id="historyof">
-                    <h1>HistoryOf {this.state.user.firstname}</h1>
+                    <h1><Link to="dashboard">HistoryOf {this.state.user.firstname}</Link></h1>
                     <RouteHandler/>
                 </div>
             );

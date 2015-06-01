@@ -57,10 +57,10 @@
                 );
 
             return (
-                <li className="timeline-card">
+                <div>
                     {title}
                     {actions}
-                </li>
+                </div>
             );
         }
     });

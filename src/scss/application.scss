@@ -8,13 +8,12 @@ $lightcoolblue: #85A6F5;
 body {
     color: #555;
     //background-color: #EEE;
-    font-family: Serif;
+    font-family: Arial;
     scroll-behavior: smooth;
     margin: 0;
 }
 
-header {
-    font-family: Arial;
+#app-header {
     background-color: $coolblue;
     font-size: 2em;
     padding: 0.3em 1em;
@@ -38,8 +37,16 @@ header {
 #timelines-menu {
     width: 200px;
     padding: 1em;
-    a {
-        color: inherit;
+    .timeline {
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+        &.current {
+            a {
+                font-weight: bold;
+            }
+        }
     }
     ul {
         margin: 0;

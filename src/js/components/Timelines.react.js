@@ -7,9 +7,17 @@
     var Timelines = React.createClass({
 
         render: function () {
+            var currentTimeline = this.props.currentTimeline || {};
+
             var timelines = this.props.timelines.map(function (timeline) {
+                var className = currentTimeline.id === timeline.id ?
+                    "current" :
+                    "";
+
                 return (
-                    <TimelineShort timeline={timeline} key={timeline.id || timeline.frontId}/>
+                    <li className={"timeline " + className} key={timeline.id || timeline.frontId}>
+                        <TimelineShort timeline={timeline}/>
+                    </li>
                 );
             });
 

@@ -31,7 +31,9 @@
         },
 
         componentWillReceiveProps: function (props) {
-            timelineActions.get(props.params.id);
+            if (this.props.params.id !== props.params.id) {
+                timelineActions.get(props.params.id);
+            }
         },
 
         componentWillUnmount: function () {

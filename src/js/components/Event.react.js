@@ -3,7 +3,7 @@
     var React = require("react"),
         moment = require("moment"),
         eventActions = require("../actions/eventActions"),
-        PureRenderMixin = require('react/addons').addons.PureRenderMixin,
+        PureRenderMixin = require("react/addons").addons.PureRenderMixin,
         eventTypes = require("../config/eventTypes");
 
     var Event = React.createClass({

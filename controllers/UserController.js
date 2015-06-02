@@ -34,7 +34,7 @@ module.exports = {
         res.send(req.user.toJSON());
     },
 
-    create: function (req, res) {
+    create: function (req, res, next) {
         db
             .model("user")
             .create(req.body)
@@ -48,6 +48,9 @@ module.exports = {
                     token: token,
                     user: user
                 });
+            })
+            .catch(function (err) {
+                next(err.errors);
             });
     },
 

@@ -13,7 +13,6 @@ var app = express();
 app.use(express.static("public", {}));
 app.use(bodyParser.json());
 
-
 app.post("/login", UserController.login);
 
 //Json Web Token for logged part of the app
@@ -32,5 +31,9 @@ app.post("/u/timelines/:tid/events", EventController.create);
 app.get("/u/timelines/:tid/events/:eid", EventController.middlewares.find, EventController.get);
 app.delete("/u/timelines/:tid/events/:eid", EventController.middlewares.find, EventController.remove);
 app.put("/u/timelines/:tid/events/:eid", EventController.middlewares.find, EventController.update);
+
+app.use(function (err, req, res, next) {
+    res.status(err.status || 500).send({ errors: err });
+});
 
 module.exports = app;

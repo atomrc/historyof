@@ -14,9 +14,9 @@
             };
         },
 
-        login: function (e) {
+        createUser: function (e) {
             e.preventDefault();
-            userActions.login(this.state.user.login, this.state.user.password);
+            userActions.create(this.state.user);
         },
 
         onChange: function (e) {
@@ -30,13 +30,16 @@
 
             return (
                 <div>
-                    <form onSubmit={this.login}>
+                    <form onSubmit={this.createUser}>
+                        <input placeholder="pseudo" name="pseudo" value={user.pseudo} onChange={this.onChange}/>
+                        <input placeholder="firstname" name="firstname" value={user.firstname} onChange={this.onChange}/>
+                        <input placeholder="lastname" name="lastname" value={user.lastname} onChange={this.onChange}/>
                         <input placeholder="login" name="login" value={user.login} onChange={this.onChange}/>
                         <input placeholder="password" name="password" type="password" value={user.password} onChange={this.onChange}/>
                         <input type="submit" value="Submit"/>
                     </form>
 
-                    <Link to="register">register</Link>
+                    <Link to="login">login</Link>
                 </div>
             );
         }

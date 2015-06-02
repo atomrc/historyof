@@ -2,7 +2,6 @@
 (function () {
     "use strict";
     var React = require("react"),
-        Navigation = require("./Navigation.react"),
         Year = require("./Year.react");
 
     /**
@@ -43,7 +42,6 @@
 
             return (
                 <div className="timeline table">
-                    <Navigation events={this.props.events}/>
                     <div className="events-container cell">{yearNodes}</div>
                 </div>
             );

@@ -29,6 +29,9 @@
 
         return fetch(url, conf)
             .then(function (response) {
+                if (!response.ok) {
+                    throw new Error(response.json());
+                }
                 return response.json();
             });
     }
@@ -49,7 +52,7 @@
 
     var api = {
         login: function (login, password) {
-            return request(config.loginUrl, null, {
+            return request(config.loginUrl, {
                 method: "POST",
                 body: {
                     login: login,
@@ -60,6 +63,13 @@
 
         getUser: function () {
             return request("/u");
+        },
+
+        createUser: function (user) {
+            return request("/user/create", {
+                method: "POST",
+                body: user
+            });
         },
 
         getTimeline: function (tid) {

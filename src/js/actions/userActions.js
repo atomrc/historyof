@@ -1,4 +1,4 @@
-/*global require, module*/
+/*global require, module, window*/
 (function () {
     "use strict";
     var actions = require("../constants/constants").actions,
@@ -12,9 +12,10 @@
                 null;
 
             if (!token) {
-                return;
+                return false;
             }
             dispatcher.dispatch(actions.RECEIVE_USER_TOKEN, { token: token });
+            return true;
         },
 
         login: function (login, password) {
@@ -30,6 +31,22 @@
                 });
         },
 
+        logout: function () {
+            window.localStorage.clear();
+            dispatcher.dispatch(actions.USER_LOGGED_OUT);
+        },
+
+        create: function (user) {
+            historyOfApi
+                .createUser(user)
+                .then(function (data) {
+                    window.localStorage.setItem("token", data.token);
+                    dispatcher.dispatch(actions.RECEIVE_USER_TOKEN, { token: data.token });
+                    dispatcher.dispatch(actions.RECEIVE_USER, { user: data.user });
+                    dispatcher.dispatch(actions.RECEIVE_TIMELINES, { timelines: data.user.timelines });
+                });
+        },
+
         getUser: function (token) {
             historyOfApi
                 .getUser(token)
@@ -37,6 +54,7 @@
                     dispatcher.dispatch(actions.RECEIVE_USER, { user: data });
                     dispatcher.dispatch(actions.RECEIVE_TIMELINES, { timelines: data.timelines });
                 }, function () {
+                    window.localStorage.clear();
                     dispatcher.dispatch(actions.USER_LOGGED_OUT, {});
                 });
         }

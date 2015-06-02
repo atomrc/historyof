@@ -34,6 +34,7 @@ describe("API", function () {
     var userToken,
         user = {
             login: "felix@felix.fr",
+            pseudo: "felox",
             password: "felix",
             firstname: "Felix",
             lastname: "Hello"

@@ -56,14 +56,15 @@ gulp.task("js-app", function() {
 });
 
 gulp.task("jade", function () {
-    gulp
+    return gulp
         .src("./src/index.jade")
         .pipe(jade())
         .pipe(gulp.dest("./public"));
 });
 
 gulp.task("sass", function () {
-    gulp.src("./src/scss/*.scss")
+    return gulp
+        .src("./src/scss/*.scss")
         .pipe(sass())
         .pipe(gulp.dest("./public/css"));
 });

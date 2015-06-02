@@ -7,13 +7,19 @@ module.exports = {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV1
     },
+    pseudo: {
+        type: Sequelize.STRING,
+        unique: true,
+        allowNull: false
+    },
     login: {
         type: Sequelize.STRING,
-        unique: true
+        unique: true,
+        allowNull: false
     },
     password: {
         type: Sequelize.STRING,
-        scopes: ["private"]
+        allowNull: false
     },
     firstname: Sequelize.STRING,
     lastname: Sequelize.STRING

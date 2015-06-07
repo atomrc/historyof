@@ -13,7 +13,7 @@
      *
      * @return {undefined}
      */
-    var HistoryOfApp = React.createClass({
+    module.exports = React.createClass({
 
         getInitialState: function () {
             return {
@@ -58,5 +58,4 @@
 
     });
 
-    module.exports = HistoryOfApp;
 }());

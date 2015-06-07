@@ -42,6 +42,9 @@
 
         modelChange: function () {
             this.setState(this.getInitialState());
+            if (this.state.user) {
+                this.transitionTo("timeline", { id: this.state.user.timelines[0].id });
+            }
         },
 
         logout: function () {
@@ -61,9 +64,6 @@
                         <span className="user">{this.state.user.firstname}</span>
                         <button onClick={this.logout}>logout</button>
                     </header>
-                    <div id="timelines-menu">
-                        <Timelines timelines={this.state.user.timelines}/>
-                    </div>
                     <RouteHandler/>
                 </div>
             );

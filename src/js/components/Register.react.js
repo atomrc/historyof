@@ -3,15 +3,38 @@
     "use strict";
 
     var React = require("react"),
+        Router = require("react-router"),
         Link = require("react-router").Link,
-        userActions = require("../actions/userActions");
+        userActions = require("../actions/userActions"),
+        tokenActions = require("../actions/tokenActions"),
+        tokenStore = require("../stores/tokenStore");
 
-    var Login = React.createClass({
+    module.exports = React.createClass({
+
+        mixins: [Router.Navigation],
 
         getInitialState: function () {
             return {
-                user: {}
+                user: {},
+                token: tokenStore.get()
             };
+        },
+
+        componentWillMount: function () {
+            tokenStore.addChangeListener(this.tokenChange);
+
+            tokenActions.getToken();
+        },
+
+        componentWillUnmount: function () {
+            tokenStore.removeChangeListener(this.tokenChange);
+        },
+
+        tokenChange: function () {
+            this.setState(this.getInitialState());
+            if (this.state.token) {
+                this.transitionTo("home");
+            }
         },
 
         createUser: function (e) {
@@ -39,12 +62,10 @@
                         <input type="submit" value="Submit"/>
                     </form>
 
-                    <Link to="login">login</Link>
+                    <Link to="home">login</Link>
                 </div>
             );
         }
     });
-
-    module.exports = Login;
 
 }());

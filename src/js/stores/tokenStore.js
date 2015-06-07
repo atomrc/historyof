@@ -6,12 +6,12 @@
         EventEmitter = require("events").EventEmitter,
         assign = require("object-assign");
 
-    var user;
+    var token;
 
-    var userStore = assign({}, EventEmitter.prototype, {
+    var tokenStore = assign({}, EventEmitter.prototype, {
 
         get: function () {
-            return user;
+            return token;
         },
 
         addChangeListener: function (callback) {
@@ -37,20 +37,20 @@
             data = payload.data;
 
         switch (action) {
-            case actions.RECEIVE_USER:
-                user = data.user;
+            case actions.RECEIVE_USER_TOKEN:
+                token = data.token;
                 this.emitChange();
                 break;
 
             case actions.USER_LOGGED_OUT:
-                user = null;
+                token = null;
                 this.emitChange();
                 break;
 
             default:
                 break;
         }
-    }.bind(userStore));
+    }.bind(tokenStore));
 
-    module.exports = userStore;
+    module.exports = tokenStore;
 }());

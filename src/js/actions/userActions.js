@@ -21,7 +21,7 @@
         login: function (login, password) {
             dispatcher.dispatch(actions.USER_LOGIN);
 
-            historyOfApi
+            return historyOfApi
                 .login(login, password)
                 .then(function (data) {
                     window.localStorage.setItem("token", data.token);

@@ -2,15 +2,13 @@
 (function () {
     "use strict";
     var assign = require("object-assign"),
-        appDispatcher = require("../dispatcher/appDispatcher"),
-        actions = require("../constants/constants").actions,
+        tokenStore = require("../stores/tokenStore"),
         fetchPolyfill = require("whatwg-fetch");
 
     var config = {
-            loginUrl: "/login",
-            urlPattern: "/u/timelines/:tid/events/:eid"
-        },
-        token;
+        loginUrl: "/login",
+        urlPattern: "/u/timelines/:tid/events/:eid"
+    };
 
     function request(url, params) {
         var conf = assign({}, {
@@ -20,6 +18,8 @@
                 "Content-Type": "application/json"
             }
         }, params);
+
+        var token = tokenStore.get();
 
         if (token) {
             conf.headers.Authorization = "Bearer " + token;
@@ -116,20 +116,6 @@
             });
         }
     };
-
-    appDispatcher.register(function (payload) {
-        var action = payload.action,
-            data = payload.data;
-
-        switch (action) {
-            case actions.RECEIVE_USER_TOKEN:
-                token = data.token;
-                break;
-
-            default:
-                break;
-        }
-    });
 
     module.exports = api;
 }());

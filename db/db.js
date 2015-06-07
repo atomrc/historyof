@@ -2,26 +2,17 @@
 
 "use strict";
 var Sequelize = require("sequelize"),
-    Instance = require("sequelize").Instance,
-    assign = require("object-assign");
+    Instance = require("sequelize").Instance;
 
-var defaultConfig = {
-        host: "localhost",
-        user: "",
-        password: "",
-        db: "historyof"
-    },
-    init = false,
+var init = false,
     models = {};
 
 module.exports = {
 
-    init: function (params) {
+    init: function (config) {
         if (init) {
             throw new Error("db is already initiated");
         }
-
-        var config = assign({}, defaultConfig, params);
 
         var sequelize = new Sequelize(config.db, config.user, config.password, {
             host: config.host,

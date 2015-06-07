@@ -42,12 +42,20 @@ module.exports = {
                 var user = data.toJSON(),
                     token = createToken(user);
 
-                user.timelines = [];
+                db
+                    .model("timeline")
+                    .create({
+                        userId: user.id,
+                        title: user.pseudo + "'s Story"
+                    })
+                    .then(function (timeline) {
+                        user.timelines = [timeline];
 
-                res.send({
-                    token: token,
-                    user: user
-                });
+                        res.send({
+                            token: token,
+                            user: user
+                        });
+                    });
             })
             .catch(function (err) {
                 next(err.errors);

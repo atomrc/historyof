@@ -54,7 +54,7 @@ describe("API", function () {
                 expect(u.password).not.toBeDefined();
                 expect(u.createdAt).toBeDefined();
                 expect(u.login).toBe(user.login);
-                expect(u.timelines).toEqual([]);
+                expect(u.timelines.length).toEqual(1);
                 userToken = res.body.token;
                 user = u;
                 done();
@@ -115,8 +115,9 @@ describe("API", function () {
             .expect(200)
             .end(function (err, res) {
                 if (err) { return done(err); }
-                expect(res.body.length).toBe(1);
-                expect(res.body[0].id).toEqual(timeline.id);
+                expect(res.body.length).toBe(2);
+                expect(res.body[0].id).toEqual(user.timelines[0].id);
+                expect(res.body[1].id).toEqual(timeline.id);
 
                 done();
             });
@@ -263,14 +264,14 @@ describe("API", function () {
             .expect(204, done);
     });
 
-    it("should return empty timelines for user", function (done) {
+    it("should not return deleted timelines", function (done) {
         request(app)
             .get("/u/timelines")
             .set("Authorization", "Bearer " + userToken)
             .expect(200)
             .end(function (err, res) {
                 if (err) { return done(err); }
-                expect(res.body.length).toBe(0);
+                expect(res.body.length).toBe(1);
                 done();
             });
     });

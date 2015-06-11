@@ -2,3 +2,4 @@ node_modules
 public/js
 public/css
 public/index.html
+.env

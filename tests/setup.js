@@ -1,12 +1,12 @@
 /*eslint-env node */
 
 "use strict";
+require("dotenv").load();
 var db = require("../db/db"),
     config = require("../config/config");
 
 
-config.db = "historyoftest";
-var sequelize = db.init(config);
+var sequelize = db.init(config.db);
 
 module.exports = {
     init: function (callback) {

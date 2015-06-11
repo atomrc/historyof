@@ -1,6 +1,8 @@
 /*eslint-env node */
 
 "use strict";
+require("dotenv").load();
+
 var app = require("./app"),
     db = require("./db/db"),
     config = require("./config/config");

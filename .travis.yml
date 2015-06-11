@@ -9,3 +9,5 @@ services:
 before_script:
   - psql -c 'create database historyoftest;' -U postgres
   - psql historyoftest < scripts/db/create.sql
+env:
+  - POSTGRESQL_ADDON_HOST=localhost POSTGRESQL_ADDON_USER="" POSTGRESQL_ADDON_PASSWORD="" POSTGRESQL_ADDON_DB=historyoftest

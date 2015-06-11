@@ -8,6 +8,5 @@ services:
   - postgres
 before_script:
   - psql -c 'create database historyoftest;' -U postgres
-  - node_modules/db-migrate/bin/db-migrate up
 env:
   - POSTGRESQL_ADDON_HOST=localhost POSTGRESQL_ADDON_USER="" POSTGRESQL_ADDON_PASSWORD="" POSTGRESQL_ADDON_DB=historyoftest

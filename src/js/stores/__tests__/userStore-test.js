@@ -26,16 +26,4 @@ describe("userStore", function () {
         expect(userStore.get()).toBe(user);
     });
 
-    it("should tell if the user has a token", function () {
-        var token = "hereismytoken",
-            receivedUserTokenAction = {
-                action: actions.RECEIVE_USER_TOKEN,
-                data: { token: token }
-            };
-
-        expect(userStore.hasToken()).toBeFalsy();
-        callback(receivedUserTokenAction);
-        expect(userStore.hasToken()).toBeTruthy();
-    });
-
 });

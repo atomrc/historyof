@@ -21,6 +21,5 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false
     },
-    firstname: Sequelize.STRING,
-    lastname: Sequelize.STRING
+    pseudo: Sequelize.STRING
 };

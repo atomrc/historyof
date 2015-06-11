@@ -1,0 +1,10 @@
+{
+    "dev": {
+    "host": { "ENV": "POSTGRESQL_ADDON_HOST" },
+    "user": { "ENV" : "POSTGRESQL_ADDON_USER" },
+    "password" : { "ENV" : "POSTGRESQL_ADDON_PASSWORD" },
+    "database": { "ENV" : "POSTGRESQL_ADDON_DB" },
+    "driver": "postgres",
+    "multipleStatements": true
+  }
+}

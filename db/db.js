@@ -16,6 +16,7 @@ module.exports = {
 
         var sequelize = new Sequelize(config.db, config.user, config.password, {
             host: config.host,
+            port: config.port,
             dialect: "postgres",
             logging: false
         });

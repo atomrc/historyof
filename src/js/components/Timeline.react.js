@@ -1,7 +1,7 @@
+/*global require, module*/
 (function () {
     "use strict";
     var React = require("react"),
-        Navigation = require("./Navigation.react"),
         Year = require("./Year.react");
 
     /**
@@ -22,7 +22,7 @@
                     })
                     .reduce(function (obj, e) {
                         var key = e.date.getFullYear().toString();
-                        if (!obj[key]) { obj[key] = [] }
+                        if (!obj[key]) { obj[key] = []; }
                         obj[key].push(e);
                         return obj;
                     }, {});
@@ -35,9 +35,13 @@
                         events={groupedEvents[i]}/>
                 ));
             }
+
+            if (yearNodes.length === 0) {
+                return (<div>No event yet</div>);
+            }
+
             return (
                 <div className="timeline table">
-                    <Navigation events={this.props.events}/>
                     <div className="events-container cell">{yearNodes}</div>
                 </div>
             );

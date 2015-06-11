@@ -3,7 +3,7 @@
     var React = require("react"),
         moment = require("moment"),
         eventActions = require("../actions/eventActions"),
-        PureRenderMixin = require('react/addons').addons.PureRenderMixin,
+        PureRenderMixin = require("react/addons").addons.PureRenderMixin,
         eventTypes = require("../config/eventTypes");
 
     var Event = React.createClass({
@@ -53,7 +53,7 @@
                                 </em>
                             </div>
                             <div className="cell">
-                                <strong>{event.title || (event.text || "").substr(0, 40).concat("...")}</strong>
+                                <strong>{event.title || (event.description || "").substr(0, 40).concat("...")}</strong>
                             </div>
                             <div className="actions cell">
                                 <a onClick={this.edit}>E</a>&nbsp;
@@ -61,7 +61,7 @@
                             </div>
                         </div>
                     </header>
-                    <p className={"toggle " + classes} dangerouslySetInnerHTML={{__html: (event.text || "").replace(/\n/g, "<br>")}}></p>
+                    <p className={"toggle " + classes} dangerouslySetInnerHTML={{__html: (event.description || "").replace(/\n/g, "<br>")}}></p>
                 </div>
             );
         }

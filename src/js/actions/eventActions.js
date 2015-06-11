@@ -21,22 +21,22 @@
             dispatcher.dispatch(actions.EDIT_EVENT, { event: event });
         },
 
-        cancelEdit: function (event) {
-            dispatcher.dispatch(actions.END_EDIT_EVENT);
+        cancelEdit: function () {
+            dispatcher.dispatch(actions.CANCEL_EDIT_EVENT);
         },
 
-        create: function (event) {
+        create: function (tid, event) {
             dispatcher.dispatch(actions.CREATE_EVENT, { event: event });
             historyOfApi
-                .create(event)
+                .createEvent(tid, event)
                 .then(function (e) {
                     dispatcher.dispatch(actions.RECEIVE_CREATED_EVENT, { event: e });
                 });
         },
 
-        update: function (event) {
+        update: function (tid, event) {
             dispatcher.dispatch(actions.UPDATE_EVENT, { event: event });
-            historyOfApi.update(event);
+            historyOfApi.updateEvent(tid, event);
         },
 
         remove: function (event) {

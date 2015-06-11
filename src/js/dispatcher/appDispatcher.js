@@ -2,7 +2,6 @@
 
 (function () {
     "use strict";
-
     var Dispatcher = require("flux").Dispatcher,
         assign = require("object-assign");
 

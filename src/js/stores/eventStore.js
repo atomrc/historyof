@@ -1,12 +1,13 @@
-/*global require, module*/
+/*global require, module, window*/
 (function () {
     "use strict";
     var appDispatcher = require("../dispatcher/appDispatcher"),
         eventActions = require("../constants/constants").actions,
+        EventEmitter = require("events").EventEmitter,
+        assign = require("object-assign"),
         hash = require("string-hash");
 
-    var listeners = [],
-        events = [];
+    var events;
 
     /**
      * getFrontId - generate an id specific to the frontend
@@ -85,28 +86,36 @@
     }
 
 
-    var eventStore = {
-        getAll: function () {
+    var eventStore = assign({}, EventEmitter.prototype, {
+        get: function () {
             return events;
         },
 
         addChangeListener: function (callback) {
-            listeners.push(callback);
-            return listeners.length - 1;
+            this.on("CHANGE", callback);
+        },
+
+        removeChangeListener: function (callback) {
+            this.removeListener("CHANGE", callback);
         },
 
         emitChange: function () {
-            listeners.forEach(function (listener) {
-                listener();
-            });
+            window.setTimeout(() => {
+                this.emit("CHANGE");
+            }, 0);
         }
-    };
+    });
 
     appDispatcher.register(function (payload) {
         var action = payload.action,
             data = payload.data;
 
         switch (action) {
+            case eventActions.LOAD_EVENTS:
+                events = null;
+                this.emitChange();
+                break;
+
             case eventActions.RECEIVE_EVENTS:
                 events = data.events.map(initEvent);
                 this.emitChange();

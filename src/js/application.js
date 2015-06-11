@@ -1,11 +1,27 @@
-/*global require*/
+/*global require, document*/
 (function () {
     "use strict";
-    var React = require("react"),
-        HistoryOfApp = require("./components/HistoryOfApp.react");
 
-    React.render(<HistoryOfApp/>, document.getElementById("main"));
-    var actions = require("./actions/eventActions");
+    var Router = require("react-router"),
+        Route = Router.Route,
+        React = require("react"),
+        AppHandler = require("./components/routeHandlers/AppHandler.react"),
+        Register = require("./components/Register.react"),
+        UserHandler = require("./components/routeHandlers/UserHandler.react"),
+        TimelineHandler = require("./components/routeHandlers/TimelineHandler.react");
 
-    actions.load();
+    var routes = (
+        <Route>
+            <Route name="register" path="/register" handler={Register}/>
+            <Route handler={AppHandler}>
+                <Route name="home" path="/" handler={UserHandler}>
+                    <Route name="timeline" path="/timelines/:id" handler={TimelineHandler}/>
+                </Route>
+            </Route>
+        </Route>
+    );
+
+    Router.run(routes, function (Handler) {
+        React.render(<Handler/>, document.body);
+    });
 }());

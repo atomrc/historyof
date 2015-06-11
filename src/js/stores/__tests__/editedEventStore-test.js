@@ -1,6 +1,6 @@
 /*global expect, it, jest, describe, require*/
 
-var APP_PATH = "../src/js";
+var APP_PATH = "../..";
 jest.dontMock(APP_PATH + "/stores/editedEventStore");
 jest.dontMock("object-assign");
 
@@ -31,7 +31,7 @@ describe("eeditedEventStore", function () {
 
     it("should end editing when user cancels", function () {
         var endEditAction = {
-            action: actions.END_EDIT_EVENT
+            action: actions.CANCEL_EDIT_EVENT
         };
 
         callback(endEditAction);

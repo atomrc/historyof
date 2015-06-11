@@ -1,66 +1,39 @@
-/*global require*/
+/*eslint-env node */
 
-(function () {
-    "use strict";
-    var bodyParser = require("body-parser"),
-        mongoose = require("mongoose"),
-        express = require("express"),
-        Event = require("./model/Event");
+"use strict";
+var bodyParser = require("body-parser"),
+    express = require("express"),
+    jwt = require("express-jwt"),
+    UserController = require("./controllers/UserController"),
+    TimelineController = require("./controllers/TimelineController"),
+    EventController = require("./controllers/EventController");
 
-    var app = express();
+var app = express();
 
-    var mongoConfig = {
-            host: process.env["MONGODB_ADDON_HOST"] || "localhost",
-            port: process.env["MONGODB_ADDON_PORT"] || "27017",
-            user: process.env["MONGODB_ADDON_USER"] || "",
-            password: process.env["MONGODB_ADDON_PASSWORD"] || "",
-            db: process.env["MONGODB_ADDON_DB"] || "historyofus"
-        },
-        mongoUrl = "mongodb://{user}:{password}@{host}/{db}"
-            .replace("{host}", mongoConfig.host)
-            .replace("{user}", mongoConfig.user)
-            .replace("{port}", mongoConfig.port)
-            .replace("{password}", mongoConfig.password)
-            .replace("{db}", mongoConfig.db)
-        ;
+app.use(express.static("public", {}));
+app.use(bodyParser.json());
 
-    mongoose.connect(mongoUrl);
+app.post("/login", UserController.login);
 
-    app.use(express.static("public", {}));
-    app.use(bodyParser.json());
+//Json Web Token for logged part of the app
+app.post("/user/create", UserController.create);
+app.use("/u", jwt({ secret: "tochange" }), UserController.middlewares.authenticate);
+app.get("/u", UserController.get);
 
-    app.get("/events", function (req, res) {
-        Event.find().sort({date: "asc"}).exec(function (err, events) {
-            res.send(events);
-        });
-    });
+app.get("/u/timelines", TimelineController.getAll);
+app.post("/u/timelines", TimelineController.create);
+app.get("/u/timelines/:tid", TimelineController.middlewares.find, TimelineController.get);
+app.put("/u/timelines/:tid", TimelineController.middlewares.find, TimelineController.update);
+app.delete("/u/timelines/:tid", TimelineController.middlewares.find, TimelineController.remove);
 
-    app.post("/events", function (req, res) {
-        var event = new Event(req.body);
-        event.save(function (err, data) {
-            res.send(data);
-        });
-    });
+app.get("/u/timelines/:tid/events", TimelineController.middlewares.find, EventController.getAll);
+app.post("/u/timelines/:tid/events", EventController.create);
+app.get("/u/timelines/:tid/events/:eid", EventController.middlewares.find, EventController.get);
+app.delete("/u/timelines/:tid/events/:eid", EventController.middlewares.find, EventController.remove);
+app.put("/u/timelines/:tid/events/:eid", EventController.middlewares.find, EventController.update);
 
-    app.get("/events/:id", function (req, res) {
-        Event.findById(req.params.id, function (err, event) {
-            res.send(event);
-        });
-    });
+app.use(function (err, req, res, next) {
+    res.status(err.status || 500).send({ errors: err });
+});
 
-    app.delete("/events/:id", function (req, res) {
-        Event.remove({ _id: req.params.id }, function (err, nb, msg) {
-            res.send(msg);
-        });
-    });
-
-    app.put("/events/:id", function (req, res) {
-        Event.where({ _id: req.params.id }).update(req.body, function (err, nb, msg) {
-            res.send(msg);
-        });
-    });
-
-    var server = app.listen(process.env["PORT"] || 1337, function () {
-        console.log("%s listening at %s", app.name, app.url);
-    });
-}());
+module.exports = app;

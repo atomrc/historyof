@@ -2,12 +2,14 @@
 (function () {
     "use strict";
     var appDispatcher = require("../dispatcher/appDispatcher"),
-        eventActions = require("../constants/constants").actions;
+        EventEmitter = require("events").EventEmitter,
+        eventActions = require("../constants/constants").actions,
+        assign = require("object-assign");
 
     var listeners = [],
         editedEvent;
 
-    var editedEventStore = {
+    var editedEventStore  = assign({}, EventEmitter.prototype, {
 
         getEditedEvent: function () {
             return editedEvent;
@@ -18,16 +20,17 @@
         },
 
         addChangeListener: function (callback) {
-            listeners.push(callback);
-            return listeners.length - 1;
+            this.on("CHANGE", callback);
+        },
+
+        removeChangeListener: function (callback) {
+            this.removeListener("CHANGE", callback);
         },
 
         emitChange: function () {
-            listeners.forEach(function (listener) {
-                listener();
-            });
+            this.emit("CHANGE");
         }
-    };
+    });
 
     appDispatcher.register(function (payload) {
         var action = payload.action,
@@ -44,7 +47,7 @@
                 this.emitChange();
                 break;
 
-            case eventActions.END_EDIT_EVENT:
+            case eventActions.CANCEL_EDIT_EVENT:
                 editedEvent = undefined;
                 this.emitChange();
                 break;

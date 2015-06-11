@@ -17,8 +17,12 @@
             };
         },
 
-        componentDidMount: function () {
+        componentWillMount: function () {
             editedEventStore.addChangeListener(this.onEditedEventChange);
+        },
+
+        componentWillUnmount: function () {
+            editedEventStore.removeChangeListener(this.onEditedEventChange);
         },
 
         onEditedEventChange: function () {
@@ -49,8 +53,8 @@
             this.replaceState(this.getInitialState());
 
             return event.id ?
-                eventActions.update(event) :
-                eventActions.create(event);
+                eventActions.update(this.props.timelineId, event) :
+                eventActions.create(this.props.timelineId, event);
         },
 
         cancel: function () {
@@ -81,9 +85,9 @@
                         <br/>
                         <DatePicker onChange={this.dateChange} selected={moment(this.state.event.date)}/>
                         <br/>
-                        <textarea rows="8" name="text" placeholder="Description" value={event.text || ""} onChange={this.onChange}/>
+                        <textarea rows="8" name="description" placeholder="Description" value={event.description || ""} onChange={this.onChange}/>
                         <br/>
-                        <button>add</button>
+                        <button className="flat-button">add</button>
                     </form>
                 </div>
             );

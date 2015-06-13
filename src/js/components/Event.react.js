@@ -18,7 +18,7 @@
             this.setState({ open: !this.state.open });
         },
 
-        edit: function (e) {
+        edit: function (/*e*/) {
             eventActions.edit(this.props.event);
         },
 

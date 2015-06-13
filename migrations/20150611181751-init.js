@@ -15,8 +15,8 @@ var createSql = "CREATE EXTENSION \"uuid-ossp\";" +
     "CREATE TABLE events (" +
     "    id UUID PRIMARY KEY DEFAULT uuid_generate_v1()," +
     "    user_id UUID REFERENCES users (id)," +
-    "    title VARCHAR(64) NOT NULL," +
-    "    type VARCHAR(30) NOT NULL," +
+    "    title VARCHAR(64)," +
+    "    type VARCHAR(30)," +
     "    date TIMESTAMP NOT NULL," +
     "    description text," +
     "    created_at TIMESTAMP DEFAULT NOW()," +

@@ -2,10 +2,10 @@
 (function () {
     "use strict";
     var React = require("react"),
-        timelineActions = require("../../actions/timelineActions"),
         Timeline = require("../Timeline.react"),
         EventForm = require("../EventForm.react"),
         AddButton = require("../AddButton.react"),
+        eventActions = require("../../actions/eventActions"),
         eventStore = require("../../stores/eventStore");
 
     /**
@@ -27,13 +27,7 @@
 
         componentWillMount: function() {
             eventStore.addChangeListener(this.onChange);
-            timelineActions.get(this.props.params.id);
-        },
-
-        componentWillReceiveProps: function (props) {
-            if (this.props.params.id !== props.params.id) {
-                timelineActions.get(props.params.id);
-            }
+            eventActions.getAll();
         },
 
         componentWillUnmount: function () {
@@ -47,10 +41,10 @@
 
             return (
                 <div>
-                    <Timeline timelineId={this.props.params.id} events={this.state.events}/>
+                    <Timeline events={this.state.events}/>
                     <div id="edit-section">
-                        <EventForm timelineId={this.props.params.id}/>
-                        <AddButton timelineId={this.props.params.id}/>
+                        <EventForm/>
+                        <AddButton/>
                     </div>
                 </div>
             );

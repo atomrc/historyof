@@ -15,7 +15,7 @@
             <Route name="register" path="/register" handler={Register}/>
             <Route handler={AppHandler}>
                 <Route name="home" path="/" handler={UserHandler}>
-                    <Route name="timeline" path="/timelines/:id" handler={TimelineHandler}/>
+                    <Route name="timeline" path="/" handler={TimelineHandler}/>
                 </Route>
             </Route>
         </Route>

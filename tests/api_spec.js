@@ -4,275 +4,249 @@
 "use strict";
 var request = require("supertest"),
     app = require("../app"),
-    setup = require("./setup");
-
-var isInit = false;
-/**
- * Override the finishCallback so we can add some cleanup methods.
- * This is run after all tests have been completed.
- */
-var _finishCallback = jasmine.Runner.prototype.finishCallback;
-jasmine.Runner.prototype.finishCallback = function () {
-    // Run the old finishCallback
-    _finishCallback.bind(this)();
-
-    setup.teardown();
-    // add your cleanup code here...
-};
+    setup = require("./setup"),
+    Promise = require("promise");
 
 beforeEach(function (done) {
-    if (isInit) { return done(); }
     //clean the database before playing the tests
-    setup.init(function () {
+    setup.reset(function () {
         done();
     });
-    isInit = true;
 });
+
+var api = {
+    createUser: function (user) {
+        return request(app)
+            .post("/user/create")
+            .send(user);
+    },
+
+    getUser: function (userToken) {
+        return request(app)
+            .get("/u")
+            .set("Authorization", "Bearer " + userToken);
+    },
+
+    login: function (login, pwd) {
+        return request(app)
+            .post("/login")
+            .send({
+                login: login,
+                password: pwd
+            });
+    },
+
+    createEvent: function (userToken, event) {
+        return request(app)
+            .post("/u/events")
+            .set("Authorization", "Bearer " + userToken)
+            .send(event);
+    },
+
+    getEvents: function (userToken) {
+        return request(app)
+            .get("/u/events")
+            .set("Authorization", "Bearer " + userToken);
+    },
+
+    getEvent: function (userToken, eventId) {
+        return request(app)
+            .get("/u/events/" + eventId)
+            .set("Authorization", "Bearer " + userToken);
+    },
+
+
+    updateEvent: function (userToken, eventId, newData) {
+        return request(app)
+            .put("/u/events/" + eventId)
+            .set("Authorization", "Bearer " + userToken)
+            .send(newData);
+    },
+
+    deleteEvent: function (userToken, eventId) {
+        return request(app)
+            .del("/u/events/" + eventId)
+            .set("Authorization", "Bearer " + userToken);
+    }
+};
+
+var preconditions = {
+    hasUser: function (user) {
+        return new Promise(function (resolve, reject) {
+            api
+                .createUser(user)
+                .end(function (err, res) {
+                    if (err) { return reject(err); }
+                    resolve(res.body);
+                });
+        });
+    },
+
+    hasEvent: function (user, event) {
+        return new Promise(function (resolve, reject) {
+            this
+                .hasUser(user)
+                .then(function (datas) {
+                    api
+                        .createEvent(datas.token, event)
+                        .end(function (err, res) {
+                            if (err) {
+                                return reject(err);
+                            }
+
+                            resolve({ token: datas.token, event: res.body });
+                        });
+                });
+        }.bind(this));
+    }
+};
 
 
 describe("API", function () {
-    var userToken,
-        user = {
+    var testUser = {
             login: "felix@felix.fr",
             pseudo: "felox",
             password: "felix",
             firstname: "Felix",
             lastname: "Hello"
         },
-        timeline,
-        event;
+        testEvent = { title: "new event", type: "event", date: new Date() };
 
     it("should create a new user", function (done) {
-        request(app)
-            .post("/user/create")
-            .send(user)
+        api
+            .createUser(testUser)
             .expect(200)
             .end(function (err, res) {
                 if (err) { return done(err); }
                 var u = res.body.user;
                 expect(u.id).toBeDefined();
                 expect(u.password).not.toBeDefined();
-                expect(u.createdAt).toBeDefined();
-                expect(u.login).toBe(user.login);
-                expect(u.timelines.length).toEqual(1);
-                userToken = res.body.token;
-                user = u;
+                expect(u.login).toBe(testUser.login);
                 done();
+            });
+    });
+
+    it("cannot create user with same login", function (done) {
+        preconditions
+            .hasUser(testUser)
+            .then(function () {
+                api
+                    .createUser(testUser)
+                    .expect(400, done);
             });
     });
 
     it("should return logged user", function (done) {
-        request(app)
-            .get("/u")
-            .set("Authorization", "Bearer " + userToken)
-            .expect(200)
-            .end(function (err, res) {
-                if (err) { return done(err); }
-                var u = res.body;
-                expect(u).toEqual(user);
-                done();
+        preconditions
+            .hasUser(testUser)
+            .then(function (userData) {
+                var token = userData.token,
+                    loggedUser = userData.user;
+
+                api.getUser(token)
+                    .expect(200)
+                    .end(function (err, res) {
+                        if (err) { return done(err); }
+                        var u = res.body;
+                        expect(u.id).toEqual(loggedUser.id);
+                        expect(u.pseudo).toEqual(loggedUser.pseudo);
+                        done();
+                    });
             });
     });
 
     it("should return user's token", function (done) {
-        request(app)
-            .post("/login")
-            .send({
-                login: user.login,
-                password: "felix"
-            })
-            .expect(200)
-            .end(function (err, res) {
-                if (err) { return done(err); }
-                var body = res.body;
-                expect(body.token).toBeDefined();
-                expect(body.user).toEqual(user);
-                done();
+        preconditions
+            .hasUser(testUser)
+            .then(function (userData) {
+                api.login(testUser.login, testUser.password)
+                    .expect(200)
+                    .end(function (err, res) {
+                        if (err) { return done(err); }
+                        var body = res.body;
+                        expect(body.token).toBeDefined();
+                        expect(body.user.login).toEqual(userData.user.login);
+
+                        done();
+                    });
             });
     });
 
-    it("should create a new timeline for user", function (done) {
-        request(app)
-            .post("/u/timelines")
-            .set("Authorization", "Bearer " + userToken)
-            .send({
-                title: "new timeline"
-            })
-            .expect(200)
-            .end(function (err, res) {
-                if (err) { return done(err); }
-                timeline = res.body;
-                expect(timeline.id).toBeDefined();
-                expect(timeline.title).toBe("new timeline");
-                done();
+    it("should add a new event to user", function (done) {
+        preconditions
+            .hasUser(testUser)
+            .then(function (userData) {
+                var token = userData.token;
+
+                api.createEvent(token, testEvent)
+                    .expect(200)
+                    .end(function (err, res) {
+                        if (err) { return done(err); }
+                        var event = res.body;
+
+                        expect(event.title).toBe(testEvent.title);
+                        expect(event.id).toBeDefined();
+                        done();
+                    });
             });
     });
 
-    it("should return all user's timelines", function (done) {
-        request(app)
-            .get("/u/timelines")
-            .set("Authorization", "Bearer " + userToken)
-            .expect(200)
-            .end(function (err, res) {
-                if (err) { return done(err); }
-                expect(res.body.length).toBe(2);
-                expect(res.body[0].id).toEqual(user.timelines[0].id);
-                expect(res.body[1].id).toEqual(timeline.id);
+    it("should return list of user's events", function (done) {
+        preconditions
+            .hasEvent(testUser, testEvent)
+            .then(function (datas) {
+                var token = datas.token,
+                    event = datas.event;
 
-                done();
-            });
-    });
-
-    it("should return timeline with id", function (done) {
-        request(app)
-            .get("/u/timelines/" + timeline.id)
-            .set("Authorization", "Bearer " + userToken)
-            .expect(200)
-            .end(function (err, res) {
-                if (err) { return done(err); }
-                var tl = res.body;
-                expect(tl).toEqual(timeline);
-
-                done();
-            });
-    });
-
-    it("should not found an non existing timeline", function (done) {
-        request(app)
-            .get("/u/timelines/eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee")
-            .set("Authorization", "Bearer " + userToken)
-            .expect(404, done);
-    });
-
-    it("should add an event in a timeline", function (done) {
-        request(app)
-            .post("/u/timelines/" + timeline.id + "/events")
-            .set("Authorization", "Bearer " + userToken)
-            .send({ title: "new event", type: "event", date: new Date() })
-            .expect(200)
-            .end(function (err, res) {
-                if (err) { return done(err); }
-                event = res.body;
-                expect(event.title).toBe("new event");
-                expect(event.id).toBeDefined();
-
-                done();
-            });
-    });
-
-    it("should return created event", function (done) {
-        request(app)
-            .get("/u/timelines/" + timeline.id + "/events/" + event.id)
-            .set("Authorization", "Bearer " + userToken)
-            .expect(200)
-            .end(function (err, res) {
-                if (err) { return done(err); }
-                expect(res.body).toEqual(event);
-
-                done();
+                api
+                    .getEvents(token)
+                    .end(function (err, res) {
+                        if (err) { return done(err); }
+                        expect(res.body.length).toBe(1);
+                        expect(res.body[0]).toEqual(datas.event);
+                        done();
+                    });
             });
     });
 
     it("should update newly created event", function (done) {
-        request(app)
-            .put("/u/timelines/" + timeline.id + "/events/" + event.id)
-            .set("Authorization", "Bearer " + userToken)
-            .send({ title: "new title" })
-            .expect(200)
-            .end(function (err, res) {
-                if (err) { return done(err); }
+        preconditions
+            .hasEvent(testUser, testEvent)
+            .then(function (datas) {
+                api
+                    .updateEvent(datas.token, datas.event.id, { title: "new title" })
+                    .expect(200)
+                    .end(function (err, res) {
+                        if (err) { return done(err); }
 
-                var e = res.body;
-                expect(e.title).toBe("new title");
-                expect(e.id).toBe(event.id);
-                expect(e.timelineId).toBe(event.timelineId);
-                expect(e.date).toBe(event.date);
-                event = e;
+                        var e = res.body;
+                        expect(e.title).toBe("new title");
+                        expect(e.id).toBe(datas.event.id);
+                        expect(e.date).toEqual(datas.event.date);
 
-                done();
+                        done();
+                    });
             });
-    });
-
-    it("should not found an event not belonging to timeline", function (done) {
-        request(app)
-            .get("/u/timelines/eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee/events/" + event.id)
-            .set("Authorization", "Bearer " + userToken)
-            .expect(404, done);
     });
 
     it("should not find an inexistant event", function (done) {
-        request(app)
-            .get("/u/timelines/" + timeline.id + "/events/eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee")
-            .set("Authorization", "Bearer " + userToken)
-            .expect(404, done);
-    });
-
-    it("should update timeline", function (done) {
-        request(app)
-            .put("/u/timelines/" + timeline.id)
-            .set("Authorization", "Bearer " + userToken)
-            .send({title: "a new title"})
-            .expect(200)
-            .end(function (err, res) {
-                if (err) { return done(err); }
-                var tl = res.body;
-                expect(tl.id).toBe(timeline.id);
-                expect(tl.title).toBe("a new title");
-                timeline = tl;
-
-                done();
+        preconditions
+            .hasEvent(testUser, testEvent)
+            .then(function (datas) {
+                api
+                    .getEvent(datas.token, "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee")
+                    .expect(404, done);
             });
     });
 
-    it("timeline events should have the new event", function (done) {
-        request(app)
-            .get("/u/timelines/" + timeline.id + "/events")
-            .set("Authorization", "Bearer " + userToken)
-            .expect(200)
-            .end(function (err, res) {
-                if (err) { return done(err); }
-                expect(res.body.length).toBe(1);
-                expect(res.body[0]).toEqual(event);
-
-                done();
+    it("should delete event", function (done) {
+        preconditions
+            .hasEvent(testUser, testEvent)
+            .then(function (datas) {
+                api
+                    .deleteEvent(datas.token, datas.event.id)
+                    .expect(204, done);
             });
     });
 
-    it("should delete event from timeline", function (done) {
-        request(app)
-            .del("/u/timelines/" + timeline.id + "/events/" + event.id)
-            .set("Authorization", "Bearer " + userToken)
-            .expect(204, done);
-    });
-
-    it("should return empty timeline events array", function (done) {
-        request(app)
-            .get("/u/timelines/" + timeline.id + "/events")
-            .set("Authorization", "Bearer " + userToken)
-            .expect(200)
-            .end(function (err, res) {
-                if (err) { return done(err); }
-                expect(res.body.length).toBe(0);
-                done();
-            });
-    });
-
-    it("should delete timeline", function (done) {
-        request(app)
-            .del("/u/timelines/" + timeline.id)
-            .set("Authorization", "Bearer " + userToken)
-            .expect(204, done);
-    });
-
-    it("should not return deleted timelines", function (done) {
-        request(app)
-            .get("/u/timelines")
-            .set("Authorization", "Bearer " + userToken)
-            .expect(200)
-            .end(function (err, res) {
-                if (err) { return done(err); }
-                expect(res.body.length).toBe(1);
-                done();
-            });
-    });
 });

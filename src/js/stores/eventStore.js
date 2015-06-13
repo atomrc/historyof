@@ -4,21 +4,9 @@
     var appDispatcher = require("../dispatcher/appDispatcher"),
         eventActions = require("../constants/constants").actions,
         EventEmitter = require("events").EventEmitter,
-        assign = require("object-assign"),
-        hash = require("string-hash");
+        assign = require("object-assign");
 
     var events;
-
-    /**
-     * getFrontId - generate an id specific to the frontend
-     * of the app
-     *
-     * @param {Object} event - the event of which we will generate a front id
-     * @return {String} frontId - the generated id
-     */
-    function getFrontId(event) {
-        return "front-" + hash(event.title);
-    }
 
     /**
      * initEvent - init the object of the event
@@ -34,14 +22,13 @@
 
     /**
      * findEventIndex - find an event index in the events array
-     * using its id or frontId
      *
      * @param {String} id - the id of the event to find
      * @return {Number} index - the index of the event in the events array
      */
     function findEventIndex(id) {
         return events.reduce(function (prev, e, index) {
-            return e.id === id || e.frontId === id ? index : prev;
+            return e.id === id;
         }, -1);
     }
 
@@ -49,14 +36,17 @@
      * update - update the event with the given id
      * with the given data
      *
-     * @param {String} id - the id or frontId of the event
+     * @param {String} id - the id
      * @param {Object} data - the new data to inject
      * @return {undefined} void
      */
     function update(id, data) {
-        var i = findEventIndex(id);
-        events[i] = JSON.parse(JSON.stringify(data));
-        events[i].date = new Date(events[i].date);
+        events = events.map(function (e) {
+            if (e.id !== id) { return e; }
+            var event = JSON.parse(JSON.stringify(data));
+            event.date = new Date(event.date);
+            return event;
+        });
     }
 
     /**
@@ -73,15 +63,11 @@
 
     /**
      * add - add an event to the events array
-     * this will add a frontId property to the event
-     * in order for it to be found event when not already
-     * saved in the DB
      *
      * @param {Object} event - the event to add
      * @return {undefined} void
      */
     function add (event) {
-        event.frontId = getFrontId(event);
         events = events.concat(event);
     }
 
@@ -132,10 +118,9 @@
                 break;
 
             case eventActions.RECEIVE_CREATED_EVENT:
-                var e = initEvent(data.event),
-                    frontId = getFrontId(e);
+                var e = initEvent(data.event);
 
-                update(frontId, e);
+                update(e.id, e);
                 this.emitChange();
                 break;
 

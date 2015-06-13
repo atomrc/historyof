@@ -18,7 +18,6 @@ var libs = [
     "object-assign",
     "react-datepicker",
     "react-router",
-    "string-hash",
     "whatwg-fetch",
     "events"
 ];

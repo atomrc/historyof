@@ -13,7 +13,7 @@
                 .events
                 .map(function (event) {
                     return (
-                        <Event event={event} key={event.id || event.frontId}/>
+                        <Event event={event} key={event.id}/>
                     );
                 }.bind(this));
 

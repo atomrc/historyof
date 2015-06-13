@@ -53,12 +53,10 @@ describe("eventStore", function () {
         callback(createAction);
         newEvent = eventStore.get()[1];
         expect(eventStore.get().length).toBe(2);
-        expect(newEvent.frontId).toBeDefined();
+        expect(newEvent.id).toBeDefined();
 
         callback(confirmCreateAction);
         expect(eventStore.get().length).toBe(2);
-        //check that the event dont have the front id anymore
-        expect(eventStore.get()[1].frontId).toBeUndefined();
         //check that it has an id (corresponding to the id in the DB)
         expect(eventStore.get()[1].id).toBe(15);
     });

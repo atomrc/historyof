@@ -15,8 +15,8 @@ app.use(bodyParser.json());
 
 app.post("/login", UserController.login);
 
-//Json Web Token for logged part of the app
 app.post("/user/create", UserController.create);
+//Json Web Token for logged part of the app
 app.use("/u", jwt({ secret: "tochange" }), UserController.middlewares.authenticate);
 app.get("/u", UserController.get);
 
@@ -33,7 +33,7 @@ app.delete("/u/timelines/:tid/events/:eid", EventController.middlewares.find, Ev
 app.put("/u/timelines/:tid/events/:eid", EventController.middlewares.find, EventController.update);
 
 app.use(function (err, req, res, next) {
-    res.status(err.status || 500).send({ errors: err });
+    res.status(err.status || 500).send({ errors: err.message });
 });
 
 module.exports = app;

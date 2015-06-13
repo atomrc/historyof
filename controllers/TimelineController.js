@@ -13,7 +13,7 @@ module.exports = {
                 .findOne({
                     where: {
                         id: req.params.tid,
-                        userId: req.user.id
+                        user_id: req.user.id
                     },
                     include: [db.model("event")]
                 })
@@ -39,7 +39,7 @@ module.exports = {
         db
             .model("timeline")
             .create({
-                userId: req.user.id,
+                user_id: req.user.id,
                 title: req.body.title
             })
             .then(function (tl) {

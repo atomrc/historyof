@@ -45,7 +45,7 @@ module.exports = {
                 db
                     .model("timeline")
                     .create({
-                        userId: user.id,
+                        user_id: user.id,
                         title: user.pseudo + "'s Story"
                     })
                     .then(function (timeline) {
@@ -58,7 +58,7 @@ module.exports = {
                     });
             })
             .catch(function (err) {
-                next(err.errors);
+                next(err);
             });
     },
 

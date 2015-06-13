@@ -11,7 +11,7 @@ module.exports = {
     type: Sequelize.STRING,
     date: Sequelize.DATE,
     description: Sequelize.TEXT,
-    timelineId: {
+    timeline_id: {
         type: Sequelize.UUID,
         model: "timeline",
         key: "id"

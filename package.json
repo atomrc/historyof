@@ -4,7 +4,7 @@
   "description": "Don't forget any of what has made you",
   "main": "index.js",
   "scripts": {
-    "test": "jasmine-node tests/api_spec.js && jest",
+    "test": "db-migrate up && jasmine-node tests/api_spec.js && jest",
     "install": "gulp && db-migrate up"
   },
   "author": "Thomas Belin",

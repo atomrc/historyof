@@ -18,7 +18,8 @@ module.exports = {
             host: config.host,
             port: config.port,
             dialect: "postgres",
-            logging: false
+            logging: false,
+            define: { underscored: true }
         });
 
         ["user", "timeline", "event"].forEach(function (element) {

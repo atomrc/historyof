@@ -12,17 +12,9 @@ var createSql = "CREATE EXTENSION \"uuid-ossp\";" +
     "    updated_at TIMESTAMP" +
     ");" +
 
-    "CREATE TABLE timelines (" +
-    "    id UUID PRIMARY KEY DEFAULT uuid_generate_v1()," +
-    "    user_id UUID REFERENCES users (id)," +
-    "    title VARCHAR(64) NOT NULL," +
-    "    created_at TIMESTAMP DEFAULT NOW()," +
-    "    updated_at TIMESTAMP" +
-    ");" +
-
     "CREATE TABLE events (" +
     "    id UUID PRIMARY KEY DEFAULT uuid_generate_v1()," +
-    "    timeline_id UUID REFERENCES timelines (id)," +
+    "    user_id UUID REFERENCES users (id)," +
     "    title VARCHAR(64) NOT NULL," +
     "    type VARCHAR(30) NOT NULL," +
     "    date TIMESTAMP NOT NULL," +

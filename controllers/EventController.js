@@ -10,7 +10,7 @@ module.exports = {
             db
                 .model("event")
                 .findOne({
-                    where: { timeline_id: req.params.tid, id: req.params.eid }
+                    where: { user_id: req.user.id, id: req.params.eid }
                 })
                 .then(function (event) {
                     if (!event) {
@@ -25,11 +25,16 @@ module.exports = {
     },
 
     getAll: function (req, res) {
-        res.send(req.timeline.get("events"));
+        req
+            .user
+            .getEvents()
+            .then(function (events) {
+                res.send(events);
+            });
     },
 
     create: function (req, res) {
-        req.body.timeline_id = req.params.tid;
+        req.body.user_id = req.user.id;
 
         db
             .model("event")

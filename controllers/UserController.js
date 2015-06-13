@@ -15,8 +15,7 @@ module.exports = {
             db
                 .model("user")
                 .findOne({
-                    where: { id: req.user },
-                    include: [db.model("timeline")]
+                    where: { id: req.user }
                 })
                 .then(function (user) {
                     if (!user) {
@@ -42,22 +41,13 @@ module.exports = {
                 var user = data.toJSON(),
                     token = createToken(user);
 
-                db
-                    .model("timeline")
-                    .create({
-                        user_id: user.id,
-                        title: user.pseudo + "'s Story"
-                    })
-                    .then(function (timeline) {
-                        user.timelines = [timeline];
-
-                        res.send({
-                            token: token,
-                            user: user
-                        });
+                    res.send({
+                        token: token,
+                        user: user
                     });
             })
             .catch(function (err) {
+                err.status = 400;
                 next(err);
             });
     },
@@ -70,7 +60,7 @@ module.exports = {
 
         db
             .model("user")
-            .findOne({ where: { login: req.body.login }, include: [db.model("timeline")]})
+            .findOne({ where: { login: req.body.login }})
             .then(function (user) {
                 if (!user || user.get("password") !== req.body.password) {
                     return res.status(401).send("The login or password don't match");

@@ -2,7 +2,7 @@ require("dotenv").load();
 var dbm = global.dbm || require("db-migrate");
 var type = dbm.dataType;
 
-var createSql = "CREATE EXTENSION \"uuid-ossp\";" +
+var createSql = "CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";" +
     "CREATE TABLE users (" +
     "    id UUID PRIMARY KEY DEFAULT uuid_generate_v1()," +
     "    login VARCHAR UNIQUE NOT NULL," +

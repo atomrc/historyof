@@ -5,7 +5,7 @@
 var request = require("supertest"),
     app = require("../app"),
     setup = require("./setup"),
-    Promise = require("promise");
+    Promise = require("es6-promise").Promise;
 
 beforeEach(function (done) {
     //clean the database before playing the tests

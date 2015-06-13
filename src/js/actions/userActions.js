@@ -27,7 +27,6 @@
                     window.localStorage.setItem("token", data.token);
                     dispatcher.dispatch(actions.RECEIVE_USER_TOKEN, { token: data.token });
                     dispatcher.dispatch(actions.RECEIVE_USER, { user: data.user });
-                    dispatcher.dispatch(actions.RECEIVE_TIMELINES, { timelines: data.user.timelines });
                 });
         },
 
@@ -43,7 +42,6 @@
                     window.localStorage.setItem("token", data.token);
                     dispatcher.dispatch(actions.RECEIVE_USER_TOKEN, { token: data.token });
                     dispatcher.dispatch(actions.RECEIVE_USER, { user: data.user });
-                    dispatcher.dispatch(actions.RECEIVE_TIMELINES, { timelines: data.user.timelines });
                 });
         },
 
@@ -52,7 +50,6 @@
                 .getUser(token)
                 .then(function (data) {
                     dispatcher.dispatch(actions.RECEIVE_USER, { user: data });
-                    dispatcher.dispatch(actions.RECEIVE_TIMELINES, { timelines: data.timelines });
                 }, function () {
                     window.localStorage.clear();
                     dispatcher.dispatch(actions.USER_LOGGED_OUT, {});

@@ -11,9 +11,9 @@ module.exports = {
     type: Sequelize.STRING,
     date: Sequelize.DATE,
     description: Sequelize.TEXT,
-    timelineId: {
+    user_id: {
         type: Sequelize.UUID,
-        model: "timeline",
+        model: "user",
         key: "id"
     }
 };

@@ -15,7 +15,7 @@
                     "";
 
                 return (
-                    <li className={"timeline " + className} key={timeline.id || timeline.frontId}>
+                    <li className={"timeline " + className} key={timeline.id}>
                         <TimelineShort timeline={timeline}/>
                     </li>
                 );

@@ -18,7 +18,7 @@
             this.setState({ open: !this.state.open });
         },
 
-        edit: function (e) {
+        edit: function (/*e*/) {
             eventActions.edit(this.props.event);
         },
 
@@ -30,13 +30,10 @@
         },
 
         render: function () {
+
             var event = this.props.event,
                 classes = this.state.open ? "" : "closed",
                 icon = (eventTypes.getType(this.props.event.type) || {}).icon;
-
-            if (event.frontId) {
-                classes += " saving";
-            }
 
             return (
                 <div className={"event " + classes}>

@@ -7,7 +7,7 @@
 
     var config = {
         loginUrl: "/login",
-        urlPattern: "/u/timelines/:tid/events/:eid"
+        urlPattern: "/u/events/:eid"
     };
 
     function request(url, params) {
@@ -72,46 +72,26 @@
             });
         },
 
-        getTimeline: function (tid) {
-            return request("/u/timelines/" + tid);
+        getEvents: function () {
+            return request("/u/events");
         },
 
-        createTimeline: function (timeline) {
-            return request("/u/timelines", {
-                method: "POST",
-                body: timeline
-            });
-        },
-
-        updateTimeline: function (tid, timeline) {
-            return request("/u/timelines/" + tid, {
-                method: "PUT",
-                body: timeline
-            });
-        },
-
-        removeTimeline: function (timeline) {
-            request("u/timelines/" + timeline.id, {
-                method: "DELETE"
-            });
-        },
-
-        createEvent: function (tid, event) {
-            return request("/u/timelines/" + tid + "/events", {
+        createEvent: function (event) {
+            return request("/u/events", {
                 method: "POST",
                 body: event
             });
         },
 
-        updateEvent: function (tid, event) {
-            request(generateUrl(config.urlPattern, { tid: tid, eid: event.id }), {
+        updateEvent: function (event) {
+            request(generateUrl(config.urlPattern, { eid: event.id }), {
                 method: "PUT",
                 body: event
             });
         },
 
         remove: function (event) {
-            request(generateUrl(config.urlPattern, { id: event.id }), {
+            request(generateUrl(config.urlPattern, { eid: event.id }), {
                 method: "DELETE"
             });
         }

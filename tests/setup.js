@@ -9,7 +9,11 @@ var db = require("../db/db"),
 var sequelize = db.init(config.db);
 
 module.exports = {
-    init: function (callback) {
-        sequelize.sync({ force: true }).then(callback);
+    reset: function (callback) {
+        var options = { raw: true };
+
+        sequelize
+            .query("truncate table users cascade", options)
+            .then(callback);
     }
 };

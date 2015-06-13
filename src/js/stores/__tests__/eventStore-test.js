@@ -3,7 +3,6 @@
 var APP_PATH = "../..";
 jest.dontMock(APP_PATH + "/stores/eventStore");
 jest.dontMock("object-assign");
-jest.dontMock("string-hash");
 
 describe("eventStore", function () {
     "use strict";
@@ -39,7 +38,8 @@ describe("eventStore", function () {
         var newEvent = {
                 title: "new event",
                 type: "event",
-                date: new Date()
+                date: new Date(),
+                id: 15
             },
             createAction = {
                 action: actions.CREATE_EVENT,
@@ -47,18 +47,16 @@ describe("eventStore", function () {
             },
             confirmCreateAction = {
                 action: actions.RECEIVE_CREATED_EVENT,
-                data: { event: assign({}, newEvent, {id: 15 }) }
+                data: { event: newEvent }
             };
 
         callback(createAction);
         newEvent = eventStore.get()[1];
         expect(eventStore.get().length).toBe(2);
-        expect(newEvent.frontId).toBeDefined();
+        expect(newEvent.id).toBeDefined();
 
         callback(confirmCreateAction);
         expect(eventStore.get().length).toBe(2);
-        //check that the event dont have the front id anymore
-        expect(eventStore.get()[1].frontId).toBeUndefined();
         //check that it has an id (corresponding to the id in the DB)
         expect(eventStore.get()[1].id).toBe(15);
     });

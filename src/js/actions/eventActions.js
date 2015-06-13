@@ -3,15 +3,16 @@
     "use strict";
     var actions = require("../constants/constants").actions,
         dispatcher = require("../dispatcher/appDispatcher"),
-        historyOfApi = require("../api/historyOfApi");
+        historyOfApi = require("../api/historyOfApi"),
+        uuid = require("uuid");
 
     module.exports = {
 
-        load: function () {
+        getAll: function () {
             dispatcher.dispatch(actions.LOAD_EVENTS);
 
             historyOfApi
-                .fetchAll()
+                .getEvents()
                 .then(function (events) {
                     dispatcher.dispatch(actions.RECEIVE_EVENTS, { events: events });
                 });
@@ -25,18 +26,19 @@
             dispatcher.dispatch(actions.CANCEL_EDIT_EVENT);
         },
 
-        create: function (tid, event) {
+        create: function (event) {
+            event.id = uuid.v1();
             dispatcher.dispatch(actions.CREATE_EVENT, { event: event });
             historyOfApi
-                .createEvent(tid, event)
+                .createEvent(event)
                 .then(function (e) {
                     dispatcher.dispatch(actions.RECEIVE_CREATED_EVENT, { event: e });
                 });
         },
 
-        update: function (tid, event) {
+        update: function (event) {
             dispatcher.dispatch(actions.UPDATE_EVENT, { event: event });
-            historyOfApi.updateEvent(tid, event);
+            historyOfApi.updateEvent(event);
         },
 
         remove: function (event) {

@@ -7,6 +7,7 @@ var app = require("./app"),
     db = require("./db/db"),
     config = require("./config/config");
 
+
 db.init(config.db);
 
 app.listen(process.env.PORT || 1337, function () {

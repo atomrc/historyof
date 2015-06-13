@@ -3,7 +3,6 @@
 var APP_PATH = "../..";
 jest.dontMock(APP_PATH + "/stores/userStore");
 jest.dontMock("object-assign");
-jest.dontMock("string-hash");
 
 describe("userStore", function () {
     "use strict";

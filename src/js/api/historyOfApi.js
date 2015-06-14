@@ -35,10 +35,11 @@
                 return response.json();
             })
             .catch(function (response) {
-                return response.json().then(function (error) {
-                    //FIXME add an error indicator on the interface
-                    console.log(error);
-                });
+                return response
+                    .json()
+                    .then(function (error) {
+                        throw new Error(error);
+                    });
             });
     }
 

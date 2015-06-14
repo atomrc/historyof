@@ -2,7 +2,7 @@
 
 "use strict";
 var db = require("../db/db"),
-    assign = require("object-assign");
+    Promise = require("es6-promise").Promise;
 
 module.exports = {
     middlewares: {
@@ -27,20 +27,55 @@ module.exports = {
     getAll: function (req, res) {
         req
             .user
-            .getStories()
-            .then(function (stories) {
-                res.send(stories);
+            .getStories({ include: { model: db.model("tag"), through: { attributes: [] }}})
+            .then(function (events) {
+                res.send(events);
             });
     },
 
     create: function (req, res) {
         req.body.user_id = req.user.id;
+        var newEvent = req.body;
+
+        //filter the tag ids to fetch them from DB then associate
+        //them to the event being created
+        var tagIds = (newEvent.tags || []).filter(function (t) {
+            return typeof t === "string";
+        });
+        var tagPromise = db.model("tag").findAll({
+            where: {
+                id: {
+                    in: tagIds
+                }
+            }
+        });
+
+        //on let the new tags on the entity to be created
+        newEvent.tags = (newEvent.tags || []).filter(function (t) {
+            return typeof t !== "string";
+        });
 
         db
             .model("story")
-            .create(req.body)
-            .then(function (story) {
-                res.send(story.toJSON());
+            .create(newEvent, { include: [db.model("tag")]})
+            .then(function (event) {
+                tagPromise.then(function (tags) {
+                    if (tags.length === 0) {
+                        return res.send(event.toJSON());
+                    }
+                    event
+                        .addTags(tags)
+                        .then(function () {
+                            //reload event to get all the tags
+                            //sequelize should return the instance
+                            //with the tags associated ...
+                            event
+                                .reload({ include: [db.model("tag")] })
+                                .then(function (e) {
+                                    return res.send(e.toJSON());
+                                });
+                        });
+                });
             });
     },
 

@@ -126,7 +126,7 @@ describe("API", function () {
             firstname: "Felix",
             lastname: "Hello"
         },
-        testStory = { title: "new event", type: "event", date: new Date(), tags: [] };
+        testStory = { title: "new story", type: "story", date: new Date(), tags: [] };
 
     it("should create a new user", function (done) {
         api
@@ -279,7 +279,7 @@ describe("API", function () {
             });
     });
 
-    it("should add a new tagged event to user", function (done) {
+    it("should add a new tagged story to user", function (done) {
         preconditions
             .hasUser(testUser)
             .then(function (userData) {
@@ -305,7 +305,7 @@ describe("API", function () {
             });
     });
 
-    it("should add a new tagged event with already created tag", function (done) {
+    it("should add a new tagged story with already created tag", function (done) {
         var taggedStory = assign({}, testStory, {
             tags: [{ title: "story" }]
         });

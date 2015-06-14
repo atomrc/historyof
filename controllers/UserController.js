@@ -34,9 +34,17 @@ module.exports = {
     },
 
     create: function (req, res, next) {
+        var newUser = req.body;
+
+        if (newUser.password !== newUser.passwordConfirmation) {
+            var error = new Error("passwords do not matche");
+            error.status = 400;
+            return next(error);
+        }
+
         db
             .model("user")
-            .create(req.body)
+            .create(newUser)
             .then(function (data) {
                 var user = data.toJSON(),
                     token = createToken(user);

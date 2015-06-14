@@ -14,6 +14,12 @@ module.exports = {
 
         sequelize
             .query("truncate table users cascade", options)
+            .then(function () {
+                return sequelize.query("truncate table tags", options);
+            })
+            .then(function () {
+                return sequelize.query("truncate table taggings", options);
+            })
             .then(callback);
     },
 

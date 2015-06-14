@@ -71,7 +71,6 @@ var api = {
             .set("Authorization", "Bearer " + userToken);
     },
 
-
     updateStory: function (userToken, storyId, newData) {
         return request(app)
             .put("/u/stories/" + storyId)
@@ -117,8 +116,8 @@ var preconditions = {
     }
 };
 
-
 describe("API", function () {
+
     var testUser = {
             login: "felix@felix.fr",
             pseudo: "felox",
@@ -127,7 +126,7 @@ describe("API", function () {
             firstname: "Felix",
             lastname: "Hello"
         },
-        testStory = { title: "new story", type: "story", date: new Date() };
+        testStory = { title: "new event", type: "event", date: new Date(), tags: [] };
 
     it("should create a new user", function (done) {
         api
@@ -274,6 +273,65 @@ describe("API", function () {
 
                         expect(story.title).to.be(testStory.title);
                         expect(story.id).to.not.be(undefined);
+                        expect(story.tags).to.not.be(undefined);
+                        done();
+                    });
+            });
+    });
+
+    it("should add a new tagged event to user", function (done) {
+        preconditions
+            .hasUser(testUser)
+            .then(function (userData) {
+                var token = userData.token;
+
+                var taggedStory = assign({}, testStory, {
+                    tags: [{ title: "story" }]
+                });
+
+                api.createStory(token, taggedStory)
+                    .expect(200)
+                    .end(function (err, res) {
+                        if (err) { return done(err); }
+                        var story = res.body;
+
+                        expect(story.title).to.be(testStory.title);
+                        expect(story.id).to.not.be(undefined);
+                        expect(story.tags).to.not.be(undefined);
+                        expect(story.tags.length).to.be(1);
+                        expect(story.tags[0].title).to.equal("story");
+                        done();
+                    });
+            });
+    });
+
+    it("should add a new tagged event with already created tag", function (done) {
+        var taggedStory = assign({}, testStory, {
+            tags: [{ title: "story" }]
+        });
+
+        preconditions
+            .hasStory(testUser, taggedStory)
+            .then(function (userData) {
+                var tag = userData.story.tags[0];
+                var token = userData.token;
+
+                var newTaggedStory = assign({}, testStory, {
+                    tags: [{ title: "work" }, tag.id]
+                });
+
+                api.createStory(token, newTaggedStory)
+                    .expect(200)
+                    .end(function (err, res) {
+                        if (err) { return done(err); }
+                        var story = res.body;
+
+                        expect(story.title).to.be(testStory.title);
+                        expect(story.id).to.not.be(undefined);
+                        expect(story.tags).to.not.be(undefined);
+                        expect(story.tags.length).to.be(2);
+                        expect(story.tags[0].title).to.equal("story");
+                        expect(story.tags[1].title).to.equal("work");
                         done();
                     });
             });
@@ -291,7 +349,7 @@ describe("API", function () {
                     .end(function (err, res) {
                         if (err) { return done(err); }
                         expect(res.body.length).to.be(1);
-                        expect(res.body[0]).to.eql(story);
+                        expect(res.body[0].id).to.equal(story.id);
                         done();
                     });
             });

@@ -72,7 +72,9 @@ module.exports = {
     login: function (req, res, next) {
 
         if (!req.body.login || !req.body.password) {
-            return res.status(400).send("You must send the login and the password");
+            var error = new Error("login or password missing");
+            error.status = 400;
+            return next(error);
         }
 
         db

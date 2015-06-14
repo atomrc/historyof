@@ -15,5 +15,9 @@ module.exports = {
         sequelize
             .query("truncate table users cascade", options)
             .then(callback);
+    },
+
+    disconnect: function () {
+        sequelize.close();
     }
 };

@@ -14,6 +14,19 @@ beforeEach(function (done) {
     });
 });
 
+/**
+ * Override the finishCallback so we can add some cleanup methods.
+ * This is run after all tests have been completed.
+ */
+var _finishCallback = jasmine.Runner.prototype.finishCallback;
+jasmine.Runner.prototype.finishCallback = function () {
+    // Run the old finishCallback
+    _finishCallback.bind(this)();
+
+    setup.disconnect();
+    // add your cleanup code here...
+};
+
 var api = {
     createUser: function (user) {
         return request(app)

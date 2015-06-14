@@ -2,6 +2,7 @@
 "use strict";
 
 var jwt = require("jsonwebtoken"),
+    bcrypt = require("bcrypt"),
     db = require("../db/db");
 
 function createToken(user) {
@@ -37,30 +38,38 @@ module.exports = {
         var newUser = req.body;
 
         if (newUser.password !== newUser.passwordConfirmation) {
-            var error = new Error("passwords do not matche");
+            var error = new Error("passwords do not match");
             error.status = 400;
             return next(error);
         }
 
-        db
-            .model("user")
-            .create(newUser)
-            .then(function (data) {
-                var user = data.toJSON(),
-                    token = createToken(user);
+        bcrypt.hash(newUser.password, 10, function (err, result) {
+            if (err) {
+                return next(err);
+            }
+            newUser.password = result;
 
-                    res.send({
-                        token: token,
-                        user: user
-                    });
-            })
-            .catch(function (err) {
-                err.status = 400;
-                next(err);
-            });
+            db
+                .model("user")
+                .create(newUser)
+                .then(function (data) {
+                    var user = data.toJSON(),
+                        token = createToken(user);
+
+                        res.send({
+                            token: token,
+                            user: user
+                        });
+                })
+                .catch(function (err) {
+                    err.status = 400;
+                    next(err);
+                });
+
+        });
     },
 
-    login: function (req, res) {
+    login: function (req, res, next) {
 
         if (!req.body.login || !req.body.password) {
             return res.status(400).send("You must send the login and the password");
@@ -70,14 +79,24 @@ module.exports = {
             .model("user")
             .findOne({ where: { login: req.body.login }})
             .then(function (user) {
-                if (!user || user.get("password") !== req.body.password) {
-                    return res.status(401).send("The login or password don't match");
+
+                if (!user) {
+                    var error = new Error("The login or password don't match");
+                    error.status = 401;
+                    return next(error);
                 }
 
-                var u = user.toJSON();
-                res.send({
-                    token: createToken(u),
-                    user: u
+                bcrypt.compare(req.body.password, user.password, function (err, result) {
+                    if (err || !result) {
+                        var error = new Error("The login or password don't match");
+                        error.status = 401;
+                        return next(error);
+                    }
+                    var u = user.toJSON();
+                    res.send({
+                        token: createToken(u),
+                        user: u
+                    });
                 });
         });
 

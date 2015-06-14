@@ -161,7 +161,6 @@ describe("API", function () {
             .expect(400, done);
     });
 
-
     it("should return logged user", function (done) {
         preconditions
             .hasUser(testUser)
@@ -195,6 +194,15 @@ describe("API", function () {
 
                         done();
                     });
+            });
+    });
+
+    it("should not be able to login with wrong password", function (done) {
+        preconditions
+            .hasUser(testUser)
+            .then(function () {
+                api.login(testUser.login, "wrong password")
+                    .expect(401, done);
             });
     });
 

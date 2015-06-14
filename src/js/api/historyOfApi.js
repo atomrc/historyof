@@ -30,9 +30,15 @@
         return fetch(url, conf)
             .then(function (response) {
                 if (!response.ok) {
-                    throw new Error(response.json());
+                    throw response;
                 }
                 return response.json();
+            })
+            .catch(function (response) {
+                return response.json().then(function (error) {
+                    //FIXME add an error indicator on the interface
+                    console.log(error);
+                });
             });
     }
 

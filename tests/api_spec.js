@@ -5,6 +5,7 @@
 var request = require("supertest"),
     app = require("../app"),
     setup = require("./setup"),
+    assign = require("object-assign"),
     Promise = require("es6-promise").Promise;
 
 beforeEach(function (done) {
@@ -120,6 +121,7 @@ describe("API", function () {
             login: "felix@felix.fr",
             pseudo: "felox",
             password: "felix",
+            passwordConfirmation: "felix",
             firstname: "Felix",
             lastname: "Hello"
         },
@@ -147,6 +149,16 @@ describe("API", function () {
                     .createUser(testUser)
                     .expect(400, done);
             });
+    });
+
+    it("should not create user if passwords don't match", function (done) {
+        var u = assign({}, testUser, {
+            passwordConfirmation: "wrong"
+        });
+
+        api
+            .createUser(u)
+            .expect(400, done);
     });
 
     it("should return logged user", function (done) {
@@ -182,6 +194,15 @@ describe("API", function () {
 
                         done();
                     });
+            });
+    });
+
+    it("should not be able to login with wrong password", function (done) {
+        preconditions
+            .hasUser(testUser)
+            .then(function () {
+                api.login(testUser.login, "wrong password")
+                    .expect(401, done);
             });
     });
 

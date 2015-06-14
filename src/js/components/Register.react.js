@@ -52,17 +52,19 @@
             var user = this.state.user;
 
             return (
-                <div>
-                    <form onSubmit={this.createUser}>
-                        <input placeholder="pseudo" name="pseudo" value={user.pseudo} onChange={this.onChange}/>
-                        <input placeholder="firstname" name="firstname" value={user.firstname} onChange={this.onChange}/>
-                        <input placeholder="lastname" name="lastname" value={user.lastname} onChange={this.onChange}/>
-                        <input placeholder="login" name="login" value={user.login} onChange={this.onChange}/>
-                        <input placeholder="password" name="password" type="password" value={user.password} onChange={this.onChange}/>
-                        <input type="submit" value="Submit"/>
-                    </form>
+                <div id="login">
+                    <h1>HistoryOf</h1>
+                    <div id="login-form" className="soft-box">
+                        <form onSubmit={this.createUser}>
+                            <input placeholder="pseudo" name="pseudo" value={user.pseudo} onChange={this.onChange}/>
+                            <input placeholder="login" name="login" value={user.login} onChange={this.onChange}/>
+                            <input placeholder="password" name="password" type="password" value={user.password} onChange={this.onChange}/>
+                            <input placeholder="confirm password" name="passwordConfirmation" type="password" value={user.passwordConfirmation} onChange={this.onChange}/>
+                            <input type="submit" value="Submit"/>
+                        </form>
 
-                    <Link to="home">login</Link>
+                        <Link to="home">login</Link>
+                    </div>
                 </div>
             );
         }

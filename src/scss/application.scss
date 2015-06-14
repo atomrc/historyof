@@ -5,12 +5,53 @@
 $coolblue: #3F6BD4;
 $lightcoolblue: #85A6F5;
 
+html, body {
+    height: 100%;
+}
 body {
     color: #555;
     //background-color: #EEE;
     font-family: Arial;
     scroll-behavior: smooth;
     margin: 0;
+}
+
+input[type=submit] {
+    cursor: pointer;
+}
+
+#login {
+    height: 100%;
+    font-size: 1.5em;
+    text-align: center;
+    h1 {
+        margin: 0;
+        padding: 1em;
+    }
+    #login-form {
+        background-color: #eee;
+        box-sizing: border-box;
+        padding: 1.5em;
+        width: 500px;
+        margin: auto;
+        border-radius: 5px;
+        input {
+            box-sizing: border-box;
+            font-size: inherit;
+            padding: 0.8em;
+            border: none;
+            border-bottom: solid 1px #eee;
+            display: block;
+            width: 100%;
+            margin: auto;
+        }
+        input[type=submit] {
+            padding: 0.4em;
+            background-color: $coolblue;
+            color: white;
+            margin-top: 1em;
+        }
+    }
 }
 
 #app-header {

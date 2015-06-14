@@ -35,7 +35,7 @@ app.delete("/u/timelines/:tid", TimelineController.middlewares.find, TimelineCon
 
 app.use(function (err, req, res, next) {
     console.log(err.message);
-    res.status(err.status || 500).send({ errors: err.message });
+    res.status(err.status || 500).send({ error: err.message });
 });
 
 module.exports = app;

@@ -29,14 +29,17 @@
             var user = this.state.user;
 
             return (
-                <div>
-                    <form onSubmit={this.login}>
-                        <input placeholder="login" name="login" value={user.login} onChange={this.onChange}/>
-                        <input placeholder="password" name="password" type="password" value={user.password} onChange={this.onChange}/>
-                        <input type="submit" value="Submit"/>
-                    </form>
+                <div id="login">
+                    <h1>HistoryOf</h1>
+                    <div id="login-form" className="soft-box">
+                        <form onSubmit={this.login}>
+                            <input placeholder="login" name="login" value={user.login} onChange={this.onChange}/>
+                            <input placeholder="password" name="password" type="password" value={user.password} onChange={this.onChange}/>
+                            <input type="submit" value="Login"/>
+                        </form>
 
-                    <Link to="register">register</Link>
+                        <Link to="register">register</Link>
+                    </div>
                 </div>
             );
         }

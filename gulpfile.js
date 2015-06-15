@@ -20,7 +20,8 @@ var libs = [
     "whatwg-fetch",
     "events",
     "react-input-calendar",
-    "debounce"
+    "debounce",
+    "bcrypt"
 ];
 
 gulp.task("js-vendor", function() {

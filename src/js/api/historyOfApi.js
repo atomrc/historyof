@@ -52,11 +52,6 @@
         return url.replace(/\/:.*/g, "");
     }
 
-    function initEvent(event) {
-        event.date = new Date(event.date);
-        return event;
-    }
-
     var api = {
         login: function (login, password) {
             return request(config.loginUrl, {

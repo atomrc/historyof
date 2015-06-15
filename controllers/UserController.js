@@ -30,10 +30,12 @@ module.exports = {
         }
     },
 
-    isLoginAvailable: function (req, res) {
+    isPropertyAvailable: function (req, res) {
+        var condition = { };
+        condition[req.params.property] = req.params.value;
         db
             .model("user")
-            .findOne({ where: { login: req.params.login } })
+            .findOne({ where: condition })
             .then(function (result) {
                 res.send({ available: !result });
             });

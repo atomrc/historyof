@@ -15,7 +15,7 @@ app.use(bodyParser.json());
 app.post("/login", UserController.login);
 
 app.post("/user/create", UserController.create);
-app.get("/login/available/:login", UserController.isLoginAvailable);
+app.get("/:property/available/:value", UserController.isPropertyAvailable);
 
 //Json Web Token for logged part of the app
 app.use("/u", jwt({ secret: "tochange" }), UserController.middlewares.authenticate);

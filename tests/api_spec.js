@@ -55,6 +55,11 @@ var api = {
             .get("/login/available/" + login);
     },
 
+    checkPseudo: function (pseudo) {
+        return request(app)
+            .get("/pseudo/available/" + pseudo);
+    },
+
     createEvent: function (userToken, event) {
         return request(app)
             .post("/u/events")
@@ -173,6 +178,32 @@ describe("API", function () {
             .then(function () {
                 api
                     .checkLogin(testUser.login)
+                    .expect(200)
+                    .end(function (err, res) {
+                        if (err) { return done(err); }
+                        expect(res.body.available).toBeFalsy();
+                        done();
+                    });
+            });
+    });
+
+    it("should tell the pseudo is available", function (done) {
+        api
+            .checkPseudo("felox")
+            .expect(200)
+            .end(function (err, res) {
+                if (err) { return done(err); }
+                expect(res.body.available).toBeTruthy();
+                done();
+            });
+    });
+
+    it("should tell the pseudo is not available", function (done) {
+        preconditions
+            .hasUser(testUser)
+            .then(function () {
+                api
+                    .checkPseudo(testUser.pseudo)
                     .expect(200)
                     .end(function (err, res) {
                         if (err) { return done(err); }

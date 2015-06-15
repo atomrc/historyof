@@ -25,6 +25,23 @@ input[type=submit] {
     }
 }
 
+form {
+    .async-input {
+        position: relative;
+        .loader {
+            display: none;
+            position: absolute;
+            right: 1em;
+            top: 1em;
+        }
+        &.loading {
+            .loader {
+                display: inline;
+            }
+        }
+    }
+}
+
 #login {
     height: 100%;
     font-size: 1.5em;

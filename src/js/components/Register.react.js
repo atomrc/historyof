@@ -5,6 +5,7 @@
     var React = require("react"),
         Router = require("react-router"),
         Link = require("react-router").Link,
+        UserLoginInput = require("./UserLoginInput.react"),
         userActions = require("../actions/userActions"),
         tokenActions = require("../actions/tokenActions"),
         tokenStore = require("../stores/tokenStore");
@@ -45,8 +46,14 @@
 
         onChange: function (e) {
             this.state.user[e.target.name] = e.target.value;
-            this.state.canSubmit = React.findDOMNode(this.refs.registerForm).checkValidity();
             this.setState(this.state);
+            this.checkValidity();
+        },
+
+        checkValidity: function () {
+            this.setState({
+                canSubmit: React.findDOMNode(this.refs.registerForm).checkValidity()
+            });
         },
 
         render: function () {
@@ -63,15 +70,14 @@
                                 name="pseudo"
                                 value={user.pseudo}
                                 onChange={this.onChange}
-                                required/>
+                                />
 
-                            <input
-                                type="email"
-                                placeholder="login"
+                            <UserLoginInput
                                 name="login"
                                 value={user.login}
-                                onChange={this.onChange}
-                                required/>
+                                onValid={this.checkValidity}
+                                onInvalid={this.checkValidity}
+                                onChange={this.onChange}/>
 
                             <input
                                 placeholder="password"
@@ -87,7 +93,7 @@
                                 type="password"
                                 value={user.passwordConfirmation}
                                 onChange={this.onChange}
-                                required/>
+                                />
 
                             <input type="submit" value="Submit" disabled={!this.state.canSubmit}/>
                         </form>

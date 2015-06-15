@@ -67,6 +67,10 @@
             return request("/login/available/" + login);
         },
 
+        checkPseudo: function (pseudo) {
+            return request("/pseudo/available/" + pseudo);
+        },
+
         getUser: function () {
             return request("/u");
         },

@@ -5,7 +5,8 @@
     var React = require("react"),
         Router = require("react-router"),
         Link = require("react-router").Link,
-        UserLoginInput = require("./UserLoginInput.react"),
+        AsyncValidatedInput = require("./AsyncValidatedInput.react"),
+        hapi = require("../api/historyOfApi"),
         userActions = require("../actions/userActions"),
         tokenActions = require("../actions/tokenActions"),
         tokenStore = require("../stores/tokenStore");
@@ -56,6 +57,22 @@
             });
         },
 
+        checkLogin: function (login) {
+            return hapi
+                .checkLogin(login)
+                .then(function (result) {
+                    return result.available ? "" : login + " is already taken";
+                });
+        },
+
+        checkPseudo: function (pseudo) {
+            return hapi
+                .checkPseudo(pseudo)
+                .then(function (result) {
+                    return result.available ? "" : pseudo + " is already taken";
+                });
+        },
+
         render: function () {
 
             var user = this.state.user;
@@ -65,18 +82,23 @@
                     <h1>HistoryOf</h1>
                     <div id="login-form" className="soft-box">
                         <form onSubmit={this.createUser} ref="registerForm">
-                            <input
-                                placeholder="pseudo"
+                            <AsyncValidatedInput
                                 name="pseudo"
+                                placeholder="pseudo"
                                 value={user.pseudo}
-                                onChange={this.onChange}
-                                />
+                                onValid={this.checkValidity}
+                                onInvalid={this.checkValidity}
+                                onRequestValidation={this.checkPseudo}
+                                onChange={this.onChange}/>
 
-                            <UserLoginInput
+
+                            <AsyncValidatedInput
                                 name="login"
+                                placeholder="email"
                                 value={user.login}
                                 onValid={this.checkValidity}
                                 onInvalid={this.checkValidity}
+                                onRequestValidation={this.checkLogin}
                                 onChange={this.onChange}/>
 
                             <input

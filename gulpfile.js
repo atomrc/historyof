@@ -21,7 +21,8 @@ var libs = [
     "events",
     "react-input-calendar",
     "debounce",
-    "bcrypt"
+    "bcrypt",
+    "uuid"
 ];
 
 gulp.task("js-vendor", function() {

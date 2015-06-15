@@ -75,3 +75,4 @@ gulp.task("watch", function () {
 });
 
 gulp.task("default", ["js-vendor", "js-app", "jade", "sass"]);
+gulp.task("js", ["js-vendor", "js-app"]);

@@ -49,12 +49,12 @@
                 <div className={loadingClass + " async-input"}>
                     <input
                         ref="loginInput"
-                        type="email"
+                        type={this.props.type}
                         name={this.props.name}
                         placeholder={this.props.placeholder}
                         value={this.props.value}
                         onChange={this.onChange}
-                        required/>
+                        required={this.props.required}/>
                     <i className="loader fa fa-spinner fa-spin"></i>
                 </div>
             );

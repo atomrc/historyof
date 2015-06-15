@@ -84,22 +84,26 @@
                         <form onSubmit={this.createUser} ref="registerForm">
                             <AsyncValidatedInput
                                 name="pseudo"
+                                type="text"
                                 placeholder="pseudo"
                                 value={user.pseudo}
                                 onValid={this.checkValidity}
                                 onInvalid={this.checkValidity}
                                 onRequestValidation={this.checkPseudo}
-                                onChange={this.onChange}/>
+                                onChange={this.onChange}
+                                required/>
 
 
                             <AsyncValidatedInput
                                 name="login"
+                                type="email"
                                 placeholder="email"
                                 value={user.login}
                                 onValid={this.checkValidity}
                                 onInvalid={this.checkValidity}
                                 onRequestValidation={this.checkLogin}
-                                onChange={this.onChange}/>
+                                onChange={this.onChange}
+                                required/>
 
                             <input
                                 placeholder="password"
@@ -115,7 +119,7 @@
                                 type="password"
                                 value={user.passwordConfirmation}
                                 onChange={this.onChange}
-                                />
+                                required/>
 
                             <input type="submit" value="Submit" disabled={!this.state.canSubmit}/>
                         </form>

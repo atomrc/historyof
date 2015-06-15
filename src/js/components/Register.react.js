@@ -16,7 +16,8 @@
         getInitialState: function () {
             return {
                 user: {},
-                token: tokenStore.get()
+                token: tokenStore.get(),
+                canSubmit: false
             };
         },
 
@@ -44,6 +45,7 @@
 
         onChange: function (e) {
             this.state.user[e.target.name] = e.target.value;
+            this.state.canSubmit = React.findDOMNode(this.refs.registerForm).checkValidity();
             this.setState(this.state);
         },
 
@@ -55,12 +57,39 @@
                 <div id="login">
                     <h1>HistoryOf</h1>
                     <div id="login-form" className="soft-box">
-                        <form onSubmit={this.createUser}>
-                            <input placeholder="pseudo" name="pseudo" value={user.pseudo} onChange={this.onChange}/>
-                            <input placeholder="login" name="login" value={user.login} onChange={this.onChange}/>
-                            <input placeholder="password" name="password" type="password" value={user.password} onChange={this.onChange}/>
-                            <input placeholder="confirm password" name="passwordConfirmation" type="password" value={user.passwordConfirmation} onChange={this.onChange}/>
-                            <input type="submit" value="Submit"/>
+                        <form onSubmit={this.createUser} ref="registerForm">
+                            <input
+                                placeholder="pseudo"
+                                name="pseudo"
+                                value={user.pseudo}
+                                onChange={this.onChange}
+                                required/>
+
+                            <input
+                                type="email"
+                                placeholder="login"
+                                name="login"
+                                value={user.login}
+                                onChange={this.onChange}
+                                required/>
+
+                            <input
+                                placeholder="password"
+                                name="password"
+                                type="password"
+                                value={user.password}
+                                onChange={this.onChange}
+                                required/>
+
+                            <input
+                                placeholder="confirm password"
+                                name="passwordConfirmation"
+                                type="password"
+                                value={user.passwordConfirmation}
+                                onChange={this.onChange}
+                                required/>
+
+                            <input type="submit" value="Submit" disabled={!this.state.canSubmit}/>
                         </form>
 
                         <Link to="home">login</Link>

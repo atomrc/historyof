@@ -18,6 +18,11 @@ body {
 
 input[type=submit] {
     cursor: pointer;
+    background-color: $coolblue;
+    color: white;
+    &[disabled] {
+        background-color: gray;
+    }
 }
 
 #login {
@@ -47,8 +52,6 @@ input[type=submit] {
         }
         input[type=submit] {
             padding: 0.4em;
-            background-color: $coolblue;
-            color: white;
             margin-top: 1em;
         }
     }

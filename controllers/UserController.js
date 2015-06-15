@@ -30,6 +30,17 @@ module.exports = {
         }
     },
 
+    isPropertyAvailable: function (req, res) {
+        var condition = { };
+        condition[req.params.property] = req.params.value;
+        db
+            .model("user")
+            .findOne({ where: condition })
+            .then(function (result) {
+                res.send({ available: !result });
+            });
+    },
+
     get: function (req, res) {
         res.send(req.user.toJSON());
     },

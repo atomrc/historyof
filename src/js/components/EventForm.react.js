@@ -2,8 +2,8 @@
 (function () {
     "use strict";
     var React = require("react"),
-        DatePicker = require("react-datepicker"),
         eventActions = require("../actions/eventActions"),
+        Calendar = require("react-input-calendar"),
         editedEventStore = require("../stores/editedEventStore"),
         eventTypes = require("../config/eventTypes"),
         moment = require("moment");
@@ -38,7 +38,8 @@
         dateChange: function (date) {
             var changes = { event: this.state.event },
                 prevDate = this.state.event.date;
-            date = date.toDate();
+
+            date = new Date(parseInt(date, 10));
             date.setHours(prevDate.getHours());
             date.setMinutes(prevDate.getMinutes());
             changes.event.date = date;
@@ -83,7 +84,12 @@
                         <input type="text" placeholder="Title" name="title" value={event.title || ""} onChange={this.onChange} autoComplete="off"/>
                         <select value={event.type} name="type" onChange={this.onChange}>{typeOptions}</select>
                         <br/>
-                        <DatePicker onChange={this.dateChange} selected={moment(this.state.event.date)}/>
+                        <Calendar
+                            onChange={this.dateChange}
+                            closeOnSelect={true}
+                            date={this.state.event.date}
+                            computableFormat="x"
+                            />
                         <br/>
                         <textarea rows="8" name="description" placeholder="Description" value={event.description || ""} onChange={this.onChange}/>
                         <br/>

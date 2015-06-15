@@ -35,10 +35,11 @@
                 return response.json();
             })
             .catch(function (response) {
-                return response.json().then(function (error) {
-                    //FIXME add an error indicator on the interface
-                    console.log(error);
-                });
+                return response
+                    .json()
+                    .then(function (error) {
+                        throw new Error(error);
+                    });
             });
     }
 
@@ -51,11 +52,6 @@
         return url.replace(/\/:.*/g, "");
     }
 
-    function initEvent(event) {
-        event.date = new Date(event.date);
-        return event;
-    }
-
     var api = {
         login: function (login, password) {
             return request(config.loginUrl, {
@@ -65,6 +61,14 @@
                     password: password
                 }
             });
+        },
+
+        checkLogin: function (login) {
+            return request("/login/available/" + login);
+        },
+
+        checkPseudo: function (pseudo) {
+            return request("/pseudo/available/" + pseudo);
         },
 
         getUser: function () {

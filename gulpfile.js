@@ -16,10 +16,13 @@ var libs = [
     "flux",
     "moment",
     "object-assign",
-    "react-datepicker",
     "react-router",
     "whatwg-fetch",
-    "events"
+    "events",
+    "react-input-calendar",
+    "debounce",
+    "bcrypt",
+    "uuid"
 ];
 
 gulp.task("js-vendor", function() {

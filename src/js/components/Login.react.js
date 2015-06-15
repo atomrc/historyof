@@ -10,7 +10,8 @@
 
         getInitialState: function () {
             return {
-                user: {}
+                user: {},
+                canSubmit: false
             };
         },
 
@@ -21,6 +22,7 @@
 
         onChange: function (e) {
             this.state.user[e.target.name] = e.target.value;
+            this.state.canSubmit = React.findDOMNode(this.refs.loginForm).checkValidity();
             this.setState(this.state);
         },
 
@@ -32,10 +34,24 @@
                 <div id="login">
                     <h1>HistoryOf</h1>
                     <div id="login-form" className="soft-box">
-                        <form onSubmit={this.login}>
-                            <input placeholder="login" name="login" value={user.login} onChange={this.onChange}/>
-                            <input placeholder="password" name="password" type="password" value={user.password} onChange={this.onChange}/>
-                            <input type="submit" value="Login"/>
+                        <form onSubmit={this.login} ref="loginForm">
+                            <input
+                                type="email"
+                                placeholder="login"
+                                name="login"
+                                value={user.login}
+                                onChange={this.onChange}
+                                required/>
+
+                            <input
+                                placeholder="password"
+                                name="password"
+                                type="password"
+                                value={user.password}
+                                onChange={this.onChange}
+                                required/>
+
+                            <input type="submit" value="Login" disabled={!this.state.canSubmit}/>
                         </form>
 
                         <Link to="register">register</Link>

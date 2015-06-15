@@ -50,6 +50,16 @@ var api = {
             });
     },
 
+    checkLogin: function (login) {
+        return request(app)
+            .get("/login/available/" + login);
+    },
+
+    checkPseudo: function (pseudo) {
+        return request(app)
+            .get("/pseudo/available/" + pseudo);
+    },
+
     createEvent: function (userToken, event) {
         return request(app)
             .post("/u/events")
@@ -148,6 +158,58 @@ describe("API", function () {
                 api
                     .createUser(testUser)
                     .expect(400, done);
+            });
+    });
+
+    it("should tell the login is available", function (done) {
+        api
+            .checkLogin("felix@felix.fr")
+            .expect(200)
+            .end(function (err, res) {
+                if (err) { return done(err); }
+                expect(res.body.available).toBeTruthy();
+                done();
+            });
+    });
+
+    it("should tell the login is not available", function (done) {
+        preconditions
+            .hasUser(testUser)
+            .then(function () {
+                api
+                    .checkLogin(testUser.login)
+                    .expect(200)
+                    .end(function (err, res) {
+                        if (err) { return done(err); }
+                        expect(res.body.available).toBeFalsy();
+                        done();
+                    });
+            });
+    });
+
+    it("should tell the pseudo is available", function (done) {
+        api
+            .checkPseudo("felox")
+            .expect(200)
+            .end(function (err, res) {
+                if (err) { return done(err); }
+                expect(res.body.available).toBeTruthy();
+                done();
+            });
+    });
+
+    it("should tell the pseudo is not available", function (done) {
+        preconditions
+            .hasUser(testUser)
+            .then(function () {
+                api
+                    .checkPseudo(testUser.pseudo)
+                    .expect(200)
+                    .end(function (err, res) {
+                        if (err) { return done(err); }
+                        expect(res.body.available).toBeFalsy();
+                        done();
+                    });
             });
     });
 

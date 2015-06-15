@@ -18,6 +18,28 @@ body {
 
 input[type=submit] {
     cursor: pointer;
+    background-color: $coolblue;
+    color: white;
+    &[disabled] {
+        background-color: gray;
+    }
+}
+
+form {
+    .async-input {
+        position: relative;
+        .loader {
+            display: none;
+            position: absolute;
+            right: 1em;
+            top: 1em;
+        }
+        &.loading {
+            .loader {
+                display: inline;
+            }
+        }
+    }
 }
 
 #login {
@@ -47,8 +69,6 @@ input[type=submit] {
         }
         input[type=submit] {
             padding: 0.4em;
-            background-color: $coolblue;
-            color: white;
             margin-top: 1em;
         }
     }

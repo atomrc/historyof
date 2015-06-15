@@ -117,6 +117,7 @@
                                 placeholder="confirm password"
                                 name="passwordConfirmation"
                                 type="password"
+                                pattern={user.password}
                                 value={user.passwordConfirmation}
                                 onChange={this.onChange}
                                 required/>

@@ -50,6 +50,11 @@ var api = {
             });
     },
 
+    checkLogin: function (login) {
+        return request(app)
+            .get("/login/available/" + login);
+    },
+
     createEvent: function (userToken, event) {
         return request(app)
             .post("/u/events")
@@ -148,6 +153,32 @@ describe("API", function () {
                 api
                     .createUser(testUser)
                     .expect(400, done);
+            });
+    });
+
+    it("should tell the login is available", function (done) {
+        api
+            .checkLogin("felix@felix.fr")
+            .expect(200)
+            .end(function (err, res) {
+                if (err) { return done(err); }
+                expect(res.body.available).toBeTruthy();
+                done();
+            });
+    });
+
+    it("should tell the login is not available", function (done) {
+        preconditions
+            .hasUser(testUser)
+            .then(function () {
+                api
+                    .checkLogin(testUser.login)
+                    .expect(200)
+                    .end(function (err, res) {
+                        if (err) { return done(err); }
+                        expect(res.body.available).toBeFalsy();
+                        done();
+                    });
             });
     });
 

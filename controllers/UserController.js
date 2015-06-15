@@ -30,6 +30,15 @@ module.exports = {
         }
     },
 
+    isLoginAvailable: function (req, res) {
+        db
+            .model("user")
+            .findOne({ where: { login: req.params.login } })
+            .then(function (result) {
+                res.send({ available: !result });
+            });
+    },
+
     get: function (req, res) {
         res.send(req.user.toJSON());
     },

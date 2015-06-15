@@ -63,6 +63,10 @@
             });
         },
 
+        checkLogin: function (login) {
+            return request("/login/available/" + login);
+        },
+
         getUser: function () {
             return request("/u");
         },

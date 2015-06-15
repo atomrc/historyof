@@ -2,7 +2,9 @@
 (function () {
     "use strict";
 
-    var React = require("react");
+    var React = require("react"),
+        debounce = require("debounce"),
+        hapi = require("../api/historyOfApi");
 
     var UserLoginInput = React.createClass({
 
@@ -12,19 +14,26 @@
             };
         },
 
-        onChange: (e) => {
+        checkValidity: debounce(function (input, context) {
+            context.setState({ checking: true });
+
+            hapi
+                .checkLogin(input.value)
+                .then(function (result) {
+                    input.setCustomValidity(result.available ? "" : "Login is already taken");
+                    context.setState({ checking: false });
+                    return result.available ? context.props.onValid() : context.props.onInvalid();
+                });
+        }, 500, true),
+
+
+        onChange: function (e) {
             var input = React.findDOMNode(this.refs.loginInput);
-            this.setState({ checking: true });
 
             //invalidate the input before the async check
             input.setCustomValidity(false);
 
-            window.setTimeout(function () {
-                //tell the parent to recheck the validity of the form
-                input.setCustomValidity("");
-                this.setState({ checking: false });
-                this.props.onValid();
-            }.bind(this), 1000);
+            this.checkValidity(input, this);
 
             //udpate the parent model
             this.props.onChange(e);

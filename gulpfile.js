@@ -19,7 +19,8 @@ var libs = [
     "react-router",
     "whatwg-fetch",
     "events",
-    "react-input-calendar"
+    "react-input-calendar",
+    "debounce"
 ];
 
 gulp.task("js-vendor", function() {

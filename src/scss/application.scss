@@ -139,48 +139,16 @@ form {
 }
 
 .timeline {
-    width: 90%;
-    max-width: 1000px;
-    margin: auto;
+    background-color: #EEE;
 
-    .nav-container {
-        position: relative;
-        padding: 0 1.5em;
-
-        &, nav {
-            width: 150px;
-        }
-
-        nav {
-            position: fixed;
-
-            .nav-element {
-                font-family: Open Sans, sans-serif;
-                padding: 0.75em 1em;
-                position: relative;
-                border-bottom: solid 1px #EEE;
-
-                a {
-                    color: #F06;
-                }
-
-                .events-stats {
-                    position: absolute;
-                    font-size: 8pt;
-                    right: 1em;
-                    bottom: 1em;
-                    display: inline-block;
-                    border-radius: 1em;
-                    padding: 0.5em;
-                    font-weight: bold;
-                    box-shadow: 1px 1px 1px grey inset;
-                }
-
-            }
-        }
+    h2 {
+        margin: 0;
+        padding: 1em 0 0.5em 0;
     }
 
     .events-container {
+        max-width: 500px;
+        margin: auto;
         .year {
             position: relative;
 
@@ -248,16 +216,10 @@ form {
                 position: relative;
                 .infos {
                     width: 100%;
-                    :nth-child(1) {
-                        width: 5%;
-                    }
-                    :nth-child(2) {
-                        width: 10%
-                    }
-                    :nth-child(3) {
-                        width: 80%;
-                    }
                     .actions {
+                        position: absolute;
+                        right: 1em;
+                        top: 1em;
                         opacity: 0;
                     }
                     &:hover {
@@ -296,8 +258,9 @@ button.material {
 #edit-section {
     #form-container {
         width: 100%;
+        box-sizing: border-box;
         background-color: white;
-        box-shadow: 1px 1px 3px #DDD;
+        box-shadow: 1px 1px 3px #AAA;
         padding: 1em 0.25em;
         #event-form {
             margin: auto;
@@ -315,8 +278,11 @@ button.material {
             & > * {
                 display: none;
             }
-            & > textarea[name=description] {
+            & > .persistant {
                 display: block;
+            }
+            .actions {
+                text-align: right;
             }
             &.active {
                 & > * {
@@ -338,12 +304,4 @@ button.material {
     border-radius: 1px;
     background-color: white;
     box-shadow: 2px 2px 1px #CCC;
-}
-
-.table {
-    display: table;
-}
-
-.cell {
-    display: table-cell;
 }

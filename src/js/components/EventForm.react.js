@@ -86,9 +86,34 @@
                             onFocus={this.startEditing}/>
 
                         <br/>
-                        <Pikaday onChange={this.dateChange} value={event.date}/>
                         <br/>
                         <button className="flat-button">{ event.id ? "save" : "add" }</button>
+                        <div>
+                            <input
+                                type="text"
+                                placeholder="Add a title"
+                                name="title"
+                                value={event.title || ""}
+                                onChange={this.onChange}
+                                autoComplete="off"/>
+                        </div>
+                        <div className="persistant">
+                            <textarea
+                                rows="2"
+                                name="description"
+                                placeholder="Tell me your story"
+                                value={event.description || ""}
+                                onChange={this.onChange}
+                                onFocus={this.startEditing}/>
+
+                        </div>
+                        <div>
+                            <Pikaday onChange={this.dateChange} value={event.date}/>
+                        </div>
+                        <div className="actions">
+                            <a href="javascript:void(0)" onClick={this.cancel}>cancel</a>&nbsp;
+                            <button className="flat-button">{ event.id ? "save" : "add" }</button>
+                        </div>
                     </form>
                 </div>
             );

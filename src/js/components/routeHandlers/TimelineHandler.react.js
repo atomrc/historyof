@@ -3,7 +3,6 @@
     "use strict";
     var React = require("react"),
         Timeline = require("../Timeline.react"),
-        EventForm = require("../EventForm.react"),
         eventActions = require("../../actions/eventActions"),
         eventStore = require("../../stores/eventStore");
 
@@ -39,12 +38,7 @@
             }
 
             return (
-                <div>
-                    <div id="edit-section">
-                        <EventForm/>
-                    </div>
-                    <Timeline events={this.state.events}/>
-                </div>
+                <Timeline events={this.state.events}/>
             );
         }
 

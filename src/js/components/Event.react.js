@@ -37,16 +37,16 @@
             return (
                 <div className={"event " + classes}>
                     <header onClick={this.toggle}>
-                        <div className="infos table">
-                            <div className="cell">
+                        <div className="infos">
+                            <div>
                                 <em className="date">
                                     {moment(event.date).format("DD MMM")}
                                 </em>
                             </div>
-                            <div className="cell">
-                                <strong>{event.title || (event.description || "").substr(0, 40).concat("...")}</strong>
+                            <div>
+                                <strong>{event.title || (event.description || "").substr(0, 100).concat("...")}</strong>
                             </div>
-                            <div className="actions cell">
+                            <div className="actions">
                                 <a onClick={this.edit}>E</a>&nbsp;
                                 <a onClick={this.remove}>R</a>
                             </div>

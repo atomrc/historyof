@@ -2,6 +2,7 @@
 (function () {
     "use strict";
     var React = require("react"),
+        EventForm = require("./EventForm.react"),
         Year = require("./Year.react");
 
     /**
@@ -41,8 +42,11 @@
             }
 
             return (
-                <div className="timeline table">
-                    <div className="events-container cell">{yearNodes}</div>
+                <div className="timeline">
+                    <div id="edit-section">
+                        <EventForm/>
+                    </div>
+                    <div className="events-container">{yearNodes}</div>
                 </div>
             );
         }

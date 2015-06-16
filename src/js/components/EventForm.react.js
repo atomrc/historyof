@@ -61,24 +61,34 @@
         },
 
         render: function () {
-            if (!this.state.isEditing) { return (<span></span>); }
-
-            var event = this.state.event;
+            var event = this.state.event,
+                classes = this.state.isEditing ?
+                    "active":
+                    "";
 
             return (
-                <div id="event-form">
-                    <div className="header">
-                        {event.title || "New Event"}
-                        <button type="button" onClick={this.cancel} className="cancel-button"><i className="fa fa-times"></i></button>
-                    </div>
-                    <form onSubmit={this.save}>
-                        <input type="text" placeholder="Title" name="title" value={event.title || ""} onChange={this.onChange} autoComplete="off"/>
+                <div id="form-container">
+                    <form id="event-form" className={classes} onSubmit={this.save}>
+                        <input
+                            type="text"
+                            placeholder="Add a title"
+                            name="title"
+                            value={event.title || ""}
+                            onChange={this.onChange}
+                            autoComplete="off"/>
+                        <br/>
+                        <textarea
+                            rows="2"
+                            name="description"
+                            placeholder="Tell me your story"
+                            value={event.description || ""}
+                            onChange={this.onChange}
+                            onFocus={this.startEditing}/>
+
                         <br/>
                         <Pikaday onChange={this.dateChange} value={event.date}/>
                         <br/>
-                        <textarea rows="8" name="description" placeholder="Description" value={event.description || ""} onChange={this.onChange}/>
-                        <br/>
-                        <button className="flat-button">add</button>
+                        <button className="flat-button">{ event.id ? "save" : "add" }</button>
                     </form>
                 </div>
             );

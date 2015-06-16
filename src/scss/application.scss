@@ -294,64 +294,34 @@ button.material {
 }
 
 #edit-section {
-    position: fixed;
-    right: 0;
-    bottom: 0;
-    .add-button-container:hover {
-        text-align: center;
-        .action-buttons {
-            opacity: 1;
-        }
-    }
-    .action-buttons {
-        opacity: 0;
-        button {
-            margin: auto;
-            margin-bottom: 1em;
-            font-size: 1.05em;
-            background-color: #E77B20;
-            color: white;
-            display: block;
-        }
-    }
-
-    #event-form {
-        position: absolute;
-        bottom: 0;
-        right: 8em;
-        width: 350px;
+    #form-container {
+        width: 100%;
         background-color: white;
-        box-shadow: 1px 1px 10px #666;
-        border-radius: 5px 5px 0 0;
-        .header {
-            border-radius: 5px 5px 0 0;
-            padding: 0.5em;
-            background-color: #666;
-            color: #EEE;
-            text-align: left;
-            font-family: Arial;
-
-            .cancel-button {
-                position: absolute;
-                right: 0;
-                top: 0;
-                border: none;
-                background: none;
-                color: inherit;
-                font-size: 1em;
-            }
-        }
-        form {
-            padding: 1em 0.25em;
-            input, textarea, select {
+        box-shadow: 1px 1px 3px #DDD;
+        padding: 1em 0.25em;
+        #event-form {
+            margin: auto;
+            max-width: 500px;
+            input, textarea {
+                width: 100%;
                 font-family: Arial;
                 font-size: 1em;
                 padding: 1em 0.5em;
-                width: 100%;
                 box-sizing: border-box;
                 border: none;
                 border-bottom: solid 1px #CCC;
                 color: inherit;
+            }
+            & > * {
+                display: none;
+            }
+            & > textarea[name=description] {
+                display: block;
+            }
+            &.active {
+                & > * {
+                    display: block;
+                }
             }
         }
     }

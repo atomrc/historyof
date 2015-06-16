@@ -35,7 +35,7 @@ describe("eeditedEventStore", function () {
         };
 
         callback(endEditAction);
-        expect(editedEventStore.getEditedEvent()).toBeUndefined();
+        expect(editedEventStore.getEditedEvent()).toEqual({});
     });
 
     it("should end editing when event is created", function () {
@@ -47,7 +47,7 @@ describe("eeditedEventStore", function () {
         };
 
         callback(createAction);
-        expect(editedEventStore.getEditedEvent()).toBeUndefined();
+        expect(editedEventStore.getEditedEvent()).toEqual({});
     });
 
     it("should give the current state of edition", function () {

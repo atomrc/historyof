@@ -4,6 +4,7 @@
     var React = require("react"),
         eventActions = require("../actions/eventActions"),
         Pikaday = require("./Pikaday.react"),
+        editedEventActions = require("../actions/editedEventActions"),
         editedEventStore = require("../stores/editedEventStore");
 
     var EventForm = React.createClass({
@@ -28,27 +29,27 @@
         },
 
         onChange: function (e) {
-            var changes = { event: this.state.event };
-            changes.event[e.target.name] = e.target.value;
-            this.setState(changes);
+            var target = e.target;
+            var updates = {};
+            updates[target.name] = target.value;
+
+            editedEventActions.update(updates);
         },
 
-        dateChange: function (date) {
-            var changes = { event: this.state.event },
-                prevDate = this.state.event.date;
+        dateChange: function (timestamp) {
+            editedEventActions.update({ date: new Date(+timestamp) });
+        },
 
-            date.setHours(prevDate.getHours());
-            date.setMinutes(prevDate.getMinutes());
-            changes.event.date = date;
-
-            this.setState(changes);
+        startEditing: function () {
+            if (this.state.isEditing) {
+                return;
+            }
+            editedEventActions.update({ date: new Date() });
         },
 
         save: function (e) {
             e.preventDefault();
             var event = this.state.event;
-            event.date = new Date(event.date);
-            this.replaceState(this.getInitialState());
 
             return event.id ?
                 eventActions.update(event) :

@@ -1,8 +1,8 @@
+/*global require, module*/
 (function () {
     "use strict";
     var React = require("react"),
         Month = require("./Month.react"),
-        EventsStats = require("./EventsStats.react"),
         moment = require("moment");
 
     var Year = React.createClass({

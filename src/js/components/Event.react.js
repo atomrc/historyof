@@ -1,9 +1,9 @@
+/*global module, require*/
 (function () {
     "use strict";
     var React = require("react"),
         moment = require("moment"),
         eventActions = require("../actions/eventActions"),
-        eventTypes = require("../config/eventTypes"),
         PureRenderMixin = require("react-addons-pure-render-mixin");
 
     var Event = React.createClass({
@@ -32,18 +32,12 @@
         render: function () {
 
             var event = this.props.event,
-                classes = this.state.open ? "" : "closed",
-                icon = (eventTypes.getType(this.props.event.type) || {}).icon;
+                classes = this.state.open ? "" : "closed";
 
             return (
                 <div className={"event " + classes}>
                     <header onClick={this.toggle}>
                         <div className="infos table">
-                            <div className="cell">
-                                <a name={ "events/" + event.id }>
-                                    <i className={"fa " + icon}></i>
-                                </a>
-                            </div>
                             <div className="cell">
                                 <em className="date">
                                     {moment(event.date).format("DD MMM")}

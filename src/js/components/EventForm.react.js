@@ -4,9 +4,7 @@
     var React = require("react"),
         eventActions = require("../actions/eventActions"),
         Pikaday = require("./Pikaday.react"),
-        editedEventStore = require("../stores/editedEventStore"),
-        eventTypes = require("../config/eventTypes"),
-        moment = require("moment");
+        editedEventStore = require("../stores/editedEventStore");
 
     var EventForm = React.createClass({
 
@@ -64,24 +62,16 @@
         render: function () {
             if (!this.state.isEditing) { return (<span></span>); }
 
-            var event = this.state.event,
-                type = eventTypes.getType(event.type) || {};
-
-            var typeOptions = eventTypes.getTypes().map(function (eventType) {
-                return ((
-                    <option value={eventType.name} key={eventType.name}>{eventType.name}</option>
-                ));
-            });
+            var event = this.state.event;
 
             return (
                 <div id="event-form">
                     <div className="header">
-                        <i className={"fa " + type.icon}></i> {event.title || "New Event"}
+                        {event.title || "New Event"}
                         <button type="button" onClick={this.cancel} className="cancel-button"><i className="fa fa-times"></i></button>
                     </div>
                     <form onSubmit={this.save}>
                         <input type="text" placeholder="Title" name="title" value={event.title || ""} onChange={this.onChange} autoComplete="off"/>
-                        <select value={event.type} name="type" onChange={this.onChange}>{typeOptions}</select>
                         <br/>
                         <Pikaday onChange={this.dateChange} value={event.date}/>
                         <br/>

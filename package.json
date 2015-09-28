@@ -19,7 +19,6 @@
     "express": "^4.13.3",
     "express-jwt": "^3.1.0",
     "flux": "^2.1.1",
-    "jasmine-node": "^2.0.0",
     "jsonwebtoken": "^5.0.5",
     "moment": "^2.10.6",
     "object-assign": "^4.0.1",
@@ -39,7 +38,7 @@
     "gulp-jade": "*",
     "gulp-sass": "*",
     "gulp-uglify": "*",
-    "jasmine-node": "*",
+    "jasmine-node": "^1.14.5",
     "jest-cli": "*",
     "supertest": "*",
     "vinyl-source-stream": "*"

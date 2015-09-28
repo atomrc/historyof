@@ -2,7 +2,7 @@
 "use strict";
 
 var jwt = require("jsonwebtoken"),
-    bcrypt = require("bcrypt"),
+    bcrypt = require("bcryptjs"),
     db = require("../db/db");
 
 function createToken(user) {

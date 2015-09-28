@@ -5,7 +5,8 @@ var Sequelize = require("sequelize");
 module.exports = {
     id: {
         type: Sequelize.UUID,
-        defaultValue: Sequelize.UUIDV1
+        defaultValue: Sequelize.UUIDV1,
+        primaryKey: true
     },
     pseudo: {
         type: Sequelize.STRING,

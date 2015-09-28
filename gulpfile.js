@@ -21,7 +21,7 @@ var libs = [
     "events",
     "react-input-calendar",
     "debounce",
-    "bcrypt",
+    "bcryptjs",
     "uuid"
 ];
 

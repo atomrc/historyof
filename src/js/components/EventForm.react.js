@@ -91,7 +91,7 @@
                         <div>
                             <input
                                 type="text"
-                                placeholder="Add a title"
+                                placeholder="Title"
                                 name="title"
                                 value={event.title || ""}
                                 onChange={this.onChange}
@@ -101,7 +101,7 @@
                             <textarea
                                 rows="2"
                                 name="description"
-                                placeholder="Tell me your story"
+                                placeholder="Add a story"
                                 value={event.description || ""}
                                 onChange={this.onChange}
                                 onFocus={this.startEditing}/>

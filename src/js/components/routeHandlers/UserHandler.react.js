@@ -50,8 +50,8 @@
             return (
                 <div>
                     <header id="app-header">
-                        <Link to="home">HistoryOf <span className="user">{this.state.user.pseudo}</span></Link>
-                        <button onClick={this.logout}>logout</button>
+                        <Link to="home"><i className="fa fa-book"></i> <span className="user">{this.state.user.pseudo}</span></Link>
+                        <button className="logout" onClick={this.logout}><i className="fa fa-power-off"></i></button>
                     </header>
                     <RouteHandler/>
                 </div>

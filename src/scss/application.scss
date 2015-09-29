@@ -76,12 +76,24 @@ form {
 
 #app-header {
     background-color: $coolblue;
-    font-size: 2em;
+    font-size: 1.1em;
     padding: 0.3em 1em;
     color: white;
+    position: relative;
 
     a {
         color: inherit;
+    }
+    .logout {
+        position: absolute;
+        border: none;
+        border-left: solid;
+        color: white;
+        background-color: transparent;
+        right: 0;
+        top: 0;
+        height: 100%;
+        font-size: 0.75em;
     }
 }
 

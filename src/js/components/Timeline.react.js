@@ -37,16 +37,16 @@
                 ));
             }
 
-            if (yearNodes.length === 0) {
-                return (<div>No event yet</div>);
-            }
+            var content = yearNodes.length === 0 ?
+                (<div>No event yet</div>) :
+                (<div className="events-container">{yearNodes}</div>);
 
             return (
                 <div className="timeline">
                     <div id="edit-section">
                         <EventForm/>
                     </div>
-                    <div className="events-container">{yearNodes}</div>
+                    {content}
                 </div>
             );
         }

@@ -47,8 +47,8 @@
                                 <strong>{event.title || (event.description || "").substr(0, 100).concat("...")}</strong>
                             </div>
                             <div className="actions">
-                                <a onClick={this.edit}>E</a>&nbsp;
-                                <a onClick={this.remove}>R</a>
+                                <a onClick={this.edit}><i className="fa fa-pencil"></i></a>&nbsp;
+                                <a onClick={this.remove}><i className="fa fa-trash"></i></a>
                             </div>
                         </div>
                     </header>

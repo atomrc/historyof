@@ -255,49 +255,48 @@ button.material {
     cursor: pointer;
 }
 
-#edit-section {
-    #form-container {
-        width: 100%;
-        box-sizing: border-box;
-        background-color: white;
-        box-shadow: 1px 1px 3px #AAA;
-        padding: 1em 0.25em;
-        #event-form {
-            margin: auto;
-            max-width: 500px;
-            input, textarea {
-                width: 100%;
-                font-family: Arial;
-                font-size: 1em;
-                padding: 1em 0.5em;
-                box-sizing: border-box;
-                border: none;
-                border-bottom: solid 1px #CCC;
-                color: inherit;
-            }
-            & > * {
-                display: none;
-            }
-            & > .persistant {
-                display: block;
-            }
-            .actions {
-                text-align: right;
-            }
-            &.active {
-                & > * {
-                    display: block;
-                }
-            }
+#form-container {
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    font-size: 1.25em;
+    z-index: 1;
+    box-sizing: border-box;
+    background-color: white;
+    padding: 3em;
+
+    transition: bottom .5s, opacity .5s;
+    bottom: 100%; //on top of the screen when inactive
+    opacity: 0;
+    &.active {
+        bottom: 0;
+        opacity: 1;
+    }
+    #event-form {
+        margin: auto;
+        input, textarea {
+            width: 100%;
+            font-family: Arial;
+            font-size: 1em;
+            padding: 30px 10px;
+            box-sizing: border-box;
+            border: none;
+            color: inherit;
+        }
+        input[name=title] {
+            font-size: 1.5em;
+        }
+        .actions {
+            text-align: right;
         }
     }
+}
 
-    .add-button {
-        margin: 0 1em 1em 1em;
-        font-size: 1.5em;
-        background-color: #3F6BD4;
-        color: white;
-    }
+.add-button {
+    margin: 0 1em 1em 1em;
+    font-size: 1.5em;
+    background-color: #3F6BD4;
+    color: white;
 }
 
 .soft-box {

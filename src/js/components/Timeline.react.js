@@ -14,6 +14,7 @@
 
         render: function() {
             var yearNodes = [],
+                user = this.props.user,
                 groupedEvents = this
                     .props
                     .events
@@ -43,7 +44,9 @@
 
             return (
                 <div className="timeline">
-                    <div id="edit-section">
+                    <div className="timeline-header">
+                        <h1>{user.pseudo}'s timeline</h1>
+                        <span>{this.props.events.length} events</span>
                         <EventForm/>
                     </div>
                     {content}

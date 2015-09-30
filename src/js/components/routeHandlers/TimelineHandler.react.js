@@ -38,7 +38,7 @@
             }
 
             return (
-                <Timeline events={this.state.events}/>
+                <Timeline user={this.props.user} events={this.state.events}/>
             );
         }
 

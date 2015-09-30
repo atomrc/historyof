@@ -139,6 +139,20 @@ form {
 }
 
 .timeline {
+    .timeline-header {
+        background-color: white;
+        box-shadow: 0 -2px 6px 1px #DDD inset;
+        padding: 1em;
+        h1 {
+            margin: 0;
+        }
+        table {
+            margin: auto;
+            td:nth-child(2) {
+                text-align: right;
+            }
+        }
+    }
     background-color: #EEE;
 
     h2 {
@@ -147,7 +161,6 @@ form {
     }
 
     .events-container {
-        max-width: 500px;
         margin: auto;
         .year {
             position: relative;
@@ -159,43 +172,6 @@ form {
                 text-align: center;
                 color: #F06;
             }
-        }
-
-        .month {
-
-            .add-button-container {
-                margin-left: auto;
-                font-size: 0.75em;
-                float: right;
-                width: 2em;
-                position: relative;
-
-                button, .action-buttons button {
-                    color: inherit;
-                    background-color: transparent;
-                    box-shadow: none;
-                }
-
-                &:hover {
-                    .action-buttons {
-                        max-height: 400px;
-                    }
-                }
-
-                .action-buttons {
-                    z-index: 1;
-                    transition: 0.3s;
-                    width: 100%;
-                    background-color: white;
-                    max-height: 0px;
-                    overflow: hidden;
-                    position: absolute;
-                    margin-top: 2em;
-                    display: block;
-                    color: #E77B20;
-                }
-            }
-
         }
 
         .event {
@@ -257,6 +233,7 @@ button.material {
 
 #form-container {
     position: fixed;
+    left: 0;
     height: 100%;
     width: 100%;
     font-size: 1.25em;
@@ -303,4 +280,10 @@ button.material {
     border-radius: 1px;
     background-color: white;
     box-shadow: 2px 2px 1px #CCC;
+}
+
+.fluid-content {
+    min-width: 500px;
+    max-width: 900px;
+    width: 90%;
 }

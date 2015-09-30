@@ -2,6 +2,7 @@
 (function () {
     "use strict";
     var React = require("react"),
+        WriteButton = require("./WriteButton.react"),
         EventForm = require("./EventForm.react"),
         Year = require("./Year.react");
 
@@ -40,16 +41,25 @@
 
             var content = yearNodes.length === 0 ?
                 (<div>No event yet</div>) :
-                (<div className="events-container">{yearNodes}</div>);
+                (<div className="events-container fluid-content">{yearNodes}</div>);
 
             return (
                 <div className="timeline">
                     <div className="timeline-header">
-                        <h1>{user.pseudo}'s timeline</h1>
-                        <span>{this.props.events.length} events</span>
-                        <EventForm/>
+                        <table className="fluid-content">
+                            <tr>
+                                <td>
+                                <h1>{user.pseudo}'s timeline</h1>
+                                <span>{this.props.events.length} events</span>
+                                </td>
+                                <td>
+                                <WriteButton/>
+                                </td>
+                            </tr>
+                        </table>
                     </div>
                     {content}
+                    <EventForm/>
                 </div>
             );
         }

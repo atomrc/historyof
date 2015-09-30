@@ -67,27 +67,8 @@
                     "";
 
             return (
-                <div id="form-container">
-                    <form id="event-form" className={classes} onSubmit={this.save}>
-                        <input
-                            type="text"
-                            placeholder="Add a title"
-                            name="title"
-                            value={event.title || ""}
-                            onChange={this.onChange}
-                            autoComplete="off"/>
-                        <br/>
-                        <textarea
-                            rows="2"
-                            name="description"
-                            placeholder="Tell me your story"
-                            value={event.description || ""}
-                            onChange={this.onChange}
-                            onFocus={this.startEditing}/>
-
-                        <br/>
-                        <br/>
-                        <button className="flat-button">{ event.id ? "save" : "add" }</button>
+                <div id="form-container" className={classes}>
+                    <form id="event-form" onSubmit={this.save}>
                         <div>
                             <input
                                 type="text"
@@ -97,18 +78,18 @@
                                 onChange={this.onChange}
                                 autoComplete="off"/>
                         </div>
-                        <div className="persistant">
+                        <div>
+                            <Pikaday onChange={this.dateChange} value={event.date}/>
+                        </div>
+                        <div>
                             <textarea
                                 rows="2"
                                 name="description"
-                                placeholder="Add a story"
+                                placeholder="Your Story"
                                 value={event.description || ""}
                                 onChange={this.onChange}
                                 onFocus={this.startEditing}/>
 
-                        </div>
-                        <div>
-                            <Pikaday onChange={this.dateChange} value={event.date}/>
                         </div>
                         <div className="actions">
                             <a href="javascript:void(0)" onClick={this.cancel}>cancel</a>&nbsp;

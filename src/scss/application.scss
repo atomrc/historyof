@@ -10,7 +10,6 @@ html, body {
 }
 body {
     color: #555;
-    //background-color: #EEE;
     font-family: Arial;
     scroll-behavior: smooth;
     margin: 0;
@@ -72,6 +71,11 @@ form {
             margin-top: 1em;
         }
     }
+}
+
+#app {
+    height: 100%;
+    background-color: #EEE;
 }
 
 #app-header {
@@ -153,7 +157,6 @@ form {
             }
         }
     }
-    background-color: #EEE;
 
     h2 {
         margin: 0;

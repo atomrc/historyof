@@ -12,14 +12,14 @@ var gulp = require("gulp"),
 
 var libs = [
     "react",
-    "react/addons",
+    "react-router",
+    "react-dom",
+    "react-addons-pure-render-mixin",
     "flux",
     "moment",
     "object-assign",
-    "react-router",
     "whatwg-fetch",
     "events",
-    "react-input-calendar",
     "debounce",
     "bcryptjs",
     "uuid"

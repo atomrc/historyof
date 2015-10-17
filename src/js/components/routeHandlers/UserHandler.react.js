@@ -2,9 +2,7 @@
 (function () {
     "use strict";
     var React = require("react"),
-        Router = require("react-router"),
         Link = require("react-router").Link,
-        RouteHandler = Router.RouteHandler,
         userStore = require("../../stores/userStore"),
         userActions = require("../../actions/userActions");
 
@@ -14,8 +12,6 @@
      * @return {undefined}
      */
     module.exports = React.createClass({
-
-        mixins: [Router.Navigation],
 
         getInitialState: function () {
             return {
@@ -53,7 +49,7 @@
                         <Link to="home"><i className="fa fa-book"></i> <span className="user">{this.state.user.pseudo}</span></Link>
                         <button className="logout" onClick={this.logout}><i className="fa fa-power-off"></i></button>
                     </header>
-                    <RouteHandler/>
+                    {this.props.children}
                 </div>
             );
         }

@@ -3,7 +3,7 @@
     "use strict";
     var React = require("react"),
         eventActions = require("../actions/eventActions"),
-        Calendar = require("react-input-calendar"),
+        //Calendar = require("react-input-calendar"),
         editedEventStore = require("../stores/editedEventStore"),
         eventTypes = require("../config/eventTypes"),
         moment = require("moment");
@@ -83,13 +83,6 @@
                     <form onSubmit={this.save}>
                         <input type="text" placeholder="Title" name="title" value={event.title || ""} onChange={this.onChange} autoComplete="off"/>
                         <select value={event.type} name="type" onChange={this.onChange}>{typeOptions}</select>
-                        <br/>
-                        <Calendar
-                            onChange={this.dateChange}
-                            closeOnSelect={true}
-                            date={this.state.event.date}
-                            computableFormat="x"
-                            />
                         <br/>
                         <textarea rows="8" name="description" placeholder="Description" value={event.description || ""} onChange={this.onChange}/>
                         <br/>

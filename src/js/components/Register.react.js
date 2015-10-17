@@ -13,7 +13,7 @@
 
     module.exports = React.createClass({
 
-        mixins: [Router.Navigation],
+        mixins: [Router.History],
 
         getInitialState: function () {
             return {

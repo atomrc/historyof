@@ -3,14 +3,13 @@
     "use strict";
     var React = require("react"),
         Router = require("react-router"),
-        RouteHandler = Router.RouteHandler,
         Login = require("../../components/Login.react"),
         tokenActions = require("../../actions/tokenActions"),
         tokenStore = require("../../stores/tokenStore");
 
     module.exports = React.createClass({
 
-        mixins: [Router.Navigation],
+        mixins: [Router.History],
 
         getInitialState: function () {
             return {
@@ -20,9 +19,6 @@
 
         onChange: function () {
             this.setState(this.getInitialState());
-            if (this.state.token) {
-                this.transitionTo("home");
-            }
         },
 
         componentWillMount: function() {
@@ -40,7 +36,7 @@
             if (!this.state.token) {
                 return (<Login/>);
             }
-            return (<RouteHandler/>);
+            return (<div>{this.props.children}</div>);
         }
 
     });

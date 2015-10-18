@@ -3,6 +3,7 @@
     "use strict";
 
     var React = require("react"),
+        ReactDom = require("react-dom"),
         Link = require("react-router").Link,
         userActions = require("../actions/userActions");
 
@@ -22,7 +23,7 @@
 
         onChange: function (e) {
             this.state.user[e.target.name] = e.target.value;
-            this.state.canSubmit = React.findDOMNode(this.refs.loginForm).checkValidity();
+            this.state.canSubmit = ReactDom.findDOMNode(this.refs.loginForm).checkValidity();
             this.setState(this.state);
         },
 

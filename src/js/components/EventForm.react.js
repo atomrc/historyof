@@ -3,7 +3,7 @@
     "use strict";
     var React = require("react"),
         eventActions = require("../actions/eventActions"),
-        Calendar = require("react-input-calendar"),
+        Pikaday = require("./Pikaday.react"),
         editedEventStore = require("../stores/editedEventStore"),
         eventTypes = require("../config/eventTypes"),
         moment = require("moment");
@@ -39,7 +39,6 @@
             var changes = { event: this.state.event },
                 prevDate = this.state.event.date;
 
-            date = new Date(parseInt(date, 10));
             date.setHours(prevDate.getHours());
             date.setMinutes(prevDate.getMinutes());
             changes.event.date = date;
@@ -84,12 +83,7 @@
                         <input type="text" placeholder="Title" name="title" value={event.title || ""} onChange={this.onChange} autoComplete="off"/>
                         <select value={event.type} name="type" onChange={this.onChange}>{typeOptions}</select>
                         <br/>
-                        <Calendar
-                            onChange={this.dateChange}
-                            closeOnSelect={true}
-                            date={this.state.event.date}
-                            computableFormat="x"
-                            />
+                        <Pikaday onChange={this.dateChange} value={event.date}/>
                         <br/>
                         <textarea rows="8" name="description" placeholder="Description" value={event.description || ""} onChange={this.onChange}/>
                         <br/>

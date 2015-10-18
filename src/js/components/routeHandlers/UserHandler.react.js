@@ -44,12 +44,12 @@
             }
 
             return (
-                <div>
+                <div id="app">
                     <header id="app-header">
-                        <Link to="home"><i className="fa fa-book"></i> <span className="user">{this.state.user.pseudo}</span></Link>
+                        <Link to="/"><i className="fa fa-book"></i> <span className="user">{this.state.user.pseudo}</span></Link>
                         <button className="logout" onClick={this.logout}><i className="fa fa-power-off"></i></button>
                     </header>
-                    {this.props.children}
+                    {React.cloneElement(this.props.children, {user: this.state.user })}
                 </div>
             );
         }

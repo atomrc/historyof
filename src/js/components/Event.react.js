@@ -1,9 +1,9 @@
+/*global module, require*/
 (function () {
     "use strict";
     var React = require("react"),
         moment = require("moment"),
         eventActions = require("../actions/eventActions"),
-        eventTypes = require("../config/eventTypes"),
         PureRenderMixin = require("react-addons-pure-render-mixin");
 
     var Event = React.createClass({
@@ -32,29 +32,23 @@
         render: function () {
 
             var event = this.props.event,
-                classes = this.state.open ? "" : "closed",
-                icon = (eventTypes.getType(this.props.event.type) || {}).icon;
+                classes = this.state.open ? "" : "closed";
 
             return (
                 <div className={"event " + classes}>
                     <header onClick={this.toggle}>
-                        <div className="infos table">
-                            <div className="cell">
-                                <a name={ "events/" + event.id }>
-                                    <i className={"fa " + icon}></i>
-                                </a>
-                            </div>
-                            <div className="cell">
+                        <div className="infos">
+                            <div>
                                 <em className="date">
                                     {moment(event.date).format("DD MMM")}
                                 </em>
                             </div>
-                            <div className="cell">
-                                <strong>{event.title || (event.description || "").substr(0, 40).concat("...")}</strong>
+                            <div>
+                                <strong>{event.title || (event.description || "").substr(0, 100).concat("...")}</strong>
                             </div>
-                            <div className="actions cell">
-                                <a onClick={this.edit}>E</a>&nbsp;
-                                <a onClick={this.remove}>R</a>
+                            <div className="actions">
+                                <a onClick={this.edit}><i className="fa fa-pencil"></i></a>&nbsp;
+                                <a onClick={this.remove}><i className="fa fa-trash"></i></a>
                             </div>
                         </div>
                     </header>

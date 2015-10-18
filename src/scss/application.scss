@@ -10,13 +10,12 @@ html, body {
 }
 body {
     color: #555;
-    //background-color: #EEE;
     font-family: Arial;
     scroll-behavior: smooth;
     margin: 0;
 }
 
-input[type=submit] {
+button, input[type=submit] {
     cursor: pointer;
     background-color: $coolblue;
     color: white;
@@ -72,6 +71,11 @@ form {
             margin-top: 1em;
         }
     }
+}
+
+#app {
+    height: 100%;
+    background-color: #EEE;
 }
 
 #app-header {
@@ -139,48 +143,28 @@ form {
 }
 
 .timeline {
-    width: 90%;
-    max-width: 1000px;
-    margin: auto;
-
-    .nav-container {
-        position: relative;
-        padding: 0 1.5em;
-
-        &, nav {
-            width: 150px;
+    .timeline-header {
+        background-color: white;
+        box-shadow: 0 -2px 6px 1px #DDD inset;
+        padding: 1em;
+        h1 {
+            margin: 0;
         }
-
-        nav {
-            position: fixed;
-
-            .nav-element {
-                font-family: Open Sans, sans-serif;
-                padding: 0.75em 1em;
-                position: relative;
-                border-bottom: solid 1px #EEE;
-
-                a {
-                    color: #F06;
-                }
-
-                .events-stats {
-                    position: absolute;
-                    font-size: 8pt;
-                    right: 1em;
-                    bottom: 1em;
-                    display: inline-block;
-                    border-radius: 1em;
-                    padding: 0.5em;
-                    font-weight: bold;
-                    box-shadow: 1px 1px 1px grey inset;
-                }
-
+        table {
+            margin: auto;
+            td:nth-child(2) {
+                text-align: right;
             }
         }
     }
 
+    h2 {
+        margin: 0;
+        padding: 1em 0 0.5em 0;
+    }
+
     .events-container {
+        margin: auto;
         .year {
             position: relative;
 
@@ -191,43 +175,6 @@ form {
                 text-align: center;
                 color: #F06;
             }
-        }
-
-        .month {
-
-            .add-button-container {
-                margin-left: auto;
-                font-size: 0.75em;
-                float: right;
-                width: 2em;
-                position: relative;
-
-                button, .action-buttons button {
-                    color: inherit;
-                    background-color: transparent;
-                    box-shadow: none;
-                }
-
-                &:hover {
-                    .action-buttons {
-                        max-height: 400px;
-                    }
-                }
-
-                .action-buttons {
-                    z-index: 1;
-                    transition: 0.3s;
-                    width: 100%;
-                    background-color: white;
-                    max-height: 0px;
-                    overflow: hidden;
-                    position: absolute;
-                    margin-top: 2em;
-                    display: block;
-                    color: #E77B20;
-                }
-            }
-
         }
 
         .event {
@@ -248,16 +195,10 @@ form {
                 position: relative;
                 .infos {
                     width: 100%;
-                    :nth-child(1) {
-                        width: 5%;
-                    }
-                    :nth-child(2) {
-                        width: 10%
-                    }
-                    :nth-child(3) {
-                        width: 80%;
-                    }
                     .actions {
+                        position: absolute;
+                        right: 1em;
+                        top: 1em;
                         opacity: 0;
                     }
                     &:hover {
@@ -293,75 +234,49 @@ button.material {
     cursor: pointer;
 }
 
-#edit-section {
+#form-container {
     position: fixed;
-    right: 0;
-    bottom: 0;
-    .add-button-container:hover {
-        text-align: center;
-        .action-buttons {
-            opacity: 1;
-        }
-    }
-    .action-buttons {
-        opacity: 0;
-        button {
-            margin: auto;
-            margin-bottom: 1em;
-            font-size: 1.05em;
-            background-color: #E77B20;
-            color: white;
-            display: block;
-        }
-    }
+    left: 0;
+    height: 100%;
+    width: 100%;
+    font-size: 1.25em;
+    z-index: 1;
+    box-sizing: border-box;
+    background-color: white;
+    padding: 3em;
 
-    #event-form {
-        position: absolute;
+    transition: bottom .5s, opacity .5s;
+    bottom: 100%; //on top of the screen when inactive
+    opacity: 0;
+    &.active {
         bottom: 0;
-        right: 8em;
-        width: 350px;
-        background-color: white;
-        box-shadow: 1px 1px 10px #666;
-        border-radius: 5px 5px 0 0;
-        .header {
-            border-radius: 5px 5px 0 0;
-            padding: 0.5em;
-            background-color: #666;
-            color: #EEE;
-            text-align: left;
+        opacity: 1;
+    }
+    #event-form {
+        margin: auto;
+        input, textarea {
+            width: 100%;
             font-family: Arial;
-
-            .cancel-button {
-                position: absolute;
-                right: 0;
-                top: 0;
-                border: none;
-                background: none;
-                color: inherit;
-                font-size: 1em;
-            }
+            font-size: 1em;
+            padding: 30px 10px;
+            box-sizing: border-box;
+            border: none;
+            color: inherit;
         }
-        form {
-            padding: 1em 0.25em;
-            input, textarea, select {
-                font-family: Arial;
-                font-size: 1em;
-                padding: 1em 0.5em;
-                width: 100%;
-                box-sizing: border-box;
-                border: none;
-                border-bottom: solid 1px #CCC;
-                color: inherit;
-            }
+        input[name=title] {
+            font-size: 1.5em;
+        }
+        .actions {
+            text-align: right;
         }
     }
+}
 
-    .add-button {
-        margin: 0 1em 1em 1em;
-        font-size: 1.5em;
-        background-color: #3F6BD4;
-        color: white;
-    }
+.add-button {
+    margin: 0 1em 1em 1em;
+    font-size: 1.5em;
+    background-color: #3F6BD4;
+    color: white;
 }
 
 .soft-box {
@@ -370,10 +285,15 @@ button.material {
     box-shadow: 2px 2px 1px #CCC;
 }
 
-.table {
-    display: table;
+.fluid-content {
+    min-width: 500px;
+    max-width: 900px;
+    width: 90%;
 }
 
-.cell {
-    display: table-cell;
+.pikaday-button {
+    background-color: transparent;
+    color: inherit;
+    font-size: 1em;
+    border: none;
 }

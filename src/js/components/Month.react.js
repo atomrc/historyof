@@ -1,9 +1,8 @@
+/*global require, module */
 (function () {
     "use strict";
     var React = require("react"),
-        Event = require("./Event.react"),
-        AddButton = require("./AddButton.react"),
-        moment = require("moment");
+        Event = require("./Event.react");
 
     var Month = React.createClass({
 
@@ -22,7 +21,6 @@
                 <div>
                     <div className="month">
                         {month}
-                        <AddButton/>
                         <div style={{clear: "both"}}></div>
                     </div>
                     <div className="soft-box">{nodes}</div>

@@ -17,6 +17,7 @@ var libs = [
     "react-addons-pure-render-mixin",
     "flux",
     "moment",
+    "pikaday",
     "object-assign",
     "whatwg-fetch",
     "events",

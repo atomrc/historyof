@@ -2,13 +2,14 @@
 (function () {
     "use strict";
     var React = require("react"),
-        Pikaday = require("pikaday");
+        Pikaday = require("pikaday"),
+        moment = require("moment");
 
     var PikadayReact = React.createClass({
 
         componentDidMount: function () {
             var input = this.refs.dateInput;
-            var picker = new Pikaday({
+            new Pikaday({
                 field: input,
                 onSelect: this.props.onChange,
                 defaultDate: this.props.value,
@@ -17,7 +18,10 @@
         },
 
         render: function () {
-            return (<input type="text" ref="dateInput"/>);
+            return (<span>
+                <button className="pikaday-button" type="button" ref="dateInput"><i className="fa fa-calendar"></i></button>
+                <span>{moment(this.props.value).format("DD MMM YYYY")}</span>
+            </span>);
         }
     });
 

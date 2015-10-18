@@ -317,7 +317,7 @@ describe("API", function () {
                 var token = userData.token;
 
                 var newTaggedStory = assign({}, testStory, {
-                    tags: [{ title: "work" }, tag.id]
+                    tags: [{ title: "work" }, { id: tag.id }]
                 });
 
                 api.createStory(token, newTaggedStory)

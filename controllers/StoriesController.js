@@ -39,9 +39,10 @@ module.exports = {
 
         //filter the tag ids to fetch them from DB then associate
         //them to the event being created
-        var tagIds = (newEvent.tags || []).filter(function (t) {
-            return typeof t === "string";
-        });
+        var tagIds = (newEvent.tags || [])
+            .filter((t) => t.id)
+            .map((t) => t.id);
+
         var tagPromise = db.model("tag").findAll({
             where: {
                 id: {
@@ -51,9 +52,7 @@ module.exports = {
         });
 
         //on let the new tags on the entity to be created
-        newEvent.tags = (newEvent.tags || []).filter(function (t) {
-            return typeof t !== "string";
-        });
+        newEvent.tags = (newEvent.tags || []).filter((t) => !t.id);
 
         db
             .model("story")

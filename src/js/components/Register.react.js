@@ -125,7 +125,7 @@
                             <input type="submit" value="Submit" disabled={!this.state.canSubmit}/>
                         </form>
 
-                        <Link to="home">login</Link>
+                        <Link to="/">login</Link>
                     </div>
                 </div>
             );

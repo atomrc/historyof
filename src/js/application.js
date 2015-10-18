@@ -14,10 +14,10 @@
 
     var routes = (
         <Router>
-            <Route name="register" path="/register" component={Register}/>
+            <Route path="/register" component={Register}/>
             <Route component={AppHandler}>
-                <Route name="home" component={UserHandler}>
-                    <Route name="timeline" path="/" component={TimelineHandler}/>
+                <Route component={UserHandler}>
+                    <Route path="/" component={TimelineHandler}/>
                 </Route>
             </Route>
         </Router>

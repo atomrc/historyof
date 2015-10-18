@@ -15,7 +15,7 @@ body {
     margin: 0;
 }
 
-input[type=submit] {
+button, input[type=submit] {
     cursor: pointer;
     background-color: $coolblue;
     color: white;
@@ -293,6 +293,7 @@ button.material {
 
 .pikaday-button {
     background-color: transparent;
+    color: inherit;
     font-size: 1em;
     border: none;
 }

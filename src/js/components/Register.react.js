@@ -36,7 +36,7 @@
         tokenChange: function () {
             this.setState(this.getInitialState());
             if (this.state.token) {
-                this.transitionTo("home");
+                this.history.pushState(null, "#/");
             }
         },
 

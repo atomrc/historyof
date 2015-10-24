@@ -53,7 +53,7 @@
 
         checkValidity: function () {
             this.setState({
-                canSubmit: React.findDOMNode(this.refs.registerForm).checkValidity()
+                canSubmit: this.refs.registerForm.checkValidity()
             });
         },
 

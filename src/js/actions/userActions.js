@@ -6,18 +6,6 @@
         historyOfApi = require("../api/historyOfApi");
 
     module.exports = {
-        getToken: function () {
-            var token = window.localStorage.getItem("token") ?
-                window.localStorage.getItem("token") :
-                null;
-
-            if (!token) {
-                return false;
-            }
-            dispatcher.dispatch(actions.RECEIVE_USER_TOKEN, { token: token });
-            return true;
-        },
-
         login: function (login, password) {
             dispatcher.dispatch(actions.USER_LOGIN);
 
@@ -45,9 +33,9 @@
                 });
         },
 
-        getUser: function (token) {
+        getUser: function () {
             historyOfApi
-                .getUser(token)
+                .getUser()
                 .then(function (data) {
                     dispatcher.dispatch(actions.RECEIVE_USER, { user: data });
                 }, function () {

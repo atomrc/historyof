@@ -23,8 +23,7 @@
 
         componentWillMount: function() {
             tokenStore.addChangeListener(this.onChange);
-            //retrieve the user's stored token (if exists) before launching the app
-            tokenActions.getToken();
+            window.setTimeout(tokenActions.getToken);
         },
 
         componentWillUnmount: function () {

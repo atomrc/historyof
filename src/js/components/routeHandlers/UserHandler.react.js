@@ -21,8 +21,7 @@
 
         componentWillMount: function () {
             userStore.addChangeListener(this.modelChange);
-
-            userActions.getUser();
+            window.setTimeout(userActions.getUser);
         },
 
         componentWillUnmount: function () {

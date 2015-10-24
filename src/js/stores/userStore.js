@@ -32,6 +32,7 @@
             data = payload.data;
 
         switch (action) {
+            case actions.LOGIN_SUCCESS:
             case actions.RECEIVE_USER:
                 user = data.user;
                 this.emitChange();

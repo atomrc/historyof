@@ -12,14 +12,14 @@
             return historyOfApi
                 .login(login, password)
                 .then(function (data) {
-                    window.localStorage.setItem("token", data.token);
-                    dispatcher.dispatch(actions.RECEIVE_USER_TOKEN, { token: data.token });
-                    dispatcher.dispatch(actions.RECEIVE_USER, { user: data.user });
+                    dispatcher.dispatch(actions.LOGIN_SUCCESS, { token: data.token, user: data.user });
+                })
+                .catch(function (data) {
+                    dispatcher.dispatch(actions.LOGIN_FAILED, { error: data.error });
                 });
         },
 
         logout: function () {
-            window.localStorage.clear();
             dispatcher.dispatch(actions.USER_LOGGED_OUT);
         },
 
@@ -27,9 +27,7 @@
             historyOfApi
                 .createUser(user)
                 .then(function (data) {
-                    window.localStorage.setItem("token", data.token);
-                    dispatcher.dispatch(actions.RECEIVE_USER_TOKEN, { token: data.token });
-                    dispatcher.dispatch(actions.RECEIVE_USER, { user: data.user });
+                    dispatcher.dispatch(actions.LOGIN_SUCCESS, { token: data.token, user: data.user });
                 });
         },
 
@@ -39,8 +37,7 @@
                 .then(function (data) {
                     dispatcher.dispatch(actions.RECEIVE_USER, { user: data });
                 }, function () {
-                    window.localStorage.clear();
-                    dispatcher.dispatch(actions.USER_LOGGED_OUT, {});
+                    dispatcher.dispatch(actions.USER_LOGGED_OUT);
                 });
         }
     };

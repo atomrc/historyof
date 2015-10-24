@@ -6,7 +6,9 @@
         EventEmitter = require("events").EventEmitter,
         assign = require("object-assign");
 
-    var token;
+    var token = window.localStorage.getItem("token") ?
+        window.localStorage.getItem("token") :
+        null;
 
     var tokenStore = assign({}, EventEmitter.prototype, {
 
@@ -32,13 +34,15 @@
             data = payload.data;
 
         switch (action) {
-            case actions.RECEIVE_USER_TOKEN:
+            case actions.LOGIN_SUCCESS:
                 token = data.token;
+                window.localStorage.setItem("token", token);
                 this.emitChange();
                 break;
 
             case actions.USER_LOGGED_OUT:
                 token = null;
+                window.localStorage.clear();
                 this.emitChange();
                 break;
 

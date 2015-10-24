@@ -5,8 +5,9 @@
         actions: {
             USER_LOGIN: "USER_LOGIN", //log the user with his credentials
             USER_LOGGED_OUT: "USER_LOGGED_OUT", //the user has logged out
+            LOGIN_FAILED: "LOGIN_FAILED", //the sent user's credentials were not recognize by server
+            LOGIN_SUCCESS: "LOGIN_SUCCESS", //the user has been retreived from the server
             RECEIVE_USER: "RECEIVE_USER", //the user has been retreived from the server
-            RECEIVE_USER_TOKEN: "RECEIVE_USER_TOKEN", //the app received the user's token
 
             LOAD_EVENTS: "LOAD_EVENTS",
             CREATE_EVENT: "CREATE_EVENT",

@@ -3,6 +3,7 @@
 var React = require("react"),
     WriteButton = require("./WriteButton.react"),
     StoryForm = require("./StoryForm.react"),
+    TimelineStats = require("./TimelineStats.react"),
     Year = require("./Year.react");
 
 /**
@@ -46,11 +47,11 @@ var Timeline = function(props) {
                     <tbody>
                         <tr>
                             <td>
-                            <h1>{user.pseudo}'s timeline</h1>
-                            <span>{stories.length} stories</span>
+                                <h1>{user.pseudo}'s timeline</h1>
+                                <TimelineStats stories={stories}/>
                             </td>
                             <td>
-                            <WriteButton onClick={() => onEditStory({date: new Date()})}/>
+                                <WriteButton onClick={() => onEditStory({date: new Date()})}/>
                             </td>
                         </tr>
                     </tbody>

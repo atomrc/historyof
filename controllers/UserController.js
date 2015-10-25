@@ -6,7 +6,7 @@ var jwt = require("jsonwebtoken"),
     db = require("../db/db");
 
 function createToken(user) {
-    return jwt.sign(user.id, "tochange", { expiresIn: 60 * 60 * 5 });
+    return jwt.sign({id: user.id}, "tochange", { expiresIn: 60 * 60 * 5 });
 }
 
 module.exports = {
@@ -16,7 +16,7 @@ module.exports = {
             db
                 .model("user")
                 .findOne({
-                    where: { id: req.user }
+                    where: { id: req.user.id }
                 })
                 .then(function (user) {
                     if (!user) {

@@ -17,14 +17,15 @@
 
         onChange: function () {
             this.setState(this.getInitialState(), () => {
-                return !this.state.token ?
-                    this.history.pushState(null, "/login") :
+                return this.state.token ?
+                    this.history.pushState(null, "/me") :
                     null;
             });
         },
 
         componentWillMount: function() {
             tokenStore.addChangeListener(this.onChange);
+            this.onChange();
         },
 
         componentWillUnmount: function () {

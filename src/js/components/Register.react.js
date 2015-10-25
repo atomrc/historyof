@@ -7,34 +7,15 @@
         Link = require("react-router").Link,
         AsyncValidatedInput = require("./AsyncValidatedInput.react"),
         hapi = require("../api/historyOfApi"),
-        userActions = require("../actions/userActions"),
-        tokenStore = require("../stores/tokenStore");
+        userActions = require("../actions/userActions");
 
     module.exports = React.createClass({
-
-        mixins: [Router.History],
 
         getInitialState: function () {
             return {
                 user: {},
-                token: tokenStore.get(),
                 canSubmit: false
             };
-        },
-
-        componentWillMount: function () {
-            tokenStore.addChangeListener(this.tokenChange);
-        },
-
-        componentWillUnmount: function () {
-            tokenStore.removeChangeListener(this.tokenChange);
-        },
-
-        tokenChange: function () {
-            this.setState({ token: tokenStore.get() });
-            if (this.state.token) {
-                this.history.pushState(null, "#/");
-            }
         },
 
         createUser: function (e) {
@@ -121,7 +102,7 @@
                             <input type="submit" value="Submit" disabled={!this.state.canSubmit}/>
                         </form>
 
-                        <Link to="/">login</Link>
+                        <Link to="/login">login</Link>
                     </div>
                 </div>
             );

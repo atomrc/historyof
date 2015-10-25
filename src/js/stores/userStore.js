@@ -23,12 +23,7 @@
         },
 
         emitChange: function () {
-            //timeout hack to avoid having
-            //multiple disptatch at the same time
-            //see https://github.com/facebook/flux/issues/138
-            window.setTimeout(() => {
-                this.emit("CHANGE");
-            }, 0);
+            this.emit("CHANGE");
         }
     });
 
@@ -37,6 +32,7 @@
             data = payload.data;
 
         switch (action) {
+            case actions.LOGIN_SUCCESS:
             case actions.RECEIVE_USER:
                 user = data.user;
                 this.emitChange();

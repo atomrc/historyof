@@ -6,14 +6,12 @@
         EventEmitter = require("events").EventEmitter,
         assign = require("object-assign");
 
-    var token = window.localStorage.getItem("token") ?
-        window.localStorage.getItem("token") :
-        null;
+    var error;
 
-    var tokenStore = assign({}, EventEmitter.prototype, {
+    var loginStore = assign({}, EventEmitter.prototype, {
 
-        get: function () {
-            return token;
+        getError: function () {
+            return error;
         },
 
         addChangeListener: function (callback) {
@@ -35,21 +33,19 @@
 
         switch (action) {
             case actions.LOGIN_SUCCESS:
-                token = data.token;
-                window.localStorage.setItem("token", token);
+                error = null;
                 this.emitChange();
                 break;
 
-            case actions.USER_LOGGED_OUT:
-                token = null;
-                window.localStorage.clear();
+            case actions.LOGIN_FAILED:
+                error = data.error;
                 this.emitChange();
                 break;
 
             default:
                 break;
         }
-    }.bind(tokenStore));
+    }.bind(loginStore));
 
-    module.exports = tokenStore;
+    module.exports = loginStore;
 }());

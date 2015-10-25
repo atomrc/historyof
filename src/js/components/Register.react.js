@@ -8,7 +8,6 @@
         AsyncValidatedInput = require("./AsyncValidatedInput.react"),
         hapi = require("../api/historyOfApi"),
         userActions = require("../actions/userActions"),
-        tokenActions = require("../actions/tokenActions"),
         tokenStore = require("../stores/tokenStore");
 
     module.exports = React.createClass({
@@ -25,8 +24,6 @@
 
         componentWillMount: function () {
             tokenStore.addChangeListener(this.tokenChange);
-
-            tokenActions.getToken();
         },
 
         componentWillUnmount: function () {
@@ -34,9 +31,9 @@
         },
 
         tokenChange: function () {
-            this.setState(this.getInitialState());
+            this.setState({ token: tokenStore.get() });
             if (this.state.token) {
-                this.transitionTo("home");
+                this.history.pushState(null, "#/");
             }
         },
 
@@ -53,7 +50,7 @@
 
         checkValidity: function () {
             this.setState({
-                canSubmit: React.findDOMNode(this.refs.registerForm).checkValidity()
+                canSubmit: this.refs.registerForm.checkValidity()
             });
         },
 
@@ -74,7 +71,6 @@
         },
 
         render: function () {
-
             var user = this.state.user;
 
             return (

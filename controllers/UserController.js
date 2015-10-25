@@ -6,7 +6,7 @@ var jwt = require("jsonwebtoken"),
     db = require("../db/db");
 
 function createToken(user) {
-    return jwt.sign(user.id, "tochange", { expiresInMinutes: 60 * 5 });
+    return jwt.sign(user.id, "tochange", { expiresIn: 60 * 60 * 5 });
 }
 
 module.exports = {

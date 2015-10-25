@@ -28,7 +28,7 @@
 
 
         onChange: function (e) {
-            var input = React.findDOMNode(this.refs.loginInput);
+            var input = this.refs.loginInput;
 
             //invalidate the input before the async check
             input.setCustomValidity(false);

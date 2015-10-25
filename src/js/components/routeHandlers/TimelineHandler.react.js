@@ -25,7 +25,7 @@
 
         componentWillMount: function() {
             eventStore.addChangeListener(this.onChange);
-            eventActions.getAll();
+            window.setTimeout(eventActions.getAll);
         },
 
         componentWillUnmount: function () {

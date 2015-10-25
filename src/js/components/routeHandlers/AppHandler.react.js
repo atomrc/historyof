@@ -4,7 +4,6 @@
     var React = require("react"),
         Router = require("react-router"),
         Login = require("../../components/Login.react"),
-        tokenActions = require("../../actions/tokenActions"),
         tokenStore = require("../../stores/tokenStore");
 
     module.exports = React.createClass({
@@ -23,8 +22,6 @@
 
         componentWillMount: function() {
             tokenStore.addChangeListener(this.onChange);
-            //retrieve the user's stored token (if exists) before launching the app
-            tokenActions.getToken();
         },
 
         componentWillUnmount: function () {

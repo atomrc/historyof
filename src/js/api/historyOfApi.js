@@ -38,7 +38,7 @@
                 return response
                     .json()
                     .then(function (error) {
-                        throw new Error(error);
+                        throw error;
                     });
             });
     }

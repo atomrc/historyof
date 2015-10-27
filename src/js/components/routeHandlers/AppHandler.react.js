@@ -25,6 +25,7 @@
 
         componentWillMount: function() {
             tokenStore.addChangeListener(this.onChange);
+            this.onChange();
         },
 
         componentWillUnmount: function () {

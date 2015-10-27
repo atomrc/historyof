@@ -6,7 +6,7 @@
         fetchPolyfill = require("whatwg-fetch");
 
     var config = {
-        loginUrl: "/login",
+        loginUrl: "/user/authenticate",
         urlPattern: "/u/events/:eid"
     };
 

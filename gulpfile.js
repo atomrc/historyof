@@ -60,7 +60,7 @@ gulp.task("js-app", function() {
 
 gulp.task("jade", function () {
     return gulp
-        .src("./src/index.jade")
+        .src("./src/*.jade")
         .pipe(jade())
         .pipe(gulp.dest("./public"));
 });
@@ -75,7 +75,7 @@ gulp.task("sass", function () {
 gulp.task("watch", function () {
     gulp.watch("src/js/**/*.js", ["js-app"]);
     gulp.watch("src/scss/*.scss", ["sass"]);
-    gulp.watch("src/index.jade", ["jade"]);
+    gulp.watch("src/*.jade", ["jade"]);
 });
 
 gulp.task("default", ["js-vendor", "js-app", "jade", "sass"]);

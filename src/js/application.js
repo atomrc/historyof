@@ -7,6 +7,7 @@
         ReactRouter = require("react-router"),
         Route = ReactRouter.Route,
         Router = ReactRouter.Router,
+        createBrowserHistory = require("history/lib/createBrowserHistory"),
         AppHandler = require("./components/routeHandlers/AppHandler.react"),
         GuestHandler = require("./components/routeHandlers/GuestHandler.react"),
         Register = require("./components/Register.react"),
@@ -15,12 +16,12 @@
         TimelineHandler = require("./components/routeHandlers/TimelineHandler.react");
 
     var routes = (
-        <Router>
+        <Router history={createBrowserHistory()}>
+            <Route component={GuestHandler}>
+                <Route path="register" component={Register}/>
+                <Route path="login" component={Login}/>
+            </Route>
             <Route component={AppHandler}>
-                <Route component={GuestHandler}>
-                    <Route path="/register" component={Register}/>
-                    <Route path="/login" component={Login}/>
-                </Route>
                 <Route component={UserHandler}>
                     <Route path="/me" component={TimelineHandler}/>
                 </Route>

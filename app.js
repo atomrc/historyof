@@ -23,7 +23,7 @@ app.use(bodyParser.json());
 /** API methods **/
 app.post("/user/authenticate", UserController.login);
 app.post("/user/create", UserController.create);
-app.get("/:property/available/:value", UserController.isPropertyAvailable);
+app.get("/check/:property/:value", UserController.isPropertyAvailable);
 
 //Json Web Token for logged part of the app
 app.use("/u", jwt({ secret: "tochange" }), UserController.middlewares.authenticate);

@@ -64,11 +64,11 @@
         },
 
         checkLogin: function (login) {
-            return request("/login/available/" + login);
+            return request("/check/login/" + login);
         },
 
         checkPseudo: function (pseudo) {
-            return request("/pseudo/available/" + pseudo);
+            return request("/check/pseudo/" + pseudo);
         },
 
         getUser: function () {

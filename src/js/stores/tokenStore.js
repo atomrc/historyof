@@ -1,35 +1,19 @@
 /*global require, module, window*/
-(function () {
-    "use strict";
-    var appDispatcher = require("../dispatcher/appDispatcher"),
-        actions = require("../constants/constants").actions,
-        EventEmitter = require("events").EventEmitter,
-        assign = require("object-assign");
+"use strict";
+var appDispatcher = require("../dispatcher/appDispatcher"),
+    actions = require("../constants/constants").actions,
+    FluxStore = require("flux/utils").Store;
 
-    var token = window.localStorage.getItem("token") ?
-        window.localStorage.getItem("token") :
-        null;
+var token = window.localStorage.getItem("token") ?
+    window.localStorage.getItem("token") :
+    null;
 
-    var tokenStore = assign({}, EventEmitter.prototype, {
+class TokenStore extends FluxStore {
+    get() {
+        return token;
+    }
 
-        get: function () {
-            return token;
-        },
-
-        addChangeListener: function (callback) {
-            this.on("CHANGE", callback);
-        },
-
-        removeChangeListener: function (callback) {
-            this.removeListener("CHANGE", callback);
-        },
-
-        emitChange: function () {
-            this.emit("CHANGE");
-        }
-    });
-
-    appDispatcher.register(function (payload) {
+    __onDispatch(payload) {
         var action = payload.action,
             data = payload.data;
 
@@ -37,19 +21,19 @@
             case actions.LOGIN_SUCCESS:
                 token = data.token;
                 window.localStorage.setItem("token", token);
-                this.emitChange();
+                this.__emitChange();
                 break;
 
             case actions.USER_LOGGED_OUT:
                 token = null;
                 window.localStorage.clear();
-                this.emitChange();
+                this.__emitChange();
                 break;
 
             default:
                 break;
         }
-    }.bind(tokenStore));
+    }
+}
 
-    module.exports = tokenStore;
-}());
+module.exports = new TokenStore(appDispatcher);

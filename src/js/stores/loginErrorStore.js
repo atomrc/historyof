@@ -1,51 +1,34 @@
 /*global require, module, window*/
-(function () {
-    "use strict";
-    var appDispatcher = require("../dispatcher/appDispatcher"),
-        actions = require("../constants/constants").actions,
-        EventEmitter = require("events").EventEmitter,
-        assign = require("object-assign");
+var appDispatcher = require("../dispatcher/appDispatcher"),
+    actions = require("../constants/constants").actions,
+    FluxStore = require("flux/utils").Store;
 
-    var error;
+var error;
 
-    var loginStore = assign({}, EventEmitter.prototype, {
+class LoginErrorStore extends FluxStore {
+    get() {
+        return error;
+    }
 
-        getError: function () {
-            return error;
-        },
-
-        addChangeListener: function (callback) {
-            this.on("CHANGE", callback);
-        },
-
-        removeChangeListener: function (callback) {
-            this.removeListener("CHANGE", callback);
-        },
-
-        emitChange: function () {
-            this.emit("CHANGE");
-        }
-    });
-
-    appDispatcher.register(function (payload) {
+    __onDispatch(payload) {
         var action = payload.action,
             data = payload.data;
 
         switch (action) {
             case actions.LOGIN_SUCCESS:
                 error = null;
-                this.emitChange();
+                this.__emitChange();
                 break;
 
             case actions.LOGIN_FAILED:
                 error = data.error;
-                this.emitChange();
+                this.__emitChange();
                 break;
 
             default:
                 break;
         }
-    }.bind(loginStore));
+    }
+}
 
-    module.exports = loginStore;
-}());
+module.exports = new LoginErrorStore(appDispatcher);

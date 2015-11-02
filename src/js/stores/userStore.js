@@ -1,33 +1,16 @@
-/*global require, module, window*/
-(function () {
-    "use strict";
-    var appDispatcher = require("../dispatcher/appDispatcher"),
-        actions = require("../constants/constants").actions,
-        EventEmitter = require("events").EventEmitter,
-        assign = require("object-assign");
+/*global require, module*/
+var appDispatcher = require("../dispatcher/appDispatcher"),
+    actions = require("../constants/constants").actions,
+    FluxStore = require("flux/utils").Store;
 
-    var user;
+var user;
 
-    var userStore = assign({}, EventEmitter.prototype, {
+class UserStore extends FluxStore {
+    get() {
+        return user;
+    }
 
-        get: function () {
-            return user;
-        },
-
-        addChangeListener: function (callback) {
-            this.on("CHANGE", callback);
-        },
-
-        removeChangeListener: function (callback) {
-            this.removeListener("CHANGE", callback);
-        },
-
-        emitChange: function () {
-            this.emit("CHANGE");
-        }
-    });
-
-    appDispatcher.register(function (payload) {
+    __onDispatch(payload) {
         var action = payload.action,
             data = payload.data;
 
@@ -35,18 +18,18 @@
             case actions.LOGIN_SUCCESS:
             case actions.RECEIVE_USER:
                 user = data.user;
-                this.emitChange();
+                this.__emitChange();
                 break;
 
             case actions.USER_LOGGED_OUT:
                 user = null;
-                this.emitChange();
+                this.__emitChange();
                 break;
 
             default:
                 break;
         }
-    }.bind(userStore));
+    }
+}
 
-    module.exports = userStore;
-}());
+module.exports = new UserStore(appDispatcher);

@@ -14,13 +14,14 @@ var libs = [
     "react",
     "react-router",
     "react-dom",
+    "history/lib/createBrowserHistory",
     "react-addons-pure-render-mixin",
     "flux",
+    "flux/utils",
     "moment",
     "pikaday",
     "object-assign",
     "whatwg-fetch",
-    "events",
     "debounce",
     "bcryptjs",
     "uuid"
@@ -45,7 +46,9 @@ gulp.task("js-app", function() {
 
     var b = browserify("src/js/application.js", {
         debug: false,//!production,
-        transform: [babelify]
+        transform: [babelify.configure({
+            presets: ["es2015", "react"]
+        })]
     });
 
     libs.forEach(function (id) {

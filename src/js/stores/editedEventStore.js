@@ -1,39 +1,24 @@
 /*global require, module*/
-(function () {
-    "use strict";
-    var appDispatcher = require("../dispatcher/appDispatcher"),
-        EventEmitter = require("events").EventEmitter,
-        eventActions = require("../constants/constants").actions,
-        assign = require("object-assign");
+var appDispatcher = require("../dispatcher/appDispatcher"),
+    eventActions = require("../constants/constants").actions,
+    assign = require("object-assign"),
+    FluxStore = require("flux/utils").Store;
 
-    var editedEvent = {};
 
-    var editedEventStore = assign({}, EventEmitter.prototype, {
+var editedEvent = {};
 
-        getEditedEvent: function () {
-            return editedEvent;
-        },
+function update(updates) {
+    editedEvent = assign({}, editedEvent, updates);
+}
 
-        isEditing() { return !!editedEvent.date },
+class EditedEventStore extends FluxStore {
+    get() {
+        return editedEvent;
+    }
 
-        update(updates) {
-            editedEvent = assign({}, editedEvent, updates);
-        },
+    isEditing() { return !!editedEvent.date }
 
-        addChangeListener: function (callback) {
-            this.on("CHANGE", callback);
-        },
-
-        removeChangeListener: function (callback) {
-            this.removeListener("CHANGE", callback);
-        },
-
-        emitChange: function () {
-            this.emit("CHANGE");
-        }
-    });
-
-    appDispatcher.register(function (payload) {
+    __onDispatch(payload) {
         var action = payload.action,
             data = payload.data;
 
@@ -41,25 +26,25 @@
 
             case eventActions.EDIT_EVENT:
                 editedEvent = data.event;
-                this.emitChange();
+                this.__emitChange();
                 break;
 
             case eventActions.CREATE_EVENT:
             case eventActions.CANCEL_EDIT_EVENT:
             case eventActions.UPDATE_EVENT:
                 editedEvent = {};
-                this.emitChange();
+                this.__emitChange();
                 break;
 
             case eventActions.UPDATE_EDITED_EVENT:
-                this.update(data.updates);
-                this.emitChange();
+                update(data.updates);
+                this.__emitChange();
                 break;
 
             default:
                 break;
         }
-    }.bind(editedEventStore));
+    }
+}
 
-    module.exports = editedEventStore;
-}());
+module.exports = new EditedEventStore(appDispatcher);

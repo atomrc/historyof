@@ -4,7 +4,7 @@
   "description": "Don't forget any of what has made you",
   "main": "index.js",
   "scripts": {
-    "test": "db-migrate up && mocha tests/api_spec.js && jest",
+    "test": "db-migrate up && mocha tests/api/api_spec.js && mocha --harmony tests/front/**",
     "install": "gulp && db-migrate up"
   },
   "author": "Thomas Belin",

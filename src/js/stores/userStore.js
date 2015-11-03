@@ -1,7 +1,9 @@
 /*global require, module*/
-var appDispatcher = require("../dispatcher/appDispatcher"),
-    actions = require("../constants/constants").actions,
+"use strict";
+var actions = require("../constants/constants").actions,
     FluxStore = require("flux/utils").Store;
+
+var instance;
 
 var user;
 
@@ -32,4 +34,7 @@ class UserStore extends FluxStore {
     }
 }
 
-module.exports = new UserStore(appDispatcher);
+module.exports = function (dispatcher) {
+    instance = instance || new UserStore(dispatcher);
+    return instance;
+};

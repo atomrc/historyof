@@ -1,9 +1,10 @@
 /*global require, module*/
-var appDispatcher = require("../dispatcher/appDispatcher"),
-    eventActions = require("../constants/constants").actions,
+"use strict";
+var eventActions = require("../constants/constants").actions,
     assign = require("object-assign"),
     FluxStore = require("flux/utils").Store;
 
+var instance;
 
 var editedEvent = {};
 
@@ -47,4 +48,7 @@ class EditedEventStore extends FluxStore {
     }
 }
 
-module.exports = new EditedEventStore(appDispatcher);
+module.exports = function (dispatcher) {
+    instance = instance || new EditedEventStore(dispatcher);
+    return instance;
+};

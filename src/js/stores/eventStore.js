@@ -1,7 +1,9 @@
 /*global require, module, window*/
-var appDispatcher = require("../dispatcher/appDispatcher"),
-    eventActions = require("../constants/constants").actions,
+"use strict";
+var eventActions = require("../constants/constants").actions,
     FluxStore = require("flux/utils").Store;
+
+var instance;
 
 var events;
 
@@ -15,18 +17,6 @@ var events;
 function initEvent(event) {
     event.date = new Date(event.date);
     return event;
-}
-
-/**
- * findEventIndex - find an event index in the events array
- *
- * @param {String} id - the id of the event to find
- * @return {Number} index - the index of the event in the events array
- */
-function findEventIndex(id) {
-    return events.reduce(function (prev, e, index) {
-        return e.id === id;
-    }, -1);
 }
 
 /**
@@ -117,4 +107,7 @@ class EventStore extends FluxStore {
     }
 }
 
-module.exports = new EventStore(appDispatcher);
+module.exports = function (dispatcher) {
+    instance = instance || new EventStore(dispatcher);
+    return instance;
+};

@@ -1,4 +1,5 @@
 /*global require, module, window*/
+"use strict";
 var appDispatcher = require("../dispatcher/appDispatcher"),
     actions = require("../constants/constants").actions,
     FluxStore = require("flux/utils").Store;

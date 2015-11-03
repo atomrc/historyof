@@ -3,7 +3,7 @@
 
 "use strict";
 var request = require("supertest"),
-    app = require("../app"),
+    app = require("../../app"),
     setup = require("./setup"),
     assign = require("object-assign"),
     Promise = require("es6-promise").Promise,

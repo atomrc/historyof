@@ -4,10 +4,12 @@
 var production = (process.env.NODE_ENV === "production");
 
 var gulp = require("gulp"),
-    browserify = require("browserify"),
     jade = require("gulp-jade"),
+    browserify = require("browserify"),
     babelify = require("babelify"),
+    uglify = require("gulp-uglify"),
     sass = require("gulp-sass"),
+    buffer = require('vinyl-buffer'),
     source = require("vinyl-source-stream");
 
 var libs = [
@@ -28,9 +30,7 @@ var libs = [
 ];
 
 gulp.task("js-vendor", function() {
-    var b = browserify({
-        debug: false//!production
-    });
+    var b = browserify();
 
     libs.forEach(function (id) {
         b.require(id, { expose: id });
@@ -39,16 +39,19 @@ gulp.task("js-vendor", function() {
     return b
         .bundle()
         .pipe(source("vendor.js"))
+        .pipe(buffer())
+        .pipe(uglify())
         .pipe(gulp.dest("./public/js/"));
 });
 
 gulp.task("js-app", function() {
 
     var b = browserify("src/js/application.js", {
-        debug: false,//!production,
-        transform: [babelify.configure({
-            presets: ["es2015", "react"]
-        })]
+        transform: [
+            babelify.configure({
+                presets: ["es2015", "react"]
+            })
+        ]
     });
 
     libs.forEach(function (id) {
@@ -58,7 +61,11 @@ gulp.task("js-app", function() {
     return b
         .bundle()
         .pipe(source("application.js"))
+        .pipe(buffer())
+        //.pipe(uglify())
         .pipe(gulp.dest("./public/js/"));
+
+
 });
 
 gulp.task("jade", function () {

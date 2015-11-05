@@ -43,10 +43,11 @@
     "gulp": "*",
     "gulp-jade": "*",
     "gulp-sass": "*",
-    "gulp-uglify": "*",
+    "gulp-uglify": "^1.4.2",
     "jest-cli": "*",
     "mocha": "^2.3.3",
     "supertest": "*",
+    "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "*"
   }
 }

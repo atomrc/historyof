@@ -1,7 +1,6 @@
 /*global require, module, window*/
 "use strict";
-var appDispatcher = require("../dispatcher/appDispatcher"),
-    actions = require("../constants/constants").actions,
+var actions = require("../constants/constants").actions,
     FluxStore = require("flux/utils").Store;
 
 var token = window.localStorage.getItem("token") ?
@@ -36,4 +35,4 @@ class TokenStore extends FluxStore {
     }
 }
 
-module.exports = new TokenStore(appDispatcher);
+module.exports = TokenStore;

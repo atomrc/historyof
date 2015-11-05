@@ -2,7 +2,7 @@
 (function () {
     "use strict";
     var assign = require("object-assign"),
-        tokenStore = require("../stores/tokenStore"),
+        tokenStore = require("../stores/storeFactory").get("tokenStore"),
         fetchPolyfill = require("whatwg-fetch");
 
     var config = {

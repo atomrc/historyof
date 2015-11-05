@@ -6,23 +6,18 @@ var React = require("react"),
     Route = ReactRouter.Route,
     Router = ReactRouter.Router,
     createBrowserHistory = require("history/lib/createBrowserHistory"),
-    AppHandler = require("./components/routeHandlers/AppHandler.react"),
-    GuestHandler = require("./components/routeHandlers/GuestHandler.react"),
+    AppContainer = require("./components/containers/AppContainer.react"),
+    GuestContainer = require("./components/containers/GuestContainer.react"),
     Register = require("./components/Register.react"),
-    Login = require("./components/Login.react"),
-    UserHandler = require("./components/routeHandlers/UserHandler.react"),
-    TimelineHandler = require("./components/routeHandlers/TimelineHandler.react");
+    TimelineContainer = require("./components/containers/TimelineContainer.react");
 
 var routes = (
     <Router history={createBrowserHistory()}>
-        <Route component={GuestHandler}>
-            <Route path="register" component={Register}/>
-            <Route path="login" component={Login}/>
+        <Route components={GuestContainer}>
+            <Route path="/register" component={Register}/>
         </Route>
-        <Route component={AppHandler}>
-            <Route component={UserHandler}>
-                <Route path="/me" component={TimelineHandler}/>
-            </Route>
+        <Route component={AppContainer}>
+            <Route path="/me" component={TimelineContainer}/>
         </Route>
     </Router>
 );

@@ -1,15 +1,13 @@
-/*global require, module*/
+/*global require, module, window*/
 "use strict";
 var actions = require("../constants/constants").actions,
     FluxStore = require("flux/utils").Store;
 
-var instance;
+var error;
 
-var user;
-
-class UserStore extends FluxStore {
+class LoginErrorStore extends FluxStore {
     get() {
-        return user;
+        return error;
     }
 
     __onDispatch(payload) {
@@ -18,13 +16,12 @@ class UserStore extends FluxStore {
 
         switch (action) {
             case actions.LOGIN_SUCCESS:
-            case actions.RECEIVE_USER:
-                user = data.user;
+                error = null;
                 this.__emitChange();
                 break;
 
-            case actions.USER_LOGGED_OUT:
-                user = null;
+            case actions.LOGIN_FAILED:
+                error = data.error;
                 this.__emitChange();
                 break;
 
@@ -34,7 +31,4 @@ class UserStore extends FluxStore {
     }
 }
 
-module.exports = function (dispatcher) {
-    instance = instance || new UserStore(dispatcher);
-    return instance;
-};
+module.exports = LoginErrorStore;

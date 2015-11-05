@@ -10,7 +10,8 @@ describe("editedEventStore", function () {
             isDispatching: () => true
         },
         actions = require(APP_PATH + "/constants/constants").actions,
-        editedEventStore = require(APP_PATH + "/stores/editedEventStore")(dispatcher),
+        EditedEventStore = require(APP_PATH + "/stores/EditedEventStore"),
+        editedEventStore = new EditedEventStore(dispatcher),
         callback;
 
     function setEditing() {

@@ -3,7 +3,7 @@ var React = require("react"),
     eventActions = require("../actions/eventActions"),
     Pikaday = require("./Pikaday.react"),
     editedEventActions = require("../actions/editedEventActions"),
-    editedEventStore = require("../stores/editedEventStore");
+    editedEventStore = require("../stores/storeFactory").get("editedEventStore");
 
 var listenerToken;
 var EventForm = React.createClass({

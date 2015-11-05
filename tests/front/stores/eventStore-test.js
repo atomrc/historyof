@@ -3,18 +3,19 @@
 var APP_PATH = __dirname + "/../../../src/js",
     expect = require("expect.js");
 
-describe("eventStore", function () {
+describe("eventsStore", function () {
     "use strict";
     var dispatcher = {
             register: (cb) => { callback = cb; },
             isDispatching: () => true
         },
         actions = require(APP_PATH + "/constants/constants").actions,
-        eventStore = require(APP_PATH + "/stores/eventStore")(dispatcher),
+        EventsStore = require(APP_PATH + "/stores/EventsStore"),
+        eventsStore = new EventsStore(dispatcher),
         callback;
 
     it("should be empty at init", function () {
-        expect(eventStore.get()).to.be(undefined);
+        expect(eventsStore.get()).to.be(undefined);
     });
 
     it("loads event from the server", function () {
@@ -28,8 +29,8 @@ describe("eventStore", function () {
                 }]
         }});
 
-        expect(eventStore.get().length).to.be(1);
-        expect(eventStore.get()[0].date.getFullYear()).to.be(2015);
+        expect(eventsStore.get().length).to.be(1);
+        expect(eventsStore.get()[0].date.getFullYear()).to.be(2015);
     });
 
     it("create and update with the server's response", function () {
@@ -50,13 +51,13 @@ describe("eventStore", function () {
             };
 
         callback(createAction);
-        newEvent = eventStore.get()[1];
-        expect(eventStore.get().length).to.be(2);
+        newEvent = eventsStore.get()[1];
+        expect(eventsStore.get().length).to.be(2);
         expect(newEvent.id).to.be(15);
 
         callback(confirmCreateAction);
-        expect(eventStore.get().length).to.be(2);
-        expect(eventStore.get()[1].id).to.be(15);
+        expect(eventsStore.get().length).to.be(2);
+        expect(eventsStore.get()[1].id).to.be(15);
     });
 
     it("create and remove an event", function () {
@@ -75,10 +76,10 @@ describe("eventStore", function () {
             };
 
         callback(createAction);
-        expect(eventStore.get().length).to.be(3);
+        expect(eventsStore.get().length).to.be(3);
 
         callback(removeAction);
-        expect(eventStore.get().length).to.be(2);
+        expect(eventsStore.get().length).to.be(2);
     });
 
     it("update event", function () {
@@ -93,9 +94,9 @@ describe("eventStore", function () {
                 }
             };
 
-        expect(eventStore.get()[0].title).to.be("event");
+        expect(eventsStore.get()[0].title).to.be("event");
         callback(updateAction);
-        expect(eventStore.get()[0].title).to.be("another title");
+        expect(eventsStore.get()[0].title).to.be("another title");
 
     });
 });

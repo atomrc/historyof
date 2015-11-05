@@ -1,9 +1,11 @@
 /*global require, module*/
 var React = require("react"),
     Router = require("react-router"),
-    tokenStore = require("../../stores/tokenStore");
+    storeFactory = require("../../stores/storeFactory");
 
 var listenerToken;
+var tokenStore = storeFactory.get("tokenStore");
+
 module.exports = React.createClass({
 
     mixins: [Router.History],
@@ -16,8 +18,8 @@ module.exports = React.createClass({
 
     onChange: function () {
         this.setState(this.getInitialState(), () => {
-            return !this.state.token ?
-                this.history.pushState(null, "/login") :
+            return this.state.token ?
+                this.history.pushState(null, "/me") :
                 null;
         });
     },

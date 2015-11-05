@@ -2,7 +2,7 @@
 var React = require("react"),
     ReactDom = require("react-dom"),
     Link = require("react-router").Link,
-    loginErrorStore = require("../stores/loginErrorStore"),
+    loginErrorStore = require("../stores/storeFactory").get("loginErrorStore"),
     userActions = require("../actions/userActions");
 
 var listenerToken;
@@ -43,7 +43,6 @@ var Login = React.createClass({
     },
 
     render: function () {
-
         var user = this.state.user,
             errorMessage = this.state.error ?
                 (<div className="form-error">{this.state.error}</div>) :

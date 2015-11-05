@@ -9,8 +9,6 @@
     module.exports = {
 
         getAll: function () {
-            dispatcher.dispatch(actions.LOAD_EVENTS);
-
             historyOfApi
                 .getEvents()
                 .then(function (events) {

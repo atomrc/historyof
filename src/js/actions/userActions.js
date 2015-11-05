@@ -6,8 +6,6 @@ var actions = require("../constants/constants").actions,
 
 module.exports = {
     login: function (login, password) {
-        dispatcher.dispatch(actions.USER_LOGIN);
-
         return historyOfApi
             .login(login, password)
             .then(function (data) {

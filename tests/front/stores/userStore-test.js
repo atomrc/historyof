@@ -10,7 +10,8 @@ describe("userStore", function () {
             isDispatching: () => true
         },
         actions = require(APP_PATH + "/constants/constants").actions,
-        userStore = require(APP_PATH + "/stores/userStore")(dispatcher),
+        UserStore = require(APP_PATH + "/stores/UserStore"),
+        userStore = new UserStore(dispatcher),
         callback;
 
     it("should load data from the server", function () {

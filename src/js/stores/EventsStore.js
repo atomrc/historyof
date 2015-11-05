@@ -59,7 +59,7 @@ function add (event) {
 }
 
 
-class EventsStore extends FluxStore {
+class EventStore extends FluxStore {
     get() {
         return events;
     }
@@ -107,4 +107,7 @@ class EventsStore extends FluxStore {
     }
 }
 
-module.exports = EventsStore;
+module.exports = function (dispatcher) {
+    instance = instance || new EventStore(dispatcher);
+    return instance;
+};

@@ -1,12 +1,13 @@
-/*global expect, beforeEach, it*/
+/*global beforeEach, it, after*/
 /*eslint-env node */
 
 "use strict";
 var request = require("supertest"),
-    app = require("../app"),
+    app = require("../../app"),
     setup = require("./setup"),
     assign = require("object-assign"),
-    Promise = require("es6-promise").Promise;
+    Promise = require("es6-promise").Promise,
+    expect = require("expect.js");
 
 beforeEach(function (done) {
     //clean the database before playing the tests
@@ -15,18 +16,9 @@ beforeEach(function (done) {
     });
 });
 
-/**
- * Override the finishCallback so we can add some cleanup methods.
- * This is run after all tests have been completed.
- */
-var _finishCallback = jasmine.Runner.prototype.finishCallback;
-jasmine.Runner.prototype.finishCallback = function () {
-    // Run the old finishCallback
-    _finishCallback.bind(this)();
-
+after(function () {
     setup.disconnect();
-    // add your cleanup code here...
-};
+});
 
 var api = {
     createUser: function (user) {
@@ -43,7 +35,7 @@ var api = {
 
     login: function (login, pwd) {
         return request(app)
-            .post("/login")
+            .post("/user/authenticate")
             .send({
                 login: login,
                 password: pwd
@@ -52,12 +44,12 @@ var api = {
 
     checkLogin: function (login) {
         return request(app)
-            .get("/login/available/" + login);
+            .get("/check/login/" + login);
     },
 
     checkPseudo: function (pseudo) {
         return request(app)
-            .get("/pseudo/available/" + pseudo);
+            .get("/check/pseudo/" + pseudo);
     },
 
     createEvent: function (userToken, event) {
@@ -144,9 +136,9 @@ describe("API", function () {
             .end(function (err, res) {
                 if (err) { return done(err); }
                 var u = res.body.user;
-                expect(u.id).toBeDefined();
-                expect(u.password).not.toBeDefined();
-                expect(u.login).toBe(testUser.login);
+                expect(u.id).to.not.be(undefined);
+                expect(u.password).to.be(undefined);
+                expect(u.login).to.be(testUser.login);
                 done();
             });
     });
@@ -167,7 +159,7 @@ describe("API", function () {
             .expect(200)
             .end(function (err, res) {
                 if (err) { return done(err); }
-                expect(res.body.available).toBeTruthy();
+                expect(res.body.available).to.be.ok();
                 done();
             });
     });
@@ -181,7 +173,7 @@ describe("API", function () {
                     .expect(200)
                     .end(function (err, res) {
                         if (err) { return done(err); }
-                        expect(res.body.available).toBeFalsy();
+                        expect(res.body.available).to.not.be.ok();
                         done();
                     });
             });
@@ -193,7 +185,7 @@ describe("API", function () {
             .expect(200)
             .end(function (err, res) {
                 if (err) { return done(err); }
-                expect(res.body.available).toBeTruthy();
+                expect(res.body.available).to.be.ok();
                 done();
             });
     });
@@ -207,7 +199,7 @@ describe("API", function () {
                     .expect(200)
                     .end(function (err, res) {
                         if (err) { return done(err); }
-                        expect(res.body.available).toBeFalsy();
+                        expect(res.body.available).to.not.be.ok();
                         done();
                     });
             });
@@ -235,8 +227,8 @@ describe("API", function () {
                     .end(function (err, res) {
                         if (err) { return done(err); }
                         var u = res.body;
-                        expect(u.id).toEqual(loggedUser.id);
-                        expect(u.pseudo).toEqual(loggedUser.pseudo);
+                        expect(u.id).to.equal(loggedUser.id);
+                        expect(u.pseudo).to.equal(loggedUser.pseudo);
                         done();
                     });
             });
@@ -251,8 +243,8 @@ describe("API", function () {
                     .end(function (err, res) {
                         if (err) { return done(err); }
                         var body = res.body;
-                        expect(body.token).toBeDefined();
-                        expect(body.user.login).toEqual(userData.user.login);
+                        expect(body.token).to.not.be(undefined);
+                        expect(body.user.login).to.be(userData.user.login);
 
                         done();
                     });
@@ -280,8 +272,8 @@ describe("API", function () {
                         if (err) { return done(err); }
                         var event = res.body;
 
-                        expect(event.title).toBe(testEvent.title);
-                        expect(event.id).toBeDefined();
+                        expect(event.title).to.be(testEvent.title);
+                        expect(event.id).to.not.be(undefined);
                         done();
                     });
             });
@@ -298,8 +290,8 @@ describe("API", function () {
                     .getEvents(token)
                     .end(function (err, res) {
                         if (err) { return done(err); }
-                        expect(res.body.length).toBe(1);
-                        expect(res.body[0]).toEqual(datas.event);
+                        expect(res.body.length).to.be(1);
+                        expect(res.body[0]).to.eql(event);
                         done();
                     });
             });
@@ -316,9 +308,9 @@ describe("API", function () {
                         if (err) { return done(err); }
 
                         var e = res.body;
-                        expect(e.title).toBe("new title");
-                        expect(e.id).toBe(datas.event.id);
-                        expect(e.date).toEqual(datas.event.date);
+                        expect(e.title).to.be("new title");
+                        expect(e.id).to.be(datas.event.id);
+                        expect(e.date).to.equal(datas.event.date);
 
                         done();
                     });

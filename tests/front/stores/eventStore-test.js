@@ -1,18 +1,21 @@
-/*global expect, it, jest, describe, require*/
+/*global it, describe, require*/
+"use strict";
+var APP_PATH = __dirname + "/../../../src/js",
+    expect = require("expect.js");
 
-var APP_PATH = "../..";
-jest.dontMock(APP_PATH + "/stores/eventStore");
-jest.dontMock("object-assign");
-
-describe("eventStore", function () {
+describe("eventsStore", function () {
     "use strict";
-    var dispatcher = require(APP_PATH + "/dispatcher/appDispatcher"),
+    var dispatcher = {
+            register: (cb) => { callback = cb; },
+            isDispatching: () => true
+        },
         actions = require(APP_PATH + "/constants/constants").actions,
-        eventStore = require(APP_PATH + "/stores/eventStore"),
-        callback = dispatcher.register.mock.calls[0][0];
+        EventsStore = require(APP_PATH + "/stores/EventsStore"),
+        eventsStore = new EventsStore(dispatcher),
+        callback;
 
     it("should be empty at init", function () {
-        expect(eventStore.get()).toBeUndefined();
+        expect(eventsStore.get()).to.be(undefined);
     });
 
     it("loads event from the server", function () {
@@ -22,14 +25,12 @@ describe("eventStore", function () {
                 events: [{
                     id: 1,
                     title: "event",
-                    type: "email",
                     date: "2015-04-27T18:45:01.995Z"
                 }]
-            }
-        });
+        }});
 
-        expect(eventStore.get().length).toBe(1);
-        expect(eventStore.get()[0].date.getFullYear()).toBe(2015);
+        expect(eventsStore.get().length).to.be(1);
+        expect(eventsStore.get()[0].date.getFullYear()).to.be(2015);
     });
 
     it("create and update with the server's response", function () {
@@ -37,7 +38,6 @@ describe("eventStore", function () {
 
         var newEvent = {
                 title: "new event",
-                type: "event",
                 date: new Date(),
                 id: 15
             },
@@ -51,21 +51,19 @@ describe("eventStore", function () {
             };
 
         callback(createAction);
-        newEvent = eventStore.get()[1];
-        expect(eventStore.get().length).toBe(2);
-        expect(newEvent.id).toBeDefined();
+        newEvent = eventsStore.get()[1];
+        expect(eventsStore.get().length).to.be(2);
+        expect(newEvent.id).to.be(15);
 
         callback(confirmCreateAction);
-        expect(eventStore.get().length).toBe(2);
-        //check that it has an id (corresponding to the id in the DB)
-        expect(eventStore.get()[1].id).toBe(15);
+        expect(eventsStore.get().length).to.be(2);
+        expect(eventsStore.get()[1].id).to.be(15);
     });
 
     it("create and remove an event", function () {
         var newEvent = {
                 id: 12,
                 title: "new Event",
-                type: "email",
                 date: new Date()
             },
             createAction = {
@@ -78,16 +76,16 @@ describe("eventStore", function () {
             };
 
         callback(createAction);
-        expect(eventStore.get().length).toBe(3);
+        expect(eventsStore.get().length).to.be(3);
 
         callback(removeAction);
-        expect(eventStore.get().length).toBe(2);
+        expect(eventsStore.get().length).to.be(2);
     });
 
     it("update event", function () {
         var updated = {
                 id: 1,
-                type: "newtype"
+                title: "another title"
             },
             updateAction = {
                 action: actions.UPDATE_EVENT,
@@ -96,9 +94,9 @@ describe("eventStore", function () {
                 }
             };
 
-        expect(eventStore.get()[0].type).toBe("email");
+        expect(eventsStore.get()[0].title).to.be("event");
         callback(updateAction);
-        expect(eventStore.get()[0].type).toBe("newtype");
+        expect(eventsStore.get()[0].title).to.be("another title");
 
     });
 });

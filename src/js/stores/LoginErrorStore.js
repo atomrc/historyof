@@ -1,7 +1,6 @@
 /*global require, module, window*/
 "use strict";
-var appDispatcher = require("../dispatcher/appDispatcher"),
-    actions = require("../constants/constants").actions,
+var actions = require("../constants/constants").actions,
     FluxStore = require("flux/utils").Store;
 
 var error;
@@ -32,4 +31,4 @@ class LoginErrorStore extends FluxStore {
     }
 }
 
-module.exports = new LoginErrorStore(appDispatcher);
+module.exports = LoginErrorStore;

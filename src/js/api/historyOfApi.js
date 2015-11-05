@@ -2,11 +2,11 @@
 (function () {
     "use strict";
     var assign = require("object-assign"),
-        tokenStore = require("../stores/tokenStore"),
+        tokenStore = require("../stores/storeFactory").get("tokenStore"),
         fetchPolyfill = require("whatwg-fetch");
 
     var config = {
-        loginUrl: "/login",
+        loginUrl: "/user/authenticate",
         urlPattern: "/u/events/:eid"
     };
 
@@ -64,11 +64,11 @@
         },
 
         checkLogin: function (login) {
-            return request("/login/available/" + login);
+            return request("/check/login/" + login);
         },
 
         checkPseudo: function (pseudo) {
-            return request("/pseudo/available/" + pseudo);
+            return request("/check/pseudo/" + pseudo);
         },
 
         getUser: function () {

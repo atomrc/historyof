@@ -10,12 +10,20 @@ var bodyParser = require("body-parser"),
 var app = express();
 
 app.use(express.static("public", {}));
+function sendApp(req, res) {
+    res.sendFile(__dirname + "/public/app.html");
+}
+app.use("/me", sendApp);
+app.use("/register", sendApp);
+app.use("/login", sendApp);
 app.use(bodyParser.json());
 
-app.post("/login", UserController.login);
+/** front **/
 
+/** API methods **/
+app.post("/user/authenticate", UserController.login);
 app.post("/user/create", UserController.create);
-app.get("/:property/available/:value", UserController.isPropertyAvailable);
+app.get("/check/:property/:value", UserController.isPropertyAvailable);
 
 //Json Web Token for logged part of the app
 app.use("/u", jwt({ secret: "tochange" }), UserController.middlewares.authenticate);

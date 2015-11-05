@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "db-migrate up && mocha tests/api/api_spec.js && mocha --harmony tests/front/**",
-    "install": "gulp && db-migrate up"
+    "start": "gulp && db-migrate up && node index.js"
   },
   "author": "Thomas Belin",
   "license": "ISC",

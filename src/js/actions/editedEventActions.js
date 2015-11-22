@@ -1,12 +1,14 @@
 /*global require, module*/
-(function () {
-    "use strict";
-    var actions = require("../constants/constants").actions,
-        dispatcher = require("../dispatcher/appDispatcher");
+"use strict";
+var actions = require("../constants/constants").actions;
 
-    module.exports = {
-        update(updates) {
-            dispatcher.dispatch(actions.UPDATE_EDITED_EVENT, {updates: updates});
-        }
-    };
-}());
+module.exports = {
+    update(updates) {
+        return {
+            type:actions.UPDATE_EDITED_EVENT,
+            payload: {
+                updates: updates
+            }
+        };
+    }
+};

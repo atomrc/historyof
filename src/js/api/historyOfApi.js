@@ -2,7 +2,6 @@
 (function () {
     "use strict";
     var assign = require("object-assign"),
-        tokenStore = require("../stores/storeFactory").get("tokenStore"),
         fetchPolyfill = require("whatwg-fetch");
 
     var config = {
@@ -11,23 +10,15 @@
     };
 
     function request(url, params) {
-        var conf = assign({}, {
-            method: "GET",
-            headers: {
-                "Accept": "application/json",
-                "Content-Type": "application/json"
-            }
-        }, params);
+        params.method = params.method ? params.method : "GET";
+        params.headers = assign({}, {
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+        }, params.headers);
 
-        var token = tokenStore.get();
+        params.body = params.body ? JSON.stringify(params.body) : undefined;
 
-        if (token) {
-            conf.headers.Authorization = "Bearer " + token;
-        }
-
-        conf.body = conf.body ? JSON.stringify(conf.body) : undefined;
-
-        return fetch(url, conf)
+        return fetch(url, params)
             .then(function (response) {
                 if (!response.ok) {
                     throw response;
@@ -43,6 +34,20 @@
             });
     }
 
+    function requestProtected(url, token, params) {
+        if (!token) {
+            throw new Error("requesting protected ressource with no token");
+        }
+
+        var conf = assign({}, {
+            headers: {
+                Authorization: "Bearer " + token
+            }
+        }, params);
+
+        return request(url, conf);
+    }
+
     function generateUrl(url, data) {
         data = data || {};
         for (var i in data) {
@@ -50,6 +55,11 @@
         }
         //cut the end of the pattern to remove unbinded datas
         return url.replace(/\/:.*/g, "");
+    }
+
+    function initEvent (event) {
+        event.date = new Date(event.date);
+        return event;
     }
 
     var api = {
@@ -71,8 +81,8 @@
             return request("/check/pseudo/" + pseudo);
         },
 
-        getUser: function () {
-            return request("/u");
+        getUser: function (token) {
+            return requestProtected("/u", token);
         },
 
         createUser: function (user) {
@@ -82,26 +92,29 @@
             });
         },
 
-        getEvents: function () {
-            return request("/u/events");
+        getEvents: function (token) {
+            return requestProtected("/u/events", token)
+                .then((events) => {
+                    return events.map(initEvent)
+                });
         },
 
-        createEvent: function (event) {
-            return request("/u/events", {
-                method: "POST",
-                body: event
-            });
+        createEvent: function (token, event) {
+            return requestProtected("/u/events", token, {
+                    method: "POST",
+                    body: event
+                }).then(initEvent);
         },
 
-        updateEvent: function (event) {
-            request(generateUrl(config.urlPattern, { eid: event.id }), {
+        updateEvent: function (token, event) {
+            requestProtected(generateUrl(config.urlPattern, { eid: event.id }), token, {
                 method: "PUT",
                 body: event
-            });
+            }).then(initEvent);
         },
 
-        remove: function (event) {
-            request(generateUrl(config.urlPattern, { eid: event.id }), {
+        remove: function (token, event) {
+            requestProtected(generateUrl(config.urlPattern, token, { eid: event.id }), {
                 method: "DELETE"
             });
         }

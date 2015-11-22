@@ -1,59 +1,33 @@
 /*global require, module*/
 var React = require("react"),
-    Component = React.Component,
-    Container = require("flux/utils").Container,
-    Router = require("react-router"),
-    Link = Router.Link,
-    Login = require("../Login.react"),
+    connect = require("react-redux").connect,
     userActions = require("../../actions/userActions"),
-    storeFactory = require("../../stores/storeFactory");
+    Login = require("../Login.react");
 
-var tokenStore = storeFactory.get("tokenStore"),
-    userStore = storeFactory.get("userStore");
-
-class AppContainer extends Component {
-
-    constructor() {
-        userActions.getUser();
-        super();
+var AppContainer = (props) => {
+    let {token, user, dispatch, children} = props;
+    if (!token) {
+        return (<Login onLogin={(login, password) => dispatch(userActions.login(login, password))}/>);
     }
 
-    static getStores() {
-        return [tokenStore, userStore];
+    if (!user.id) {
+        dispatch(userActions.getUser(token));
+        return (<span>Loading...</span>);
     }
 
-    static calculateState() {
-        return {
-            token: tokenStore.get(),
-            user: userStore.get()
-        };
-    }
-
-    logout() {
-        userActions.logout();
-    }
-
-    render() {
-        var {token, user} = this.state;
-
-        if (!token) {
-            return (<Login/>);
-        }
-
-        if (!user) {
-            return (<div>loading ...</div>);
-        }
-
-        return (
+    return (
             <div id="app">
                 <header id="app-header">
-                    <Link to="/me"><i className="fa fa-book"></i> <span className="user">{user.pseudo}</span></Link>
-                    <button className="logout" onClick={this.logout}><i className="fa fa-power-off"></i></button>
+                    <i className="fa fa-book"></i> <span className="user">{user.pseudo}</span>
+                    <button className="logout" onClick={() => {
+                        dispatch(userActions.logout())
+                    }}>
+                        <i className="fa fa-power-off"></i>
+                    </button>
                 </header>
-                {React.cloneElement(this.props.children, { user: user })}
+                {children}
             </div>
         );
-    }
-}
+};
 
-module.exports = Container.create(AppContainer);
+module.exports = connect(state => state)(AppContainer);

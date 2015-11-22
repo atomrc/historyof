@@ -1,19 +1,17 @@
 /*global module, require*/
-(function () {
-    "use strict";
-    var React = require("react"),
-        editedEventActions = require("../actions/editedEventActions");
+"use strict";
+var React = require("react");
 
-    var EventForm = React.createClass({
+var WriteButton = (props) => {
+    return (
+        <button className="flat-button" onClick={props.onClick}>
+            <i className="fa fa-book"></i> I feel like writting :)
+        </button>
+    );
+};
 
-        startEditing: function () {
-            editedEventActions.update({ date: new Date() });
-        },
+WriteButton.propTypes = {
+    onClick: React.PropTypes.func.isRequired
+}
 
-        render: function () {
-            return (<button className="flat-button" onClick={this.startEditing}><i className="fa fa-book"></i> I feel like writting :)</button>);
-        }
-    });
-
-    module.exports = EventForm;
-}());
+module.exports = WriteButton;

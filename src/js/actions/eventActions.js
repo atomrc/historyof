@@ -2,46 +2,79 @@
 (function () {
     "use strict";
     var actions = require("../constants/constants").actions,
-        dispatcher = require("../dispatcher/appDispatcher"),
         historyOfApi = require("../api/historyOfApi"),
         uuid = require("uuid");
 
     module.exports = {
 
-        getAll: function () {
-            historyOfApi
-                .getEvents()
-                .then(function (events) {
-                    dispatcher.dispatch(actions.RECEIVE_EVENTS, { events: events });
-                });
+        getAll: (token) => {
+            return (dispatch) => {
+                historyOfApi
+                    .getEvents(token)
+                    .then(function (events) {
+                        dispatch({
+                            type: actions.RECEIVE_EVENTS,
+                            payload: {
+                                events: events
+                            }
+                        });
+                    });
+            }
         },
 
         edit: function (event) {
-            dispatcher.dispatch(actions.EDIT_EVENT, { event: event });
+            return {
+                type: actions.EDIT_EVENT,
+                payload: {
+                    event: event
+                }
+            };
         },
 
         cancelEdit: function () {
-            dispatcher.dispatch(actions.CANCEL_EDIT_EVENT);
+            return { type: actions.CANCEL_EDIT_EVENT };
         },
 
-        create: function (event) {
-            event.id = uuid.v1();
-            dispatcher.dispatch(actions.CREATE_EVENT, { event: event });
-            historyOfApi
-                .createEvent(event)
-                .then(function (e) {
-                    dispatcher.dispatch(actions.RECEIVE_CREATED_EVENT, { event: e });
+        create: function (token, event) {
+            return (dispatch) => {
+                event.id = uuid.v1();
+                dispatch({
+                    type: actions.EVENT_ADDED,
+                    payload: {
+                        event: event
+                    }
                 });
+                historyOfApi
+                    .createEvent(token, event)
+                    .then(function (e) {
+                        dispatch({
+                            type: actions.RECEIVE_CREATED_EVENT,
+                            payload: {
+                                event: e
+                            }
+                        });
+                    });
+            };
         },
 
-        update: function (event) {
-            dispatcher.dispatch(actions.UPDATE_EVENT, { event: event });
-            historyOfApi.updateEvent(event);
+        update: function (event, token) {
+            historyOfApi.updateEvent(event, token);
+            return {
+                type: actions.UPDATE_EVENT,
+                payload: {
+                    event: event
+                }
+            };
         },
 
-        remove: function (event) {
-            dispatcher.dispatch(actions.REMOVE_EVENT, { event: event });
-            historyOfApi.remove(event);
+        remove: function (token, event) {
+            historyOfApi.remove(token, event);
+            return {
+                type: actions.REMOVE_EVENT,
+                payload: {
+                    event: event
+                }
+            };
         }
     };
 }());

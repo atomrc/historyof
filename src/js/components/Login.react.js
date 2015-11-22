@@ -1,11 +1,7 @@
 /*global require, module */
 var React = require("react"),
     ReactDom = require("react-dom"),
-    Link = require("react-router").Link,
-    loginErrorStore = require("../stores/storeFactory").get("loginErrorStore"),
-    userActions = require("../actions/userActions");
-
-var listenerToken;
+    Link = require("react-router").Link;
 
 var Login = React.createClass({
 
@@ -13,27 +9,14 @@ var Login = React.createClass({
         return {
             user: {},
             canSubmit: false,
-            submitting: false,
-            error: loginErrorStore.get()
+            submitting: false
         };
-    },
-
-    onErrorChange: function () {
-        this.setState({ submitting: false, error: loginErrorStore.get() });
-    },
-
-    componentWillMount: function () {
-        listenerToken = loginErrorStore.addListener(this.onErrorChange);
-    },
-
-    componentWillUnmount: function () {
-        listenerToken.remove();
     },
 
     login: function (e) {
         e.preventDefault();
         this.setState({ submitting: true });
-        userActions.login(this.state.user.login, this.state.user.password);
+        this.props.onLogin(this.state.user.login, this.state.user.password);
     },
 
     onChange: function (e) {

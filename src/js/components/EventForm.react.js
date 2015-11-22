@@ -1,84 +1,52 @@
 /*global module, require*/
 var React = require("react"),
+    connect = require("react-redux").connect,
     eventActions = require("../actions/eventActions"),
     Pikaday = require("./Pikaday.react"),
-    editedEventActions = require("../actions/editedEventActions"),
-    editedEventStore = require("../stores/storeFactory").get("editedEventStore");
+    editedEventActions = require("../actions/editedEventActions");
 
-var listenerToken;
 var EventForm = React.createClass({
 
-    getInitialState: function() {
-        return {
-            event: editedEventStore.get(),
-            isEditing: editedEventStore.isEditing()
-        };
-    },
-
-    componentWillMount: function () {
-        listenerToken = editedEventStore.addListener(this.onEditedEventChange);
-    },
-
-    componentWillUnmount: function () {
-        listenerToken.remove();
-    },
-
-    onEditedEventChange: function () {
-        this.setState(this.getInitialState());
-    },
-
-    onChange: function (e) {
+    handleChange: function (e) {
         var target = e.target;
         var updates = {};
         updates[target.name] = target.value;
 
-        editedEventActions.update(updates);
+        this.props.dispatch(editedEventActions.update(updates));
     },
 
-    dateChange: function (timestamp) {
-        editedEventActions.update({ date: new Date(+timestamp) });
+    handleDateChange: function (timestamp) {
+        this.props.dispatch(editedEventActions.update({ date: new Date(+timestamp) }));
     },
 
-    startEditing: function () {
-        if (this.state.isEditing) {
-            return;
-        }
-        editedEventActions.update({ date: new Date() });
-    },
-
-    save: function (e) {
+    handleSave: function (e) {
         e.preventDefault();
-        var event = this.state.event;
-
-        return event.id ?
-            eventActions.update(event) :
-            eventActions.create(event);
+        let {event, onSave} = this.props;
+        return onSave(event);
     },
 
-    cancel: function () {
-        eventActions.cancelEdit();
+    handleCancel: function () {
+        this.props.dispatch(eventActions.cancelEdit());
     },
 
     render: function () {
-        var event = this.state.event,
-            classes = this.state.isEditing ?
-                "active":
-                "";
+        let { event, isEditing } = this.props;
+        let classes = isEditing ?  "active" : "";
 
         return (
             <div id="form-container" className={classes}>
-                <form id="event-form" onSubmit={this.save}>
+                <form id="event-form" onSubmit={this.handleSave}>
                     <div>
                         <input
                             type="text"
                             placeholder="Title"
                             name="title"
                             value={event.title || ""}
-                            onChange={this.onChange}
+                            onChange={this.handleChange}
                             autoComplete="off"/>
                     </div>
                     <div>
-                        <Pikaday onChange={this.dateChange} value={event.date}/>
+                        <Pikaday onChange={this.handleDateChange} value={event.date}/>
                     </div>
                     <div>
                         <textarea
@@ -86,12 +54,11 @@ var EventForm = React.createClass({
                             name="description"
                             placeholder="Your Story"
                             value={event.description || ""}
-                            onChange={this.onChange}
-                            onFocus={this.startEditing}/>
+                            onChange={this.handleChange}/>
 
                     </div>
                     <div className="actions">
-                        <a href="javascript:void(0)" onClick={this.cancel}>cancel</a>&nbsp;
+                        <a href="javascript:void(0)" onClick={this.handleCancel}>cancel</a>&nbsp;
                         <button className="flat-button">{ event.id ? "save" : "add" }</button>
                     </div>
                 </form>
@@ -100,4 +67,14 @@ var EventForm = React.createClass({
     }
 });
 
-module.exports = EventForm;
+EventForm.PropTypes = {
+    onSave: React.PropTypes.func.isRequired
+};
+
+function select(state) {
+    return {
+        event: state.editedEvent,
+        isEditing: state.isEditing
+    }
+}
+module.exports = connect(select)(EventForm);

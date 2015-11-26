@@ -5,9 +5,9 @@ var React = require("react"),
     Login = require("../Login.react");
 
 var AppContainer = (props) => {
-    let {token, user, dispatch, children} = props;
+    let {token, user, errors, dispatch, children} = props;
     if (!token) {
-        return (<Login onLogin={(login, password) => dispatch(userActions.login(login, password))}/>);
+        return (<Login error={errors.login} onLogin={(login, password) => dispatch(userActions.login(login, password))}/>);
     }
 
     if (!user.id) {

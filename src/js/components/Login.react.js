@@ -17,6 +17,9 @@ var Login = React.createClass({
         e.preventDefault();
         this.setState({ submitting: true });
         this.props.onLogin(this.state.user.login, this.state.user.password);
+        setTimeout(function () {
+            this.setState({ submitting: false });
+        }.bind(this), 1000);
     },
 
     onChange: function (e) {
@@ -27,8 +30,8 @@ var Login = React.createClass({
 
     render: function () {
         var user = this.state.user,
-            errorMessage = this.state.error ?
-                (<div className="form-error">{this.state.error}</div>) :
+            errorMessage = this.props.error ?
+                (<div className="form-error">{this.props.error}</div>) :
                 null;
 
         return (

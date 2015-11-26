@@ -57,9 +57,9 @@
         return url.replace(/\/:.*/g, "");
     }
 
-    function initEvent (event) {
-        event.date = new Date(event.date);
-        return event;
+    function initStory (story) {
+        story.date = new Date(story.date);
+        return story;
     }
 
     var api = {
@@ -92,29 +92,29 @@
             });
         },
 
-        getEvents: function (token) {
+        getStories: function (token) {
             return requestProtected("/u/events", token)
-                .then((events) => {
-                    return events.map(initEvent)
+                .then((stories) => {
+                    return stories.map(initStory)
                 });
         },
 
-        createEvent: function (token, event) {
+        createStory: function (token, story) {
             return requestProtected("/u/events", token, {
                     method: "POST",
-                    body: event
-                }).then(initEvent);
+                    body: story
+                }).then(initStory);
         },
 
-        updateEvent: function (token, event) {
-            requestProtected(generateUrl(config.urlPattern, { eid: event.id }), token, {
+        updateStory: function (token, story) {
+            requestProtected(generateUrl(config.urlPattern, { eid: story.id }), token, {
                 method: "PUT",
-                body: event
-            }).then(initEvent);
+                body: story
+            }).then(initStory);
         },
 
-        remove: function (token, event) {
-            requestProtected(generateUrl(config.urlPattern, token, { eid: event.id }), {
+        remove: function (token, story) {
+            requestProtected(generateUrl(config.urlPattern, token, { eid: story.id }), {
                 method: "DELETE"
             });
         }

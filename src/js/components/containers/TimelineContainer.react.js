@@ -2,10 +2,10 @@
 var React = require("react"),
     connect = require("react-redux").connect,
     Timeline = require("../Timeline.react"),
-    eventActions = require("../../actions/eventActions");
+    storyActions = require("../../actions/storyActions");
 
 /**
- * Will handle and display all the events of the timeline
+ * Will handle and display all the stories of the timeline
  *
  * @return {undefined}
  */
@@ -13,34 +13,39 @@ var TimelineContainer = React.createClass({
 
     componentWillMount: function () {
         let { dispatch, token } = this.props;
-        dispatch(eventActions.getAll(token));
+        dispatch(storyActions.getAll(token));
     },
 
-    handleEditEvent: function (event) {
-        this.props.dispatch(eventActions.edit(event));
+    handleEditStory: function (story) {
+        this.props.dispatch(storyActions.edit(story));
     },
 
-    handleSaveEvent: function (event) {
+    handleSaveStory: function (story) {
         let {dispatch, token} = this.props;
 
-        return event.id ?
-            dispatch(eventActions.update(token, event)) :
-            dispatch(eventActions.create(token, event));
+        return story.id ?
+            dispatch(storyActions.update(token, story)) :
+            dispatch(storyActions.create(token, story));
+    },
+
+    handleRemoveStory: function (story) {
+        this.props.dispatch(storyActions.remove(this.props.token, story));
     },
 
     render: function render() {
-        let { user, events } = this.props;
+        let { user, stories } = this.props;
 
-        if (!events.length) {
+        if (!stories.length) {
             return (<div>loading...</div>);
         }
 
         return (
             <Timeline
                 user={user}
-                events={events}
-                onEditEvent={this.handleEditEvent}
-                onSaveEvent={this.handleSaveEvent}
+                stories={stories}
+                onEditStory={this.handleEditStory}
+                onRemoveStory={this.handleRemoveStory}
+                onSaveStory={this.handleSaveStory}
             />
         );
     }
@@ -50,7 +55,7 @@ var TimelineContainer = React.createClass({
 function select(state) {
     return {
         user: state.user,
-        events: state.events,
+        stories: state.stories,
         token: state.token
     }
 }

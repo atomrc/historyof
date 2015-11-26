@@ -10,69 +10,69 @@
         getAll: (token) => {
             return (dispatch) => {
                 historyOfApi
-                    .getEvents(token)
-                    .then(function (events) {
+                    .getStories(token)
+                    .then(function (stories) {
                         dispatch({
-                            type: actions.RECEIVE_EVENTS,
+                            type: actions.RECEIVE_STORIES,
                             payload: {
-                                events: events
+                                stories: stories
                             }
                         });
                     });
             }
         },
 
-        edit: function (event) {
+        edit: function (story) {
             return {
-                type: actions.EDIT_EVENT,
+                type: actions.EDIT_STORY,
                 payload: {
-                    event: event
+                    story: story
                 }
             };
         },
 
         cancelEdit: function () {
-            return { type: actions.CANCEL_EDIT_EVENT };
+            return { type: actions.CANCEL_EDIT_STORY };
         },
 
-        create: function (token, event) {
+        create: function (token, story) {
             return (dispatch) => {
-                event.id = uuid.v1();
+                story.id = uuid.v1();
                 dispatch({
-                    type: actions.EVENT_ADDED,
+                    type: actions.STORY_ADDED,
                     payload: {
-                        event: event
+                        story: story
                     }
                 });
                 historyOfApi
-                    .createEvent(token, event)
+                    .createStory(token, story)
                     .then(function (e) {
                         dispatch({
-                            type: actions.RECEIVE_CREATED_EVENT,
+                            type: actions.RECEIVE_CREATED_STORY,
                             payload: {
-                                event: e
+                                story: e
                             }
                         });
                     });
             };
         },
 
-        update: function (event, token) {
-            historyOfApi.updateEvent(event, token);
+        update: function (story, token) {
+            historyOfApi.updateStory(story, token);
             return {
-                type: actions.UPDATE_EVENT,
+                type: actions.UPDATE_STORY,
                 payload: {
-                    event: event
+                    story: story
                 }
             };
         },
 
-        remove: function (token, event) {
-            historyOfApi.remove(token, event);
+        remove: function (token, story) {
+            historyOfApi.remove(token, story);
             return {
-                type: actions.REMOVE_EVENT,
+                type: actions.REMOVE_STORY,
                 payload: {
-                    event: event
+                    story: story
                 }
             };
         }

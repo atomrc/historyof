@@ -5,9 +5,9 @@ var React = require("react"),
     moment = require("moment");
 
 var Year = (props) => {
-    let { year, events } = props;
+    let { year, stories } = props;
     var monthNodes = [],
-        groupedEvents = events
+        groupedStories = stories
             .reduce(function (obj, e) {
                 var key = moment(e.date).format("MMMM");
                 if (!obj[key]) { obj[key] = []; }
@@ -15,12 +15,12 @@ var Year = (props) => {
                 return obj;
             }, {});
 
-    for (var i in groupedEvents) {
+    for (var i in groupedStories) {
         monthNodes.push((
             <Month
                 {...props}
                 key={"month-" + i}
-                events={groupedEvents[i]}
+                stories={groupedStories[i]}
                 month={i}
                 />
         ));

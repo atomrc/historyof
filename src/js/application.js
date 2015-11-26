@@ -29,7 +29,7 @@ var store = Redux.compose(
     ReduxRouter.reduxReactRouter({ routes, createHistory })
 )(Redux.createStore)(appReducers, {
     user: {},
-    events: [],
+    stories: [],
     token: window.localStorage.getItem("token")
 });
 

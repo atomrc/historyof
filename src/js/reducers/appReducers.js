@@ -31,27 +31,27 @@ var appReducers = combineReducers( {
         return state;
     },
 
-    events: (state = [], {type, payload}) => {
+    stories: (state = [], {type, payload}) => {
         switch (type) {
-            case actions.RECEIVE_EVENTS:
-                return payload.events;
+            case actions.RECEIVE_STORIES:
+                return payload.stories;
 
-            case actions.EVENT_ADDED:
-                return state.concat(payload.event);
+            case actions.STORY_ADDED:
+                return state.concat(payload.story);
         }
         return state;
     },
 
-    editedEvent: (state = {}, {type, payload}) => {
+    editedStory: (state = {}, {type, payload}) => {
         switch (type) {
-            case actions.EDIT_EVENT:
-                return payload.event;
+            case actions.EDIT_STORY:
+                return payload.story;
 
-            case actions.UPDATE_EDITED_EVENT:
+            case actions.UPDATE_EDITED_STORY:
                 return assign({}, state, payload.updates);
 
-            case actions.CANCEL_EDIT_EVENT:
-            case actions.EVENT_ADDED:
+            case actions.CANCEL_EDIT_STORY:
+            case actions.STORY_ADDED:
                 return {};
         }
         return state;
@@ -59,11 +59,11 @@ var appReducers = combineReducers( {
 
     isEditing: (state = false, {type}) => {
         switch (type) {
-            case actions.EDIT_EVENT:
+            case actions.EDIT_STORY:
                 return true;
 
-            case actions.CANCEL_EDIT_EVENT:
-            case actions.EVENT_ADDED:
+            case actions.CANCEL_EDIT_STORY:
+            case actions.STORY_ADDED:
                 return false;
         }
         return state;

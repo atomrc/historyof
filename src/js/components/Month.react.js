@@ -1,14 +1,14 @@
 /*global require, module */
 "use strict";
 var React = require("react"),
-    Entry = require("./Entry.react");
+    Story = require("./Story.react");
 
 var Month = (props) => {
-    let { month, events } = props;
-    var nodes = events
-        .map(function (event) {
+    let { month, stories } = props;
+    var nodes = stories
+        .map(function (story) {
             return (
-                <Entry {...props} event={event} key={event.id}/>
+                <Story {...props} story={story} key={story.id}/>
             );
         });
 

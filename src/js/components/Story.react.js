@@ -1,10 +1,9 @@
 /*global module, require*/
 "use strict";
 var React = require("react"),
-    moment = require("moment"),
-    eventActions = require("../actions/eventActions");
+    moment = require("moment");
 
-var Event = React.createClass({
+var Story = React.createClass({
 
     getInitialState: function () {
         return { open: false };
@@ -15,32 +14,32 @@ var Event = React.createClass({
     },
 
     edit: function (/*e*/) {
-        this.props.onEditEvent(this.props.event);
+        this.props.onEditStory(this.props.story);
     },
 
     remove: function (e) {
         e.stopPropagation();
         if (window.confirm("confirm delete?")) {
-            this.props.onRemoveEvent(this.props.event);
+            this.props.onRemoveStory(this.props.story);
         }
     },
 
     render: function () {
 
-        var event = this.props.event,
+        var story = this.props.story,
             classes = this.state.open ? "" : "closed";
 
         return (
-            <div className={"event " + classes}>
+            <div className={"story " + classes}>
                 <header onClick={this.toggle}>
                     <div className="infos">
                         <div>
                             <em className="date">
-                                {moment(event.date).format("DD MMM")}
+                                {moment(story.date).format("DD MMM")}
                             </em>
                         </div>
                         <div>
-                            <strong>{event.title || (event.description || "").substr(0, 100).concat("...")}</strong>
+                            <strong>{story.title || (story.description || "").substr(0, 100).concat("...")}</strong>
                         </div>
                         <div className="actions">
                             <a onClick={this.edit}><i className="fa fa-pencil"></i></a>&nbsp;
@@ -48,14 +47,14 @@ var Event = React.createClass({
                         </div>
                     </div>
                 </header>
-                <p className={"toggle " + classes} dangerouslySetInnerHTML={{__html: (event.description || "").replace(/\n/g, "<br>")}}></p>
+                <p className={"toggle " + classes} dangerouslySetInnerHTML={{__html: (story.description || "").replace(/\n/g, "<br>")}}></p>
             </div>
         );
     }
 });
 
-Event.propTypes = {
-    event: React.PropTypes.object.isRequired
+Story.propTypes = {
+    story: React.PropTypes.object.isRequired
 };
 
-module.exports = Event;
+module.exports = Story;

@@ -21,8 +21,8 @@ var StoryForm = React.createClass({
 
     handleSave: function (e) {
         e.preventDefault();
-        let {story, onSave} = this.props;
-        return onSave(story);
+        let {storyEditor, onSave} = this.props;
+        return onSave(storyEditor.story);
     },
 
     handleCancel: function () {
@@ -30,8 +30,8 @@ var StoryForm = React.createClass({
     },
 
     render: function () {
-        let { story, isEditing } = this.props;
-        let classes = isEditing ?  "active" : "";
+        let { story, isActive } = this.props.storyEditor;
+        let classes = isActive ?  "active" : "";
 
         return (
             <div id="form-container" className={classes}>
@@ -73,8 +73,7 @@ StoryForm.PropTypes = {
 
 function select(state) {
     return {
-        story: state.editedStory,
-        isEditing: state.isEditing
+        storyEditor: state.storyEditor
     }
 }
 module.exports = connect(select)(StoryForm);

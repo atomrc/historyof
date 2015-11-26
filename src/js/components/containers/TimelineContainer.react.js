@@ -35,7 +35,7 @@ var TimelineContainer = React.createClass({
     render: function render() {
         let { user, stories } = this.props;
 
-        if (!stories.length) {
+        if (!stories) {
             return (<div>loading...</div>);
         }
 

@@ -114,7 +114,7 @@
         },
 
         remove: function (token, story) {
-            requestProtected(generateUrl(config.urlPattern, token, { eid: story.id }), {
+            requestProtected(generateUrl(config.urlPattern, { eid: story.id }), token, {
                 method: "DELETE"
             });
         }

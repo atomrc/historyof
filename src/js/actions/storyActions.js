@@ -57,8 +57,8 @@
             };
         },
 
-        update: function (story, token) {
-            historyOfApi.updateStory(story, token);
+        update: function (token, story) {
+            historyOfApi.updateStory(token, story);
             return {
                 type: actions.UPDATE_STORY,
                 payload: {

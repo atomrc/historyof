@@ -2,8 +2,10 @@
 "use strict";
 let actions = require("../constants/constants").actions;
 
-module.exports = (state = false, {type, payload}) => {
-    switch (type) {
+module.exports = (state, action) => {
+    state = state === undefined ? false : state;
+    let payload = action.payload;
+    switch (action.type) {
         case actions.RECEIVE_STORIES:
             return payload.stories;
 

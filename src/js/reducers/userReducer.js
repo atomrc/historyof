@@ -2,8 +2,10 @@
 "use strict";
 let actions = require("../constants/constants").actions;
 
-module.exports = (state = {}, {type, payload}) => {
-    switch(type) {
+module.exports = (state, action) => {
+    state = state ? state : {};
+    let payload = action.payload;
+    switch(action.type) {
         case actions.LOGIN_SUCCESS:
         case actions.RECEIVE_USER:
             return payload.user;

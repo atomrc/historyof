@@ -1,13 +1,11 @@
 @import "./partials/datepicker.scss";
+@import "./partials/react-tagsinput.scss";
 @import url(http://fonts.googleapis.com/css?family=Open+Sans:300);
 @import url(http://fonts.googleapis.com/css?family=Droid+Serif);
 
 $coolblue: #3F6BD4;
 $lightcoolblue: #85A6F5;
 
-html, body {
-    height: 100%;
-}
 body {
     color: #555;
     font-family: Arial;
@@ -95,7 +93,7 @@ form {
 }
 
 #app {
-    height: 100%;
+    min-height: 100vh;
     background-color: #EEE;
 }
 
@@ -280,6 +278,10 @@ button.material {
         }
         .actions {
             text-align: right;
+        }
+        .react-tagsinput-input {
+            width: auto;
+            padding: 0;
         }
     }
 }

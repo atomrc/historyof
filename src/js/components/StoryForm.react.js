@@ -4,7 +4,8 @@ var React = require("react"),
     storyActions = require("../actions/storyActions"),
     Pikaday = require("./Pikaday.react"),
     editedStoryActions = require("../actions/editedStoryActions"),
-    ReactCSSTransitionGroup = require("react-addons-css-transition-group");
+    ReactCSSTransitionGroup = require("react-addons-css-transition-group"),
+    TagsInput = require("react-tagsinput");
 
 var StoryForm = React.createClass({
 
@@ -18,6 +19,10 @@ var StoryForm = React.createClass({
 
     handleDateChange: function (timestamp) {
         this.props.dispatch(editedStoryActions.update({ date: new Date(+timestamp) }));
+    },
+
+    handleTagChange: function (tags) {
+        this.props.dispatch(editedStoryActions.update({ tags: tags.map((tag) => { return {title: tag};}) }));
     },
 
     handleSave: function (e) {
@@ -58,6 +63,12 @@ var StoryForm = React.createClass({
                                 value={story.description || ""}
                                 onChange={this.handleChange}/>
 
+                        </div>
+                        <div>
+                            <TagsInput
+                                value={(story.tags || []).map(tag => tag.title)}
+                                onChange={this.handleTagChange}
+                                addKeys={[32, 13]}/>
                         </div>
                         <div className="actions">
                             <a href="javascript:void(0)" onClick={this.handleCancel}>cancel</a>&nbsp;

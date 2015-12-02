@@ -23,9 +23,12 @@ var Login = React.createClass({
     },
 
     onChange: function (e) {
-        this.state.user[e.target.name] = e.target.value;
-        this.state.canSubmit = ReactDom.findDOMNode(this.refs.loginForm).checkValidity();
-        this.setState(this.state);
+        var updateState = {
+            user: this.state.user,
+            canSubmit: ReactDom.findDOMNode(this.refs.loginForm).checkValidity()
+        }
+        updateState.user[e.target.name] = e.target.value;
+        this.setState(updateState);
     },
 
     render: function () {

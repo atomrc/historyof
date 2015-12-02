@@ -10,6 +10,7 @@ module.exports = (state = "", {type, payload}) => {
 
         case actions.USER_AUTH_FAILED:
         case actions.USER_LOGGED_OUT:
+            window.localStorage.removeItem("token");
             return "";
     }
     return state;

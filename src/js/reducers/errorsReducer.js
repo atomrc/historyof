@@ -1,7 +1,6 @@
 /*global require, module*/
 "use strict";
-let actions = require("../constants/constants").actions,
-    assign = require("object-assign");
+let actions = require("../constants/constants").actions;
 
 let loginErrorReducer = (state, action) => {
     state = state === undefined ? "" : state;
@@ -11,6 +10,9 @@ let loginErrorReducer = (state, action) => {
 
         case actions.LOGIN_FAILED:
             return "Login/password don't match";
+
+        default:
+            return "";
     }
     return state;
 };

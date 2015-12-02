@@ -2,6 +2,7 @@
 "use strict";
 module.exports = {
     actions: {
+        USER_CREATED: "USER_CREATED", //when user has registered successfully
         LOGIN_SUCCESS: "LOGIN_SUCCESS", //the user has been retreived from the server
         USER_LOGGED_OUT: "USER_LOGGED_OUT", //the user has logged out
         USER_AUTH_FAILED: "USER_AUTH_FAILED", //the user's token is not valid

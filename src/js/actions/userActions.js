@@ -33,11 +33,19 @@ module.exports = {
     },
 
     create: function (user) {
-        historyOfApi
-            .createUser(user)
-            .then(function (data) {
-                //dispatcher.dispatch(actions.LOGIN_SUCCESS, { token: data.token, user: data.user });
-            });
+        return (dispatch) => {
+            historyOfApi
+                .createUser(user)
+                .then(function (data) {
+                    dispatch({
+                        type: actions.USER_CREATED,
+                        payload: {
+                            token: data.token,
+                            user: data.user
+                        }
+                    });
+                });
+        };
     },
 
     getUser: (token) => {

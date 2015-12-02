@@ -14,10 +14,12 @@ var React = require("react"),
     Redux = require("redux"),
     appReducers = require("./reducers/appReducers"),
     AppContainer = require("./components/containers/AppContainer.react"),
-    TimelineContainer = require("./components/containers/TimelineContainer.react");
+    TimelineContainer = require("./components/containers/TimelineContainer.react"),
+    Register = require("./components/Register.react");
 
 var routes = (
     <Router>
+        <Route path="/register" component={Register}></Route>
         <Route component={AppContainer}>
             <Route path="/me" component={TimelineContainer}/>
         </Route>

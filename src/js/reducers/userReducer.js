@@ -7,6 +7,7 @@ module.exports = (state, action) => {
     let payload = action.payload;
     switch(action.type) {
         case actions.LOGIN_SUCCESS:
+        case actions.USER_CREATED:
         case actions.RECEIVE_USER:
             return payload.user;
 

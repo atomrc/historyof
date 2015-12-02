@@ -5,6 +5,7 @@ let actions = require("../constants/constants").actions;
 module.exports = (state = "", {type, payload}) => {
     switch (type) {
         case actions.LOGIN_SUCCESS:
+        case actions.USER_CREATED:
             window.localStorage.setItem("token", payload.token);
             return payload.token;
 

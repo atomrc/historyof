@@ -9,7 +9,7 @@
         urlPattern: "/u/events/:eid"
     };
 
-    function request(url, params) {
+    function request(url, params={}) {
         params.method = params.method ? params.method : "GET";
         params.headers = assign({}, {
             "Accept": "application/json",

@@ -1,11 +1,7 @@
 /*global require, module */
 var React = require("react"),
     ReactDom = require("react-dom"),
-    Link = require("react-router").Link,
-    loginErrorStore = require("../stores/storeFactory").get("loginErrorStore"),
-    userActions = require("../actions/userActions");
-
-var listenerToken;
+    Link = require("react-router").Link;
 
 var Login = React.createClass({
 
@@ -13,39 +9,32 @@ var Login = React.createClass({
         return {
             user: {},
             canSubmit: false,
-            submitting: false,
-            error: loginErrorStore.get()
+            submitting: false
         };
-    },
-
-    onErrorChange: function () {
-        this.setState({ submitting: false, error: loginErrorStore.get() });
-    },
-
-    componentWillMount: function () {
-        listenerToken = loginErrorStore.addListener(this.onErrorChange);
-    },
-
-    componentWillUnmount: function () {
-        listenerToken.remove();
     },
 
     login: function (e) {
         e.preventDefault();
         this.setState({ submitting: true });
-        userActions.login(this.state.user.login, this.state.user.password);
+        this.props.onLogin(this.state.user.login, this.state.user.password);
+        setTimeout(function () {
+            this.setState({ submitting: false });
+        }.bind(this), 1000);
     },
 
     onChange: function (e) {
-        this.state.user[e.target.name] = e.target.value;
-        this.state.canSubmit = ReactDom.findDOMNode(this.refs.loginForm).checkValidity();
-        this.setState(this.state);
+        var updateState = {
+            user: this.state.user,
+            canSubmit: ReactDom.findDOMNode(this.refs.loginForm).checkValidity()
+        }
+        updateState.user[e.target.name] = e.target.value;
+        this.setState(updateState);
     },
 
     render: function () {
         var user = this.state.user,
-            errorMessage = this.state.error ?
-                (<div className="form-error">{this.state.error}</div>) :
+            errorMessage = this.props.error ?
+                (<div className="form-error">{this.props.error}</div>) :
                 null;
 
         return (

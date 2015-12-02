@@ -163,7 +163,7 @@ form {
         padding: 1em 0 0.5em 0;
     }
 
-    .events-container {
+    .stories-container {
         margin: auto;
         .year {
             position: relative;
@@ -177,7 +177,7 @@ form {
             }
         }
 
-        .event {
+        .story {
             border-left: solid 5px transparent;
             border-bottom: solid 1px #EEE;
 
@@ -252,7 +252,7 @@ button.material {
         bottom: 0;
         opacity: 1;
     }
-    #event-form {
+    #story-form {
         margin: auto;
         input, textarea {
             width: 100%;

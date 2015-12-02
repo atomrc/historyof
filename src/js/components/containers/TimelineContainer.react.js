@@ -1,42 +1,63 @@
 /*global require, module*/
 var React = require("react"),
-    Component = React.Component,
-    Container = require("flux/utils").Container,
+    connect = require("react-redux").connect,
     Timeline = require("../Timeline.react"),
-    eventActions = require("../../actions/eventActions");
+    storyActions = require("../../actions/storyActions");
 
-var eventStore = require("../../stores/storeFactory").get("eventsStore");
 /**
- * Will handle and display all the events of the timeline
+ * Will handle and display all the stories of the timeline
  *
  * @return {undefined}
  */
-class TimelineContainer extends Component {
+var TimelineContainer = React.createClass({
 
-    constructor() {
-        eventActions.getAll();
-        super();
-    }
+    componentWillMount: function () {
+        let { dispatch, token } = this.props;
+        dispatch(storyActions.getAll(token));
+    },
 
-    static getStores() {
-        return [eventStore];
-    }
+    handleEditStory: function (story) {
+        this.props.dispatch(storyActions.edit(story));
+    },
 
-    static calculateState() {
-        return {
-            events: eventStore.get()
-        };
-    }
+    handleSaveStory: function (story) {
+        let {dispatch, token} = this.props;
 
-    render() {
-        if (!this.state.events) {
+        return story.id ?
+            dispatch(storyActions.update(token, story)) :
+            dispatch(storyActions.create(token, story));
+    },
+
+    handleRemoveStory: function (story) {
+        this.props.dispatch(storyActions.remove(this.props.token, story));
+    },
+
+    render: function render() {
+        let { user, stories } = this.props;
+
+        if (!stories) {
             return (<div>loading...</div>);
         }
 
         return (
-            <Timeline user={this.props.user} events={this.state.events}/>
+            <Timeline
+                user={user}
+                stories={stories}
+                onEditStory={this.handleEditStory}
+                onRemoveStory={this.handleRemoveStory}
+                onSaveStory={this.handleSaveStory}
+            />
         );
+    }
+});
+
+
+function select(state) {
+    return {
+        user: state.user,
+        stories: state.stories,
+        token: state.token
     }
 }
 
-module.exports = Container.create(TimelineContainer);
+module.exports = connect(select)(TimelineContainer);

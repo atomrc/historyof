@@ -3,11 +3,25 @@
 
 var React = require("react"),
     Link = require("react-router").Link,
+    pushState = require("redux-router").pushState,
+    connect = require("react-redux").connect,
     AsyncValidatedInput = require("./AsyncValidatedInput.react"),
     hapi = require("../api/historyOfApi"),
     userActions = require("../actions/userActions");
 
-module.exports = React.createClass({
+var RegisterContainer = React.createClass({
+
+    componentWillMount: function () {
+        if (this.props.token) {
+            this.props.dispatch(pushState(null, "/me"));
+        }
+    },
+
+    componentWillReceiveProps: function (newProps) {
+        if (newProps.token) {
+            this.props.dispatch(pushState(null, "/me"));
+        }
+    },
 
     getInitialState: function () {
         return {
@@ -20,7 +34,7 @@ module.exports = React.createClass({
     createUser: function (e) {
         e.preventDefault();
         this.setState({submitting: true});
-        userActions.create(this.state.user);
+        this.props.dispatch(userActions.create(this.state.user));
     },
 
     onChange: function (e) {
@@ -102,9 +116,16 @@ module.exports = React.createClass({
                         <input type="submit" value={this.state.submitting ? "Loading ..." : "Start Writting"} disabled={!this.state.canSubmit || this.state.submitting}/>
                     </form>
 
-                    <Link to="/login">login</Link>
+                    <Link to="/me">login</Link>
                 </div>
             </div>
         );
     }
 });
+
+function select(state) {
+    return {
+        token: state.token
+    };
+}
+module.exports = connect(select)(RegisterContainer);

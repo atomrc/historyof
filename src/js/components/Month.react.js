@@ -1,33 +1,26 @@
 /*global require, module */
-(function () {
-    "use strict";
-    var React = require("react"),
-        Event = require("./Event.react");
+"use strict";
+var React = require("react"),
+    Story = require("./Story.react");
 
-    var Month = React.createClass({
-
-        render: function () {
-            var nodes = this
-                .props
-                .events
-                .map(function (event) {
-                    return (
-                        <Event event={event} key={event.id}/>
-                    );
-                }.bind(this));
-
-            var month = this.props.month;
+var Month = (props) => {
+    let { month, stories } = props;
+    var nodes = stories
+        .map(function (story) {
             return (
-                <div>
-                    <div className="month">
-                        {month}
-                        <div style={{clear: "both"}}></div>
-                    </div>
-                    <div className="soft-box">{nodes}</div>
-                </div>
+                <Story {...props} story={story} key={story.id}/>
             );
-        }
-    });
+        });
 
-    module.exports = Month;
-}());
+    return (
+        <div>
+            <div className="month">
+                {month}
+                <div style={{clear: "both"}}></div>
+            </div>
+            <div className="soft-box">{nodes}</div>
+        </div>
+    );
+};
+
+module.exports = Month;

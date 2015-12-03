@@ -178,6 +178,7 @@ form {
         }
 
         .story {
+            background-color: #fff;
             border-left: solid 5px transparent;
             border-bottom: solid 1px #EEE;
 
@@ -237,6 +238,7 @@ button.material {
 #form-container {
     position: fixed;
     left: 0;
+    top: 0;
     height: 100%;
     width: 100%;
     font-size: 1.25em;
@@ -245,13 +247,6 @@ button.material {
     background-color: white;
     padding: 3em;
 
-    transition: bottom .5s, opacity .5s;
-    bottom: 100%; //on top of the screen when inactive
-    opacity: 0;
-    &.active {
-        bottom: 0;
-        opacity: 1;
-    }
     #story-form {
         margin: auto;
         input, textarea {
@@ -296,4 +291,32 @@ button.material {
     color: inherit;
     font-size: 1em;
     border: none;
+}
+
+.fade-enter {
+    opacity: 0;
+    transition: opacity .5s;
+    &.fade-enter-active {
+        opacity: 1;
+    }
+}
+
+.fade-from-top-enter {
+    opacity: 0;
+    transform: translate(0, -50px);
+    transition: all 500ms ease-in-out;
+    &.fade-from-top-enter-active {
+        opacity: 1;
+        transform: translate(0, 0);
+    }
+}
+
+.fade-from-top-leave {
+    opacity: 1;
+    transform: translate(0, 0);
+    transition: all 500ms ease-in-out;
+    &.fade-from-top-leave-active {
+        opacity: 0;
+        transform: translate(0, -50px);
+    }
 }

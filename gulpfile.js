@@ -21,14 +21,14 @@ var libs = [
     "redux",
     "redux-router",
     "redux-thunk",
-    "redux-logger",
     "react-redux",
     "pikaday",
     "object-assign",
     "whatwg-fetch",
     "debounce",
     "bcryptjs",
-    "uuid"
+    "uuid",
+    "react-addons-css-transition-group"
 ];
 
 gulp.task("js-vendor", function() {

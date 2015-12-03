@@ -1,7 +1,8 @@
 /*global require, module */
 "use strict";
 var React = require("react"),
-    Story = require("./Story.react");
+    Story = require("./Story.react"),
+    ReactCSSTransitionGroup = require("react-addons-css-transition-group");
 
 var Month = (props) => {
     let { month, stories } = props;
@@ -16,9 +17,12 @@ var Month = (props) => {
         <div>
             <div className="month">
                 {month}
-                <div style={{clear: "both"}}></div>
             </div>
-            <div className="soft-box">{nodes}</div>
+            <div className="soft-box">
+                <ReactCSSTransitionGroup transitionName="fade-from-top" transitionEnterTimeout={1000} transitionLeaveTimeout={500}>
+                    {nodes}
+                </ReactCSSTransitionGroup>
+            </div>
         </div>
     );
 };

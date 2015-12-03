@@ -13,7 +13,8 @@ var Story = React.createClass({
         this.setState({ open: !this.state.open });
     },
 
-    edit: function (/*e*/) {
+    edit: function (e) {
+        e.stopPropagation();
         this.props.onEditStory(this.props.story);
     },
 

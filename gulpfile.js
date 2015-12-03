@@ -21,7 +21,6 @@ var libs = [
     "redux",
     "redux-router",
     "redux-thunk",
-    "redux-logger",
     "react-redux",
     "pikaday",
     "object-assign",

@@ -8,7 +8,6 @@ var React = require("react"),
     Router = ReactRouter.Router,
     createHistory = require("history/lib/createBrowserHistory"),
     thunk = require("redux-thunk"),
-    createLogger = require("redux-logger"),
     Provider = require("react-redux").Provider,
     ReduxRouter = require("redux-router"),
     Redux = require("redux"),
@@ -27,7 +26,7 @@ var routes = (
 );
 
 var store = Redux.compose(
-    Redux.applyMiddleware(thunk, createLogger()),
+    Redux.applyMiddleware(thunk),
     ReduxRouter.reduxReactRouter({ routes, createHistory })
 )(Redux.createStore)(appReducers, {
     user: {},

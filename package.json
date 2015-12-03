@@ -34,24 +34,22 @@
     "redux-thunk": "^1.0.0",
     "sequelize": "^3.9.0",
     "uuid": "^2.0.1",
-    "whatwg-fetch": "^0.10.0"
-  },
-  "devDependencies": {
+    "react-addons-css-transition-group": "^0.14.3",
+    "whatwg-fetch": "^0.10.0",
     "babel-preset-es2015": "^6.0.15",
     "babel-preset-react": "^6.0.15",
     "babelify": "*",
     "browserify": "*",
-    "expect.js": "^0.3.1",
     "gulp": "*",
     "gulp-jade": "*",
     "gulp-sass": "*",
     "gulp-uglify": "^1.4.2",
-    "jest-cli": "*",
-    "mocha": "^2.3.3",
-    "react-addons-css-transition-group": "^0.14.3",
-    "redux-logger": "^2.0.4",
-    "supertest": "*",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "*"
+  },
+  "devDependencies": {
+    "expect.js": "^0.3.1",
+    "mocha": "^2.3.3",
+    "supertest": "*"
   }
 }

@@ -28,7 +28,8 @@ var libs = [
     "whatwg-fetch",
     "debounce",
     "bcryptjs",
-    "uuid"
+    "uuid",
+    "react-addons-css-transition-group"
 ];
 
 gulp.task("js-vendor", function() {

@@ -6,7 +6,7 @@
 
     var config = {
         loginUrl: "/user/authenticate",
-        urlPattern: "/u/events/:eid"
+        urlPattern: "/u/stories/:eid"
     };
 
     function request(url, params={}) {
@@ -93,14 +93,14 @@
         },
 
         getStories: function (token) {
-            return requestProtected("/u/events", token)
+            return requestProtected("/u/stories", token)
                 .then((stories) => {
                     return stories.map(initStory)
                 });
         },
 
         createStory: function (token, story) {
-            return requestProtected("/u/events", token, {
+            return requestProtected("/u/stories", token, {
                     method: "POST",
                     body: story
                 }).then(initStory);

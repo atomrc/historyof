@@ -5,7 +5,7 @@ var bodyParser = require("body-parser"),
     express = require("express"),
     jwt = require("express-jwt"),
     UserController = require("./controllers/UserController"),
-    EventController = require("./controllers/EventController");
+    StoriesController = require("./controllers/StoriesController");
 
 var app = express();
 
@@ -29,11 +29,11 @@ app.get("/check/:property/:value", UserController.isPropertyAvailable);
 app.use("/u", jwt({ secret: "tochange" }), UserController.middlewares.authenticate);
 app.get("/u", UserController.get);
 
-app.post("/u/events", EventController.create);
-app.get("/u/events", EventController.getAll);
-app.get("/u/events/:eid", EventController.middlewares.find, EventController.get);
-app.delete("/u/events/:eid", EventController.middlewares.find, EventController.remove);
-app.put("/u/events/:eid", EventController.middlewares.find, EventController.update);
+app.post("/u/stories", StoriesController.create);
+app.get("/u/stories", StoriesController.getAll);
+app.get("/u/stories/:eid", StoriesController.middlewares.find, StoriesController.get);
+app.delete("/u/stories/:eid", StoriesController.middlewares.find, StoriesController.remove);
+app.put("/u/stories/:eid", StoriesController.middlewares.find, StoriesController.update);
 
 /*
 app.get("/u/timelines", TimelineController.getAll);

@@ -52,36 +52,36 @@ var api = {
             .get("/check/pseudo/" + pseudo);
     },
 
-    createEvent: function (userToken, event) {
+    createStory: function (userToken, story) {
         return request(app)
-            .post("/u/events")
+            .post("/u/stories")
             .set("Authorization", "Bearer " + userToken)
-            .send(event);
+            .send(story);
     },
 
-    getEvents: function (userToken) {
+    getStories: function (userToken) {
         return request(app)
-            .get("/u/events")
+            .get("/u/stories")
             .set("Authorization", "Bearer " + userToken);
     },
 
-    getEvent: function (userToken, eventId) {
+    getStory: function (userToken, storyId) {
         return request(app)
-            .get("/u/events/" + eventId)
+            .get("/u/stories/" + storyId)
             .set("Authorization", "Bearer " + userToken);
     },
 
 
-    updateEvent: function (userToken, eventId, newData) {
+    updateStory: function (userToken, storyId, newData) {
         return request(app)
-            .put("/u/events/" + eventId)
+            .put("/u/stories/" + storyId)
             .set("Authorization", "Bearer " + userToken)
             .send(newData);
     },
 
-    deleteEvent: function (userToken, eventId) {
+    deleteStory: function (userToken, storyId) {
         return request(app)
-            .del("/u/events/" + eventId)
+            .del("/u/stories/" + storyId)
             .set("Authorization", "Bearer " + userToken);
     }
 };
@@ -98,19 +98,19 @@ var preconditions = {
         });
     },
 
-    hasEvent: function (user, event) {
+    hasStory: function (user, story) {
         return new Promise(function (resolve, reject) {
             this
                 .hasUser(user)
                 .then(function (datas) {
                     api
-                        .createEvent(datas.token, event)
+                        .createStory(datas.token, story)
                         .end(function (err, res) {
                             if (err) {
                                 return reject(err);
                             }
 
-                            resolve({ token: datas.token, event: res.body });
+                            resolve({ token: datas.token, story: res.body });
                         });
                 });
         }.bind(this));
@@ -127,7 +127,7 @@ describe("API", function () {
             firstname: "Felix",
             lastname: "Hello"
         },
-        testEvent = { title: "new event", type: "event", date: new Date() };
+        testStory = { title: "new story", type: "story", date: new Date() };
 
     it("should create a new user", function (done) {
         api
@@ -260,79 +260,79 @@ describe("API", function () {
             });
     });
 
-    it("should add a new event to user", function (done) {
+    it("should add a new story to user", function (done) {
         preconditions
             .hasUser(testUser)
             .then(function (userData) {
                 var token = userData.token;
 
-                api.createEvent(token, testEvent)
+                api.createStory(token, testStory)
                     .expect(200)
                     .end(function (err, res) {
                         if (err) { return done(err); }
-                        var event = res.body;
+                        var story = res.body;
 
-                        expect(event.title).to.be(testEvent.title);
-                        expect(event.id).to.not.be(undefined);
+                        expect(story.title).to.be(testStory.title);
+                        expect(story.id).to.not.be(undefined);
                         done();
                     });
             });
     });
 
-    it("should return list of user's events", function (done) {
+    it("should return list of user's stories", function (done) {
         preconditions
-            .hasEvent(testUser, testEvent)
+            .hasStory(testUser, testStory)
             .then(function (datas) {
                 var token = datas.token,
-                    event = datas.event;
+                    story = datas.story;
 
                 api
-                    .getEvents(token)
+                    .getStories(token)
                     .end(function (err, res) {
                         if (err) { return done(err); }
                         expect(res.body.length).to.be(1);
-                        expect(res.body[0]).to.eql(event);
+                        expect(res.body[0]).to.eql(story);
                         done();
                     });
             });
     });
 
-    it("should update newly created event", function (done) {
+    it("should update newly created story", function (done) {
         preconditions
-            .hasEvent(testUser, testEvent)
+            .hasStory(testUser, testStory)
             .then(function (datas) {
                 api
-                    .updateEvent(datas.token, datas.event.id, { title: "new title" })
+                    .updateStory(datas.token, datas.story.id, { title: "new title" })
                     .expect(200)
                     .end(function (err, res) {
                         if (err) { return done(err); }
 
                         var e = res.body;
                         expect(e.title).to.be("new title");
-                        expect(e.id).to.be(datas.event.id);
-                        expect(e.date).to.equal(datas.event.date);
+                        expect(e.id).to.be(datas.story.id);
+                        expect(e.date).to.equal(datas.story.date);
 
                         done();
                     });
             });
     });
 
-    it("should not find an inexistant event", function (done) {
+    it("should not find an inexistant story", function (done) {
         preconditions
-            .hasEvent(testUser, testEvent)
+            .hasStory(testUser, testStory)
             .then(function (datas) {
                 api
-                    .getEvent(datas.token, "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee")
+                    .getStory(datas.token, "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee")
                     .expect(404, done);
             });
     });
 
-    it("should delete event", function (done) {
+    it("should delete story", function (done) {
         preconditions
-            .hasEvent(testUser, testEvent)
+            .hasStory(testUser, testStory)
             .then(function (datas) {
                 api
-                    .deleteEvent(datas.token, datas.event.id)
+                    .deleteStory(datas.token, datas.story.id)
                     .expect(204, done);
             });
     });

@@ -22,7 +22,7 @@ module.exports = {
             define: { underscored: true }
         });
 
-        ["user", "event"].forEach(function (element) {
+        ["user", "story"].forEach(function (element) {
             models[element] = sequelize.define(element, require("../models/" + element), {
                 instanceMethods: {
                     toJSON: function () {
@@ -35,7 +35,7 @@ module.exports = {
             });
         });
 
-        models.user.hasMany(models.event);
+        models.user.hasMany(models.story);
 
         return sequelize;
     },

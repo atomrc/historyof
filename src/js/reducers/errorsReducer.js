@@ -4,10 +4,8 @@ let actions = require("../constants/constants").actions;
 
 let loginErrorReducer = (state, action) => {
     state = state === undefined ? "" : state;
-    switch (action.type) {
-        case actions.USER_AUTH_FAILED:
-            return "Your session has expired";
 
+    switch (action.type) {
         case actions.LOGIN_FAILED:
             return "Login/password don't match";
 
@@ -19,6 +17,14 @@ let loginErrorReducer = (state, action) => {
 
 let genericErrorReducer = (state, action) => {
     state = state === undefined ? "" : state;
+
+    switch (action.type) {
+        case actions.USER_AUTH_FAILED:
+            return "Your session has expired";
+
+        default:
+            return "";
+    }
     return state;
 };
 

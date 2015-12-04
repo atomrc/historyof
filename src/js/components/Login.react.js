@@ -33,9 +33,7 @@ var Login = React.createClass({
 
     render: function () {
         var user = this.state.user,
-            errorMessage = this.props.error ?
-                (<div className="form-error">{this.props.error}</div>) :
-                null;
+            errorMessage = this.props.errors.map(error => (<div key={error.id} className="form-error">{error.message}</div>));
 
         return (
             <div id="login">

@@ -2,6 +2,7 @@
 var React = require("react"),
     connect = require("react-redux").connect,
     userActions = require("../../actions/userActions"),
+    systemActions = require("../../actions/systemActions"),
     Notifier = require("../Notifier.react"),
     Login = require("../Login.react");
 
@@ -39,7 +40,9 @@ var AppContainer = (props) => {
     var content = getContent(props);
     return (
         <div id="global-container">
-            <Notifier messages={props.systemMessages.filter(message => message.context === "global")} />
+            <Notifier
+                onMessageSeen={message => props.dispatch(systemActions.messageSeen(message))}
+                messages={props.systemMessages.filter(message => message.context === "global")} />
             {content}
         </div>
     );

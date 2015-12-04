@@ -318,6 +318,16 @@ button.material {
     }
 }
 
+.fade-from-top-appear {
+    opacity: 0;
+    transform: translate(0, -50px);
+    transition: all 700ms ease-in-out;
+    &.fade-from-top-appear-active {
+        opacity: 1;
+        transform: translate(0, 0);
+    }
+}
+
 .fade-from-top-enter {
     opacity: 0;
     transform: translate(0, -50px);

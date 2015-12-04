@@ -2,12 +2,13 @@
 "use strict";
 let actions = require("../constants/constants").actions;
 
-let systemMessagesReducer = (state, action) => {
-    state = state === undefined ? [] : state;
+let systemMessagesReducer = (messages, action) => {
+    messages = messages === undefined ? [] : messages;
+    var payload = action.payload;
 
     switch (action.type) {
         case actions.LOGIN_FAILED:
-            return state.concat({
+            return messages.concat({
                 id: "login-failed",
                 type: "error",
                 context: "login",
@@ -15,14 +16,17 @@ let systemMessagesReducer = (state, action) => {
             });
 
         case actions.USER_AUTH_FAILED:
-            return state.concat({
+            return messages.concat({
                 id: "user-auth-failed",
                 type: "error",
                 context: "global",
                 message: "Your session has expired"
             });
+
+        case actions.SYSTEM_MESSAGE_SEEN:
+            return messages.filter(message => message.id !== payload.message.id);
     }
-    return state;
+    return messages;
 };
 
 module.exports = systemMessagesReducer;

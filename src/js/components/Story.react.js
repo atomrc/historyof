@@ -1,6 +1,7 @@
 /*global module, require*/
 "use strict";
 var React = require("react"),
+    Tag = require("./Tag.react"),
     moment = require("moment");
 
 var Story = React.createClass({
@@ -38,6 +39,9 @@ var Story = React.createClass({
                             <em className="date">
                                 {moment(story.date).format("DD MMM")}
                             </em>
+                        </div>
+                        <div>
+                            { story.tags.map(tag => (<span> <Tag key={tag.id} tag={tag}/> </span>)) }
                         </div>
                         <div>
                             <strong>{story.title || (story.description || "").substr(0, 100).concat("...")}</strong>

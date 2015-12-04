@@ -89,7 +89,6 @@ module.exports = {
             .then(function () {
                 res.status(204).send();
             });
-
     },
 
     update: function (req, res, next) {

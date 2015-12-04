@@ -8,17 +8,17 @@ module.exports = {
     middlewares: {
         find: function (req, res, next) {
             db
-                .model("event")
+                .model("story")
                 .findOne({
                     where: { user_id: req.user.id, id: req.params.eid }
                 })
-                .then(function (event) {
-                    if (!event) {
-                        var error = new Error("Event not found");
+                .then(function (story) {
+                    if (!story) {
+                        var error = new Error("Story not found");
                         error.status = 404;
                         return next(error);
                     }
-                    req.event = event;
+                    req.story = story;
                     next();
                 });
         }
@@ -27,9 +27,9 @@ module.exports = {
     getAll: function (req, res) {
         req
             .user
-            .getEvents()
-            .then(function (events) {
-                res.send(events);
+            .getStories()
+            .then(function (stories) {
+                res.send(stories);
             });
     },
 
@@ -37,20 +37,20 @@ module.exports = {
         req.body.user_id = req.user.id;
 
         db
-            .model("event")
+            .model("story")
             .create(req.body)
-            .then(function (event) {
-                res.send(event.toJSON());
+            .then(function (story) {
+                res.send(story.toJSON());
             });
     },
 
     get: function (req, res) {
-        res.send(req.event.toJSON());
+        res.send(req.story.toJSON());
     },
 
     remove: function (req, res) {
         req
-            .event
+            .story
             .destroy()
             .then(function () {
                 res.status(204).send();
@@ -60,10 +60,10 @@ module.exports = {
 
     update: function (req, res, next) {
         req
-            .event
+            .story
             .update(req.body)
-            .then(function (event) {
-                res.send(event.toJSON());
+            .then(function (story) {
+                res.send(story.toJSON());
             });
     }
 };

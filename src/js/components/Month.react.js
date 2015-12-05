@@ -19,7 +19,7 @@ var Month = (props) => {
                 {month}
             </div>
             <div className="soft-box">
-                <ReactCSSTransitionGroup transitionName="fade-from-top" transitionEnterTimeout={1000} transitionLeaveTimeout={500}>
+                <ReactCSSTransitionGroup transitionName="blink" transitionEnterTimeout={2000} transitionLeaveTimeout={1}>
                     {nodes}
                 </ReactCSSTransitionGroup>
             </div>

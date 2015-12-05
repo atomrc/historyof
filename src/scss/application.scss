@@ -347,3 +347,13 @@ button.material {
         transform: translate(0, -50px);
     }
 }
+
+.blink-enter.blink-enter-active {
+    animation: blink 2s 1;
+}
+
+@keyframes blink {
+    0% { background-color: white; }
+    50% { background-color: #fbda7d; }
+    100% { background-color: white; }
+}

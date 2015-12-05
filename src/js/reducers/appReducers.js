@@ -5,7 +5,7 @@ var combineReducers = require("redux").combineReducers,
 let userReducer = require("./userReducer"),
     tokenReducer = require("./tokenReducer"),
     storiesReducer = require("./storiesReducer"),
-    errorsReducer = require("./errorsReducer"),
+    systemMessagesReducer = require("./systemMessagesReducer"),
     storyEditorReducer = require("./storyEditorReducer");
 
 var appReducers = combineReducers( {
@@ -13,7 +13,7 @@ var appReducers = combineReducers( {
     token: tokenReducer,
     stories: storiesReducer,
     storyEditor: storyEditorReducer,
-    errors: errorsReducer,
+    systemMessages: systemMessagesReducer,
     router: routerStateReducer
 });
 

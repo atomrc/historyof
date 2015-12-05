@@ -73,6 +73,27 @@ form {
     }
 }
 
+#app-notifier {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    text-align: center;
+    z-index: 1;
+    .notif {
+        border-radius: 0 0 3px 3px;
+        padding: 0.5em 1em;
+        box-shadow: 1px 1px 2px grey;
+        display: inline-block;
+        color: white;
+        &.error {
+            background-color: orange;
+        }
+        &.info {
+            background-color: green;
+        }
+    }
+}
+
 #app {
     height: 100%;
     background-color: #EEE;
@@ -181,10 +202,6 @@ form {
             background-color: #fff;
             border-left: solid 5px transparent;
             border-bottom: solid 1px #EEE;
-
-            &.saving {
-                color: gray;
-            }
 
             &:hover {
                 border-left: solid 5px $lightcoolblue;
@@ -301,6 +318,16 @@ button.material {
     }
 }
 
+.fade-from-top-appear {
+    opacity: 0;
+    transform: translate(0, -50px);
+    transition: all 700ms ease-in-out;
+    &.fade-from-top-appear-active {
+        opacity: 1;
+        transform: translate(0, 0);
+    }
+}
+
 .fade-from-top-enter {
     opacity: 0;
     transform: translate(0, -50px);
@@ -319,4 +346,14 @@ button.material {
         opacity: 0;
         transform: translate(0, -50px);
     }
+}
+
+.blink-enter.blink-enter-active {
+    animation: blink 2s 1;
+}
+
+@keyframes blink {
+    0% { background-color: white; }
+    50% { background-color: #fbda7d; }
+    100% { background-color: white; }
 }

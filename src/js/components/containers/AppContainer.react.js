@@ -2,12 +2,18 @@
 var React = require("react"),
     connect = require("react-redux").connect,
     userActions = require("../../actions/userActions"),
+    systemActions = require("../../actions/systemActions"),
+    Notifier = require("../Notifier.react"),
     Login = require("../Login.react");
 
-var AppContainer = (props) => {
-    let {token, user, errors, dispatch, children} = props;
+
+function getContent(props) {
+    let {token, user, systemMessages, dispatch, children} = props;
     if (!token) {
-        return (<Login error={errors.login} onLogin={(login, password) => dispatch(userActions.login(login, password))}/>);
+        var loginErrors = systemMessages
+            .filter(message => message.type === "error" && message.context === "login");
+
+        return (<Login errors={loginErrors} onLogin={(login, password) => dispatch(userActions.login(login, password))}/>);
     }
 
     if (!user.id) {
@@ -28,6 +34,18 @@ var AppContainer = (props) => {
                 {children}
             </div>
         );
+}
+
+var AppContainer = (props) => {
+    var content = getContent(props);
+    return (
+        <div id="global-container">
+            <Notifier
+                onMessageSeen={message => props.dispatch(systemActions.messageSeen(message))}
+                messages={props.systemMessages.filter(message => message.context === "global")} />
+            {content}
+        </div>
+    );
 };
 
 module.exports = connect(state => state)(AppContainer);

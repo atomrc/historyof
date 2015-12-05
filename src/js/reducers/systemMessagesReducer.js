@@ -23,6 +23,14 @@ let systemMessagesReducer = (messages, action) => {
                 message: "Your session has expired"
             });
 
+        case actions.RECEIVE_CREATED_STORY:
+            return messages.concat({
+                id: "story-created",
+                type: "info",
+                context: "global",
+                message: "The story " + payload.story.title + " has been saved"
+            });
+
         case actions.SYSTEM_MESSAGE_SEEN:
             return messages.filter(message => message.id !== payload.message.id);
     }

@@ -12,13 +12,17 @@ svg.icon {
     height: 2em;
     width: 2em;
     fill: #555;
+    transform: rotate(300deg);
     &.live-icon {
         position: absolute;
         top: 50%;
-        left: 50%;
+        left: 25%;
     }
 }
 
+.canvas {
+    transform: rotate(300deg);
+}
 button, input[type=submit] {
     cursor: pointer;
     background-color: $coolblue;

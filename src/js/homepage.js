@@ -53,7 +53,7 @@ var AnimatedIcon = function (icon) {
          * @return {undefined}
          */
         init() {
-            let x = Math.floor((Math.random() * 200)),
+            let x = 30 + Math.floor((Math.random() * 200)),
                 y;
             let bounds = computeBounds(x);
             y = Math.random() * (bounds.max - bounds.min + 1) + bounds.min;
@@ -92,7 +92,7 @@ var AnimatedIcon = function (icon) {
          * @return {undefined}
          */
         commit() {
-            this.element.style.transform = "translate(" + this.position.x + "px, " + this.position.y + "px) scale(" + this.size + ")"
+            this.element.style.transform = "translate(" + this.position.x + "px, " + this.position.y + "px) scale(" + this.size + ") rotate(-300deg)"
             this.element.style.opacity = this.opacity;
             return this;
         }

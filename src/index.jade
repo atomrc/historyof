@@ -3,10 +3,13 @@ html(lang="en")
     head
         title= pageTitle
         meta(charset="UTF-8")
-        link(rel="stylesheet", type="text/css", href="/css/application.css")
-        link(rel="stylesheet", type="text/css", href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css")
+        link(rel="stylesheet", type="text/css", href="/css/homepage.css")
     body
+        include images/symbol-defs.svg
+        .canvas
         h1 HistoryOf
         h2 Ecris, sauvegarde & protège
+        div(data-converging-icons)
         a.flat-button(href="/register") Créer mon journal
         a(href="/me") Me connecter
+        script(src="js/homepage.js")

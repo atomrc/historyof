@@ -1,0 +1,29 @@
+$coolblue: #3F6BD4;
+$lightcoolblue: #85A6F5;
+
+body {
+    color: #555;
+    font-family: Arial;
+    scroll-behavior: smooth;
+    margin: 0;
+}
+
+svg.icon {
+    height: 2em;
+    width: 2em;
+    fill: #555;
+    &.live-icon {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+    }
+}
+
+button, input[type=submit] {
+    cursor: pointer;
+    background-color: $coolblue;
+    color: white;
+    &[disabled] {
+        background-color: gray;
+    }
+}

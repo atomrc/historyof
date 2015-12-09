@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "db-migrate up && mocha tests/api/api_spec.js && mocha --harmony tests/front/**",
-    "install": "gulp && db-migrate up"
+    "install": "gulp && db-migrate up",
+    "js:homepage": "browserify src/js/homepage.js -o public/js/homepage.js -t [ babelify --presets [ es2015 ] ]"
   },
   "author": "Thomas Belin",
   "license": "ISC",

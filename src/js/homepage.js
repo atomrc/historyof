@@ -33,7 +33,8 @@ var AnimatedIcon = function (icon) {
         return Math.max(0.5, x/100);
     }
 
-    function computeOpacity(x) {
+    function computeOpacity(x, opacity) {
+        return x > 0 ? Math.min(1, opacity + 0.01) : (100 + x)/100;
     }
 
     return {
@@ -44,6 +45,7 @@ var AnimatedIcon = function (icon) {
             y: 0
         },
         size: 1,
+        opacity: 1,
         computeY: function () { return 1; },
         /**
          * set initial position of the icon
@@ -60,9 +62,17 @@ var AnimatedIcon = function (icon) {
             };
             this.position.x = x;
             this.position.y = y;
+            this.opacity = 0.1;
             return this;
         },
 
+        /**
+         * update the current state of the element
+         * the new x position is computed, then everything else is
+         * deduced from the x position (y position, opacity, size)
+         *
+         * @return {undefined}
+         */
         update() {
             let {position} = this;
 
@@ -71,11 +81,19 @@ var AnimatedIcon = function (icon) {
             position.y = Math.max(bounds.min, Math.min(bounds.max, this.computeY(position.x)));
 
             this.size = computeSize(position.x);
+            this.opacity = computeOpacity(position.x, this.opacity);
 
             return this;
         },
+
+        /**
+         * render current state to the dom element
+         *
+         * @return {undefined}
+         */
         commit() {
             this.element.style.transform = "translate(" + this.position.x + "px, " + this.position.y + "px) scale(" + this.size + ")"
+            this.element.style.opacity = this.opacity;
             return this;
         }
     };
@@ -94,7 +112,13 @@ function init(rootNode) {
 
     function nextFrame() {
         iconsElements
-            .map(element => element.update())
+            .map(element => {
+                if (element.opacity === 0) {
+                    //recycle disapeared icons
+                    return element.init();
+                }
+                return element.update()
+            })
             .map(element => element.commit());
         window.requestAnimationFrame(nextFrame);
     }

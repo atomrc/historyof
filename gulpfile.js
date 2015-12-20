@@ -5,69 +5,22 @@ var production = (process.env.NODE_ENV === "production");
 
 var gulp = require("gulp"),
     jade = require("gulp-jade"),
-    browserify = require("browserify"),
-    babelify = require("babelify"),
-    uglify = require("gulp-uglify"),
     sass = require("gulp-sass"),
-    buffer = require('vinyl-buffer'),
-    source = require("vinyl-source-stream");
+    webpack = require("webpack"),
+    webpackConfig = require("./webpack.config.js");
 
-var libs = [
-    "react",
-    "react-router",
-    "react-dom",
-    "history/lib/createBrowserHistory",
-    "moment",
-    "redux",
-    "redux-router",
-    "redux-thunk",
-    "react-redux",
-    "pikaday",
-    "object-assign",
-    "whatwg-fetch",
-    "debounce",
-    "bcryptjs",
-    "uuid",
-    "react-addons-css-transition-group"
-];
+var webpackCompiler = webpack(webpackConfig);
 
-gulp.task("js-vendor", function() {
-    var b = browserify();
-
-    libs.forEach(function (id) {
-        b.require(id, { expose: id });
+gulp.task("js", function (done) {
+    webpackCompiler.run(function(err, stats) {
+        if(err) throw new Error(err);
+        console.log("[webpack:build-dev]", stats.toString({
+            colors: true,
+            chunks: false,
+            timing: true
+        }));
+        done();
     });
-
-    return b
-        .bundle()
-        .pipe(source("vendor.js"))
-        .pipe(buffer())
-        .pipe(uglify())
-        .pipe(gulp.dest("./public/js/"));
-});
-
-gulp.task("js-app", function() {
-
-    var b = browserify("src/js/application.js", {
-        transform: [
-            babelify.configure({
-                presets: ["es2015", "react"]
-            })
-        ]
-    });
-
-    libs.forEach(function (id) {
-        b.external(id);
-    });
-
-    return b
-        .bundle()
-        .pipe(source("application.js"))
-        .pipe(buffer())
-        //.pipe(uglify())
-        .pipe(gulp.dest("./public/js/"));
-
-
 });
 
 gulp.task("jade", function () {
@@ -85,10 +38,9 @@ gulp.task("sass", function () {
 });
 
 gulp.task("watch", function () {
-    gulp.watch("src/js/**/*.js", ["js-app"]);
+    gulp.watch("src/js/**/*.js", ["js"]);
     gulp.watch("src/scss/*.scss", ["sass"]);
     gulp.watch("src/*.jade", ["jade"]);
 });
 
-gulp.task("default", ["js-vendor", "js-app", "jade", "sass"]);
-gulp.task("js", ["js-vendor", "js-app"]);
+gulp.task("default", ["jade", "sass", "js"]);

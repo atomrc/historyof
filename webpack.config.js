@@ -1,7 +1,7 @@
 var webpack = require("webpack");
 
 var plugins = [
-    new webpack.optimize.CommonsChunkPlugin("vendor", "vendor.js")
+    //new webpack.optimize.CommonsChunkPlugin("vendor", "vendor.js")
 ];
 if (process.env.NODE_ENV === "production") {
     plugins.push(new webpack.optimize.UglifyJsPlugin())
@@ -10,6 +10,7 @@ if (process.env.NODE_ENV === "production") {
 module.exports = {
     entry: {
         application: "./src/js/application",
+        homepage: "./src/js/homepage"/*,
         vendor: [
             "react",
             "react-router",
@@ -27,7 +28,7 @@ module.exports = {
             "bcryptjs",
             "uuid",
             "react-addons-css-transition-group"
-        ]
+        ]*/
     },
     output: {
         path: __dirname + "/public/js",

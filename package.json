@@ -4,7 +4,10 @@
   "description": "Don't forget any of what has made you",
   "main": "index.js",
   "scripts": {
-    "test": "db-migrate up && mocha tests/api/api_spec.js && mocha --harmony tests/front/**",
+    "test:api": "db-migrate up && mocha tests/api/api_spec.js",
+    "test:unit": "mocha --harmony tests/front/**",
+    "test:e2e": "mocha --harmony tests/e2e/**",
+    "test": "npm run test:api && npm run test:unit && npm run test:e2e",
     "install": "gulp && db-migrate up"
   },
   "author": "Thomas Belin",
@@ -51,6 +54,7 @@
   "devDependencies": {
     "expect.js": "^0.3.1",
     "mocha": "^2.3.3",
-    "supertest": "*"
+    "supertest": "*",
+    "zombie": "^4.2.1"
   }
 }

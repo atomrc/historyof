@@ -24,16 +24,18 @@
                     context.setState({ checking: false });
                     return !result ? context.props.onValid() : context.props.onInvalid();
                 });
-        }, 500),
+        }),
 
 
         onChange: function (e) {
             var input = this.refs.loginInput;
 
-            //invalidate the input before the async check
-            input.setCustomValidity(false);
-
-            this.checkValidity(input, this);
+            //only perform check if custom validity is available
+            if (input.setCustomValidity) {
+                //invalidate the input before the async check
+                input.setCustomValidity(false);
+                this.checkValidity(input, this);
+            }
 
             //udpate the parent model
             this.props.onChange(e);

@@ -44,8 +44,9 @@ var RegisterContainer = React.createClass({
     },
 
     checkValidity: function () {
+        var form = this.refs.registerForm;
         this.setState({
-            canSubmit: this.refs.registerForm.checkValidity()
+            canSubmit: form.checkValidity ? form.checkValidity() : true
         });
     },
 

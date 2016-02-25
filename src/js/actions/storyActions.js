@@ -3,10 +3,10 @@
     "use strict";
     var actions = require("../constants/constants").actions,
         historyOfApi = require("../api/historyOfApi"),
+        jsonFileReader = require("../utils/jsonFileReader"),
         uuid = require("uuid");
 
     module.exports = {
-
         getAll: (token) => {
             return (dispatch) => {
                 historyOfApi
@@ -55,6 +55,55 @@
                         });
                     });
             };
+        },
+
+        /**
+         * Import all stories found in a json file
+         * will also save them to the server
+         *
+         * @param {string} token the user's token
+         * @param {file} file the file to import
+         * @returns {function} dispatch
+         */
+        importFromFile: function importFromFile(token, file) {
+            return dispatch => {
+                jsonFileReader
+                    .parse(file)
+                    .then(stories => {
+                        let nbDone = 0;
+                        stories = stories.map(story => {
+                            story.id = uuid.v1();
+                            story.date = new Date(story.date);
+                            return story;
+                        });
+
+                        function save([story, ...rest]) {
+                            if (!story) {
+                                dispatch({
+                                    type: actions.STORIES_ADDED,
+                                    payload: {
+                                        stories: stories
+                                    }
+                                });
+                                return;
+                            }
+                            historyOfApi
+                                .createStory(token, story)
+                                .then(story => {
+                                    dispatch({
+                                        type: actions.STORIES_IMPORTATION_PROGRESS,
+                                        payload: {
+                                            total: stories.length,
+                                            nbDone: stories.length - rest.length
+                                        }
+                                    });
+                                });
+                                setTimeout(() => save(rest), 500);
+                        }
+
+                        save(stories);
+                    });
+            }
         },
 
         update: function (token, story) {

@@ -23,13 +23,27 @@ let systemMessagesReducer = (messages, action) => {
                 message: "Your session has expired"
             });
 
+        case actions.STORIES_IMPORTATION_PROGRESS:
+            return messages
+                //remove potential doubles
+                .filter(message => message.id !== "import-progression")
+                .concat({
+                    id: "import-progression",
+                    type: "info",
+                    context: "global",
+                    message: "Importing stories " + payload.nbDone + "/" + payload.total
+                });
+
         case actions.RECEIVE_CREATED_STORY:
-            return messages.concat({
-                id: "story-created",
-                type: "info",
-                context: "global",
-                message: "The story " + payload.story.title + " has been saved"
-            });
+            return messages
+                //remove potential doubles
+                .filter(message => message.id !== "story-created")
+                .concat({
+                    id: "story-created",
+                    type: "info",
+                    context: "global",
+                    message: "The story " + payload.story.title + " has been saved"
+                });
 
         case actions.SYSTEM_MESSAGE_SEEN:
             return messages.filter(message => message.id !== payload.message.id);

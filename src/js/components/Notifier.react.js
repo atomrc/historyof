@@ -3,9 +3,18 @@
 var React = require("react"),
     ReactCSSTransitionGroup = require("react-addons-css-transition-group");
 
+let notifTimeout;
+
 var Notif = React.createClass({
     componentDidMount: function () {
-        setTimeout(() => {
+        notifTimeout = setTimeout(() => {
+            this.props.onMessageSeen(this.props.message);
+        }, 5000);
+    },
+
+    componentWillReceiveProps: function componentWillReceiveProps() {
+        window.clearTimeout(notifTimeout);
+        notifTimeout = setTimeout(() => {
             this.props.onMessageSeen(this.props.message);
         }, 5000);
     },

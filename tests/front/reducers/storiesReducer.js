@@ -92,4 +92,29 @@ describe("storiesReducer", function () {
         expect(stories[0].title).to.be("new title");
 
     });
+
+    it("add multiple stories at once", function () {
+        let newStories = [
+                {
+                    id: 1,
+                    title: "old story"
+                },
+                {
+                    id: 1,
+                    title: "second story"
+                }
+            ],
+            storiesAddedAction = {
+                type: actions.STORIES_ADDED,
+                payload: {
+                    stories: newStories
+                }
+            };
+
+        let stories = storiesReducer([], storiesAddedAction);
+        expect(stories.length).to.be(2);
+        expect(stories[0].title).to.be("old story");
+        expect(stories[1].title).to.be("second story");
+
+    });
 });

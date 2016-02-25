@@ -9,6 +9,9 @@ module.exports = (state, action) => {
         case actions.RECEIVE_STORIES:
             return payload.stories;
 
+        case actions.STORIES_ADDED:
+            return state.concat(payload.stories);
+
         case actions.STORY_ADDED:
             return state.concat(payload.story);
 

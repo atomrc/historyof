@@ -10,6 +10,7 @@ module.exports = {
         RECEIVE_USER: "RECEIVE_USER", //the user has been retreived from the server
 
         STORY_ADDED: "STORY_ADDED",
+        STORIES_ADDED: "STORIES_ADDED",
         REMOVE_STORY: "REMOVE_STORY",
         EDIT_STORY: "EDIT_STORY",
         CANCEL_EDIT_STORY: "CANCEL_EDIT_STORY",

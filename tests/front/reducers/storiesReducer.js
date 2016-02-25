@@ -1,6 +1,6 @@
 /*global it, describe, require*/
 "use strict";
-var APP_PATH = __dirname + "/../../../src/js",
+let APP_PATH = __dirname + "/../../../src/js",
     expect = require("expect.js");
 
 describe("storiesReducer", function () {
@@ -26,7 +26,7 @@ describe("storiesReducer", function () {
     });
 
     it("create and update with the server's response", function () {
-        var newStory = {
+        let newStory = {
                 title: "new Story",
                 date: new Date(),
                 id: 15
@@ -50,7 +50,7 @@ describe("storiesReducer", function () {
     });
 
     it("create and remove an story", function () {
-        var newStory = {
+        let newStory = {
                 id: 12,
                 title: "new Story",
                 date: new Date()
@@ -73,7 +73,7 @@ describe("storiesReducer", function () {
     });
 
     it("update story", function () {
-        var oldStory = {
+        let oldStory = {
                 id: 1,
                 title: "old title"
             },

@@ -1,6 +1,6 @@
 /*global it, describe, require*/
 "use strict";
-var APP_PATH = __dirname + "/../../../src/js",
+let APP_PATH = __dirname + "/../../../src/js",
     expect = require("expect.js");
 
 describe("storiesReducer", function () {
@@ -26,7 +26,7 @@ describe("storiesReducer", function () {
     });
 
     it("create and update with the server's response", function () {
-        var newStory = {
+        let newStory = {
                 title: "new Story",
                 date: new Date(),
                 id: 15
@@ -50,7 +50,7 @@ describe("storiesReducer", function () {
     });
 
     it("create and remove an story", function () {
-        var newStory = {
+        let newStory = {
                 id: 12,
                 title: "new Story",
                 date: new Date()
@@ -73,7 +73,7 @@ describe("storiesReducer", function () {
     });
 
     it("update story", function () {
-        var oldStory = {
+        let oldStory = {
                 id: 1,
                 title: "old title"
             },
@@ -90,6 +90,31 @@ describe("storiesReducer", function () {
 
         let stories = storiesReducer([oldStory], updateAction);
         expect(stories[0].title).to.be("new title");
+
+    });
+
+    it("add multiple stories at once", function () {
+        let newStories = [
+                {
+                    id: 1,
+                    title: "old story"
+                },
+                {
+                    id: 1,
+                    title: "second story"
+                }
+            ],
+            storiesAddedAction = {
+                type: actions.STORIES_ADDED,
+                payload: {
+                    stories: newStories
+                }
+            };
+
+        let stories = storiesReducer([], storiesAddedAction);
+        expect(stories.length).to.be(2);
+        expect(stories[0].title).to.be("old story");
+        expect(stories[1].title).to.be("second story");
 
     });
 });

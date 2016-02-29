@@ -2,6 +2,7 @@
 var React = require("react"),
     connect = require("react-redux").connect,
     userActions = require("../../actions/userActions"),
+    storyActions = require("../../actions/storyActions"),
     systemActions = require("../../actions/systemActions"),
     Notifier = require("../Notifier.react"),
     Login = require("../Login.react");
@@ -22,7 +23,11 @@ function getContent(props) {
     }
 
     return (
-            <div id="app">
+            <div
+                id="app"
+                onDrop={(e) => { e.preventDefault(); e.stopPropagation(); dispatch(storyActions.importFromFile(token, e.dataTransfer.files[0])); }}
+                onDragOver={e => { e.preventDefault(); e.stopPropagation(); e.dataTransfer.dropEffect = 'copy'; }}
+            >
                 <header id="app-header">
                     <i className="fa fa-book"></i> <span className="user">{user.pseudo}</span>
                     <button className="logout" onClick={() => {

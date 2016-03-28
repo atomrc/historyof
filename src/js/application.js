@@ -1,70 +1,29 @@
-/*global require, document*/
-"use strict";
+import {Observable} from 'rx';
+import {run} from '@cycle/core';
+import {makeDOMDriver} from '@cycle/dom';
+import isolate from '@cycle/isolate';
+import Timeline from "./components/Timeline";
+import uuid from "uuid";
 
-var React = require("react"),
-    render = require("react-dom").render,
-    ReactRouter = require("react-router"),
-    Route = ReactRouter.Route,
-    Router = ReactRouter.Router,
-    createHistory = require("history/lib/createBrowserHistory"),
-    thunk = require("redux-thunk"),
-    Provider = require("react-redux").Provider,
-    ReduxRouter = require("redux-router"),
-    Redux = require("redux"),
-    appReducers = require("./reducers/appReducers"),
-    AppContainer = require("./components/containers/AppContainer.react"),
-    TimelineContainer = require("./components/containers/TimelineContainer.react"),
-    Register = require("./components/Register.react");
+function view(timeline$) {
+    return timeline$.map(timeline => timeline.DOM);
+}
 
-var routes = (
-    <Router>
-        <Route path="/register" component={Register}></Route>
-        <Route component={AppContainer}>
-            <Route path="/me" component={TimelineContainer}/>
-        </Route>
-    </Router>
-);
+function main({DOM}) {
+    const stories = [
+        { title: "first", id: uuid.v1() },
+        { title: "second", id: uuid.v1() }
+    ];
 
-var store = Redux.compose(
-    Redux.applyMiddleware(thunk),
-    ReduxRouter.reduxReactRouter({ routes, createHistory })
-)(Redux.createStore)(appReducers, {
-    user: {},
-    stories: [],
-    token: window.localStorage.getItem("token")
-});
+    const timeline$ = Observable.just(isolate(Timeline)({DOM, initialStories$: Observable.just(stories)}));
 
-render(
-    <Provider store={store}>
-        <ReduxRouter.ReduxRouter>
-            {routes}
-        </ReduxRouter.ReduxRouter>
-    </Provider>,
-    document.getElementById("main")
-);
+    return {
+        DOM: view(timeline$, DOM)
+    };
+}
 
-/*
-var React = require("react"),
-    ReactDom = require("react-dom"),
-    ReactRouter = require("react-router"),
-    Route = ReactRouter.Route,
-    Router = ReactRouter.Router,
-    createBrowserHistory = require("history/lib/createBrowserHistory"),
-    AppContainer = require("./components/containers/AppContainer.react"),
-    GuestContainer = require("./components/containers/GuestContainer.react"),
-    Register = require("./components/Register.react"),
-    TimelineContainer = require("./components/containers/TimelineContainer.react");
+var drivers = {
+    DOM: makeDOMDriver("#main")
+};
 
-var routes = (
-    <Router history={createBrowserHistory()}>
-        <Route components={GuestContainer}>
-            <Route path="/register" component={Register}/>
-        </Route>
-        <Route component={AppContainer}>
-            <Route path="/me" component={TimelineContainer}/>
-        </Route>
-    </Router>
-);
-
-ReactDom.render(routes, document.getElementById("main"));
-*/
+run(main, drivers);

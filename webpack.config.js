@@ -11,22 +11,17 @@ module.exports = {
     entry: {
         application: "./src/js/application",
         vendor: [
-            "react",
-            "react-router",
-            "react-dom",
-            "history/lib/createBrowserHistory",
-            "moment",
-            "redux",
-            "redux-router",
-            "redux-thunk",
-            "react-redux",
-            "pikaday",
-            "object-assign",
-            "whatwg-fetch",
-            "debounce",
-            "bcryptjs",
+            "rx",
+            "@cycle/core",
+            "@cycle/dom",
+            "@cycle/http",
+            "@cycle/isolate",
             "uuid",
-            "react-addons-css-transition-group"
+            "object-assign",
+            /*"moment",
+            "pikaday",
+            "whatwg-fetch",
+            "bcryptjs",*/
         ]
     },
     output: {
@@ -39,7 +34,7 @@ module.exports = {
                 test: /src\/js.*\.js$/,
                 loader: 'babel',
                 query: {
-                    presets: ['es2015', "react"]
+                    presets: ['es2015']
                 }
             },
             { test: /\.scss$/, loaders: ["style", "css", "sass"] }

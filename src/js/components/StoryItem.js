@@ -1,23 +1,29 @@
-"use strict";
+import {Observable} from "rx";
 import {li, a} from '@cycle/dom';
 
 function intent(DOM) {
-    const action$ = DOM
+    const removeAction$ = DOM
         .select(".remove")
         .events("click")
         .map(() => ({ type: "remove" }));
 
-    return action$;
+    const editAction$ = DOM
+        .select(".edit")
+        .events("click")
+        .map(() => ({ type: "edit" }));
+
+    return Observable.merge(removeAction$, editAction$);
 }
 
 function view(story$) {
     return story$.map((story) => li(".story", [
         story.title,
-        a(".remove", { href: "#" }, "x")
+        a(".remove", { href: "#" }, "x"),
+        a(".edit", { href: "#" }, "e")
     ]));
 }
 
-function storyItem({DOM, story$}) {
+function StoryItem({DOM, story$}) {
     const action$ = intent(DOM);
     const vTree$ = view(story$);
 
@@ -27,4 +33,4 @@ function storyItem({DOM, story$}) {
     };
 }
 
-export default storyItem;
+export default StoryItem;

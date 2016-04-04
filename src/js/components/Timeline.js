@@ -7,19 +7,19 @@ import uuid from "uuid";
 import assign from "object-assign";
 
 function model(action$, stories$) {
-    const reducers$ = action$.map(action => (stories) => {
+    const reducer$ = action$.map(action => (stories) => {
         switch(action.type) {
             case "add":
                 return stories.concat(assign({}, action.story, { id: uuid.v1() }));
             case "remove":
-                return stories.filter((story) => story.id !== action.id);
+                return stories.filter((story) => story.id !== action.story.id);
             default:
                 throw new Error("uninplemented item action: "+ action.type);
         }
     });
 
     return stories$
-        .concat(reducers$)
+        .concat(reducer$)
         .scan((stories, reduceFn) => reduceFn(stories));
 }
 
@@ -34,17 +34,17 @@ function view(storyItems$, storyForm$) {
         ]));
 }
 
-function Timeline({DOM, initialStories$}) {
+function Timeline({DOM, stories$}) {
     const proxyItemAction$ = new Subject();
-    const stories$ = model(proxyItemAction$, initialStories$);
+    const storiesModel$ = model(proxyItemAction$, stories$);
 
-    const storyItems$ = stories$
+    const storyItems$ = storiesModel$
         .map((stories) =>
             stories.map((story) => {
                 const isolatedItem = isolate(StoryItem)({DOM, story$: Observable.just(story)});
                 return {
                     DOM: isolatedItem.DOM,
-                    action$: isolatedItem.action$.map(action => ({ type: action.type, id: story.id }))
+                    action$: isolatedItem.action$.map(action => ({ type: action.type, story: story }))
                 };
             })
         ).shareReplay(1);
@@ -61,9 +61,7 @@ function Timeline({DOM, initialStories$}) {
 
     return {
         DOM: vTree$,
-        action$: storyItems$.flatMap(
-            (items) => Observable.merge(items.map(item => item.action$))
-        )
+        action$: proxyItemAction$
     };
 }
 

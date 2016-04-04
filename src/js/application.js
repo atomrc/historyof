@@ -1,29 +1,34 @@
-import {Observable} from 'rx';
 import {run} from '@cycle/core';
 import {makeDOMDriver} from '@cycle/dom';
 import isolate from '@cycle/isolate';
 import Timeline from "./components/Timeline";
-import uuid from "uuid";
+import assign from "object-assign";
+import apiDriver from "./apiDriver";
 
-function view(timeline$) {
-    return timeline$.map(timeline => timeline.DOM);
-}
+function main({DOM, api}) {
+    const stories$ = api
+        .filter(request => request.action.type === "fetchStories")
+        .map(({ response }) => response);
 
-function main({DOM}) {
-    const stories = [
-        { title: "first", id: uuid.v1() },
-        { title: "second", id: uuid.v1() }
-    ];
-
-    const timeline$ = Observable.just(isolate(Timeline)({DOM, initialStories$: Observable.just(stories)}));
+    const timeline = isolate(Timeline)({DOM, stories$: stories$});
 
     return {
-        DOM: view(timeline$, DOM)
+        DOM: timeline.DOM,
+        api: timeline
+            .action$
+            .map((action) =>
+                //décorate the action that is given to the api
+                //with the user's token that authenticate him against the
+                //server
+                assign({}, action, { token: "felix" })
+            )
+            .startWith({ type: "fetchStories" })
     };
 }
 
 var drivers = {
-    DOM: makeDOMDriver("#main")
+    DOM: makeDOMDriver("#main"),
+    api: apiDriver
 };
 
 run(main, drivers);

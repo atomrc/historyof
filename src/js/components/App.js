@@ -1,5 +1,5 @@
 import isolate from '@cycle/isolate';
-import Timeline from "./Timeline";
+import Timeline from "./Timeline/Timeline";
 import assign from "object-assign";
 
 function App({DOM, api, token}) {

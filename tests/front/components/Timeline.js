@@ -8,7 +8,8 @@ import {mockDOMSource} from '@cycle/dom';
 import {Observable} from "rx";
 
 describe("Timeline Component", () => {
-    const Timeline = require(APP_PATH + "/components/Timeline").default;
+    const Timeline = require(APP_PATH + "/components/Timeline/Timeline").default;
+    const TimelineModel = require(APP_PATH + "/components/Timeline/model").default;
 
     const initialStories = [
         { id: "first-uuid", title: "first story" },
@@ -30,15 +31,32 @@ describe("Timeline Component", () => {
         });
     });
 
-    it("should send back item actions", () => {
+    it("should remove items", () => {
         const stories$ = Observable.just(initialStories),
-            DOM = mockDOMSource({
-                ".remove": { click: Observable.just({}) }
+            removeAction$ = Observable.just({ type: "remove", story: { id: "first-uuid"}});
+
+        const storiesSink$ = TimelineModel(removeAction$, stories$);
+
+        storiesSink$
+            .last()
+            .subscribe(function (stories) {
+                expect(stories.length).to.be(initialStories.length - 1);
+                expect(stories[0].title).to.be(initialStories[1].title);
             });
+    });
 
-        const sinks = Timeline({ DOM, stories$ });
+    it("should add new item", () => {
+        const stories$ = Observable.just(initialStories),
+            addAction$ = Observable.just({ type: "add", story: { id: "forth-uuid", title: "Forth Story" }});
 
-        sinks.action$.subscribe(console.log.bind(console));
+        const storiesSink$ = TimelineModel(addAction$, stories$);
+
+        storiesSink$
+            .last()
+            .subscribe(function (stories) {
+                expect(stories.length).to.be(initialStories.length + 1);
+                expect(stories[stories.length - 1].title).to.be("Forth Story");
+            });
     });
 
 });

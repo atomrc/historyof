@@ -10,15 +10,18 @@ function intent(DOM) {
         .filter(ev => ev.key !== "Enter")
         .map(ev => ({ [ev.target.name]: ev.target.value }))
 
-    const addAction$ = keyup$.filter(ev => ev.key === "Enter");
+    const addAction$ = keyup$
+        .filter(ev => ev.key === "Enter")
+        .map(() => "add");
 
     return {addAction$, editAction$};
 }
 
 function model({editAction$, addAction$}) {
-    return Observable.merge(editAction$, addAction$)
+    return Observable
+        .merge(editAction$, addAction$)
         .scan((acc, value) => {
-            if (value.type === "add") {
+            if (value === "add") {
                 return {};
             }
             return assign({}, acc, value);
@@ -26,11 +29,11 @@ function model({editAction$, addAction$}) {
         .startWith({});
 }
 
-function view(state$) {
-    return state$
-        .map(state => div([
-            input({ name: "title", value: state.title }),
-            input({ name: "test", value: state.test })
+function view(editedStory$) {
+    return editedStory$
+        .map(editedStory => div([
+            input({ name: "title", value: editedStory.title || "" }),
+            input({ name: "test", value: editedStory.test || ""  })
         ]));
 }
 
@@ -39,13 +42,13 @@ function StoryForm({DOM}) {
     const state$ = model(action);
     const vTree$ = view(state$);
 
+    const storyToAdd$ = state$.filter((story) => story.title && story.test);
     return {
         DOM: vTree$,
         action$: action
             .addAction$
-            .map(() => state$)
-            .mergeAll()
-            .map(state => ({ type: "add", story: state }))
+            .withLatestFrom(storyToAdd$, (action, story) => story)
+            .map(story => ({ type: "add", story: story }))
     };
 }
 

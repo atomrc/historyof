@@ -1,22 +1,30 @@
 import {Observable} from 'rx';
-import uuid from "uuid";
-//import api from "./api/historyOfApi";
+import api from "./api/historyOfApi";
 
 function apiDriver(action$) {
 
     function executeAction(action) {
-        console.log("[API ACTION]", action)
-        return [
-            { title: "first", id: uuid.v1() },
-            { title: "second", id: uuid.v1() }
-        ];
+        console.log("[api action]", action);
+        switch(action.type) {
+            case "login":
+                return api.login(action.login, action.password);
+
+            case "fetchUser":
+                return api.getUser(action.token);
+
+            case "fetchStories":
+                return api.getStories(action.token);
+
+            default:
+                throw new Error("unimplemented api action: " + action.type);
+        }
     }
 
     return Observable.create((subscriber) => {
         action$.subscribe((action) => {
             subscriber.onNext({
                 action: action,
-                response: executeAction(action)
+                response: Observable.fromPromise(executeAction(action))
             });
         });
     });

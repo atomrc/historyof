@@ -1,11 +1,20 @@
 import {Observable} from "rx";
-import isolate from '@cycle/isolate';
-import Timeline from "./Timeline/Timeline";
-import assign from "object-assign";
-import {div, ul} from "@cycle/dom";
+//import isolate from '@cycle/isolate';
+//import Timeline from "./Timeline/Timeline";
+//import assign from "object-assign";
+import {div, button} from "@cycle/dom";
 
 
-function intent(token, api) {
+function intent(DOM) {
+    const logoutAction$ = DOM
+        .select(".logout")
+        .events("click")
+        .map({ type: "logout" });
+
+    return logoutAction$;
+}
+
+function model(token, api, logoutAction$) {
     const token$ = token ?
         Observable.just(token) :
         api
@@ -33,13 +42,17 @@ function view(token$, user$) {
             if (token && !user) {
                 return div("login in");
             }
-            return div(user.pseudo)
+            return div([
+                user.pseudo,
+                button(".logout", "Logout")
+            ])
         });
 }
 
 function App({DOM, api, token}) {
 
-    const {token$, user$} = intent(token, api);
+    const logoutAction$ = intent(DOM);
+    const {token$, user$} = model(token, api, logoutAction$);
 
     const vtree$ = view(token$, user$);
 

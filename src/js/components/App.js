@@ -22,7 +22,10 @@ function intent(token, api) {
 
 function view(token$, user$) {
     return Observable
-        .combineLatest(token$.startWith(null), user$.startWith(null), (token, user) => ({ token: token, user: user }))
+        .combineLatest(
+            token$.startWith(null),
+            user$.startWith(null),
+            (token, user) => ({ token: token, user: user }))
         .map(({ token, user }) => {
             if (!token) {
                 return div("unlogged");
@@ -40,35 +43,14 @@ function App({DOM, api, token}) {
 
     const vtree$ = view(token$, user$);
 
-    /*
-    const token$ = api
-        .find(req => req.action.type === "login")
-        .flatMap(({response}) => response);
-
-    const stories$ = api
-        //get a single element (get a completed stream)
-        .find(request => request.action.type === "fetchStories")
-        .map(({ response }) => response);
-
-       */
-
-    const fetchUserRequest$ = token$
-        .map(token => ({ type: "fetchUser", token: token }));
+    const fetchUserRequest$ = Observable
+        .combineLatest(token$, user$.isEmpty(), (token, userIsEmpty) => ({ token, userIsEmpty }))
+        .filter(({ userIsEmpty }) => userIsEmpty)
+        .map(({ token }) => ({ type: "fetchUser", token: token }));
 
     return {
         DOM: vtree$,
         api: fetchUserRequest$
-        /*
-        api: timeline
-            .action$
-            .startWith({ type: "login", login: "felix@felix.fr", password: "felix" })
-            .map((action) =>
-                //décorate the action that is given to the api
-                //with the user's token that authenticate him against the
-                //server
-                assign({}, action, { token: token })
-            )
-            */
     }
 }
 

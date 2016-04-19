@@ -1,38 +1,19 @@
-import {Observable, Subject} from "rx";
-import isolate from "@cycle/isolate";
-import StoryItem from "../StoryItem";
-import StoryForm from "../StoryForm";
+import {Subject} from "rx";
 import model from "./model";
 import view from "./view";
+import intent from "./intent";
 
 function Timeline({DOM, stories$}) {
-    const proxyItemAction$ = new Subject();
-    const storiesModel$ = model(proxyItemAction$, stories$);
+    const proxyAction$ = new Subject();
+    const storiesModel$ = model(proxyAction$, stories$);
+    const { actions$, components } = intent(storiesModel$, DOM);
+    const vTree$ = view(components.storyItems$, components.storyForm.DOM);
 
-    const storyItems$ = storiesModel$
-        .map((stories) =>
-            stories.map((story) => {
-                const isolatedItem = isolate(StoryItem)({DOM, story$: Observable.just(story)});
-                return {
-                    DOM: isolatedItem.DOM,
-                    action$: isolatedItem.action$.map(action => ({ type: action.type, story: story }))
-                };
-            })
-        ).shareReplay(1);
-
-    const storyItemsAction$ = storyItems$.flatMap(
-        (items) => Observable.merge(items.map(item => item.action$))
-    );
-    const storyForm = isolate(StoryForm)({DOM});
-    const storyFormAction$ = storyForm.action$;
-
-    Observable.merge(storyItemsAction$, storyFormAction$).subscribe(proxyItemAction$);
-
-    const vTree$ = view(storyItems$, storyForm.DOM);
+    actions$.subscribe(proxyAction$);
 
     return {
         DOM: vTree$,
-        action$: proxyItemAction$
+        action$: proxyAction$
     };
 }
 

@@ -14,32 +14,11 @@ function intent(DOM) {
     return logoutAction$;
 }
 
-function model(token, api, logoutAction$) {
-    const token$ = token ?
-        Observable.just(token) :
-        api
-            .filter((req) => req.action.type === "login" || req.action.type === "fetchUser")
-            .map(({ token }) => token);
-
-    const user$ = api
-        .filter((req) => req.action.type === "login" || req.action.type === "fetchUser")
-        .flatMap(({ response }) => response)
-        .map(response => response.user ? response.user : response);
-
-    return { token$, user$ };
-}
-
-function view(token$, user$) {
-    return Observable
-        .combineLatest(
-            token$.startWith(null),
-            user$.startWith(null),
-            (token, user) => ({ token: token, user: user }))
-        .map(({ token, user }) => {
-            if (!token) {
-                return div("unlogged");
-            }
-            if (token && !user) {
+function view(user$) {
+    return user$
+        .startWith(null)
+        .map(user => {
+            if (!user) {
                 return div("login in");
             }
             return div([
@@ -49,21 +28,15 @@ function view(token$, user$) {
         });
 }
 
-function App({DOM, api, token}) {
-
+function App({DOM, api, user}) {
     const logoutAction$ = intent(DOM);
-    const {token$, user$} = model(token, api, logoutAction$);
+    const user$ = Observable.just(user);
 
-    const vtree$ = view(token$, user$);
-
-    const fetchUserRequest$ = Observable
-        .combineLatest(token$, user$.isEmpty(), (token, userIsEmpty) => ({ token, userIsEmpty }))
-        .filter(({ userIsEmpty }) => userIsEmpty)
-        .map(({ token }) => ({ type: "fetchUser", token: token }));
+    const vtree$ = view(user$);
 
     return {
         DOM: vtree$,
-        api: fetchUserRequest$
+        api: Observable.empty()
     }
 }
 

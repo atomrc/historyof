@@ -1,20 +1,24 @@
 import {run} from '@cycle/core';
 import {makeDOMDriver} from '@cycle/dom';
+import storageDriver from '@cycle/storage';
 import apiDriver from "./apiDriver";
-import App from "./components/App";
+import AuthContainer from "./components/AuthContainer";
 
-function main({DOM, api}) {
-    const app = App({DOM, api, token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6IjBlM2JiNDkwLTA1YTctMTFlNi04YWExLTk5Y2M5OGE3ODQwZSIsImlhdCI6MTQ2MTAxNDc5NiwiZXhwIjoxNDYxMDMyNzk2fQ.WgQqBpe9OMPOBgw-0BKhh-71vCOGatfMYq32n7wzCUs"});
+function main({DOM, api, storage}) {
+
+    const authContainer = AuthContainer({DOM, api, storage});
 
     return {
-        DOM: app.DOM,
-        api: app.api
+        DOM: authContainer.DOM,
+        api: authContainer.api,
+        storage: authContainer.storage
     }
 }
 
 var drivers = {
     DOM: makeDOMDriver("#main"),
-    api: apiDriver
+    api: apiDriver,
+    storage: storageDriver
 };
 
 run(main, drivers);

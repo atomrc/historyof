@@ -5,9 +5,9 @@ import assign from "object-assign";
 
 function intent(DOM, api, storage) {
     const sourceToken$ = storage
-            .local
-            .getItem("token")
-            .filter(token => !!token);
+        .local
+        .getItem("token")
+        .filter(token => !!token);
 
     const login$ = DOM
         .select("input[name=login]")
@@ -47,15 +47,17 @@ function intent(DOM, api, storage) {
     };
 }
 
-function model(tokenResponse$, loginResponse$, fetchUserResponse$) {
+function model(tokenResponse$, loginResponse$, fetchUserResponse$, logoutAction$) {
     const userLogin$ = loginResponse$
         .map(res => res.user);
 
     const user$ = Observable.merge(fetchUserResponse$, userLogin$);
 
+    const logoutData$ = logoutAction$.map(() => null);
+
     return {
-        token$: tokenResponse$,
-        user$
+        token$: Observable.merge(tokenResponse$, logoutData$),
+        user$: Observable.merge(user$, logoutData$)
     };
 }
 
@@ -79,16 +81,24 @@ function view(token$, app$) {
 
 function AuthContainer({DOM, api, storage}) {
 
-    //const logoutActionProxy = Subject();
+    const logoutActionProxy$ = new Subject();
 
     const { sourceToken$, loginAction$, loginResponse$, fetchUserRequest$, fetchUserResponse$ } = intent(DOM, api, storage);
-    const { token$, user$ } = model(sourceToken$, loginResponse$, fetchUserResponse$);
+    const { token$, user$ } = model(sourceToken$, loginResponse$, fetchUserResponse$, logoutActionProxy$);
 
     const app$ = user$
         .map(user => App({ DOM, api, user }));
 
+    const logoutAction$ = app$.flatMap(app => app.logoutAction$);
+
     const loginRequest$ = loginAction$
         .map((loginValues) => assign({}, { type: "login" }, loginValues));
+
+    logoutAction$.subscribe(logoutActionProxy$);
+
+    loginResponse$
+        .catch(res => console.log(res))
+        .subscribe();
 
     return {
         DOM: view(token$, app$),

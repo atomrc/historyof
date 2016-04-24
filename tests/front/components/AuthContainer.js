@@ -97,25 +97,21 @@ describe("AuthContainer Component", () => {
             done();
         });
     });
-    return;
 
     it("should display login form when user logs out", (done) => {
-        expect(false).to.be(true);
-        return done(); //TODO
         const DOM = mockDOMSource({
                 ".logout": { click: Observable.just({}) }
             }),
-
+            storage = { local: { getItem: () => Observable.empty() }},
             user$ = Observable.just({ pseudo: "felix", login: "felix@felix.fr", password: "password" }),
             apiResponse$ = Observable.just({ action: { type: "fetchUser" }, response: user$ });
 
-        const sinks = AuthContainer({ DOM, api: apiResponse$, token: "usertoken" });
+        const sinks = AuthContainer({ DOM, api: apiResponse$, storage });
 
         sinks
             .DOM
-            .last()
             .subscribe(vtree => {
-                expect(vtree.children[0].text).to.be("unlogged");
+                expect(vtree.tagName).to.be("FORM");
             });
 
         sinks

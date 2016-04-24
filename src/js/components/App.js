@@ -36,7 +36,8 @@ function App({DOM, api, user}) {
 
     return {
         DOM: vtree$,
-        api: Observable.empty()
+        api: Observable.empty(),
+        logout$: logoutAction$
     }
 }
 

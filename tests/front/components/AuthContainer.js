@@ -66,7 +66,7 @@ describe("AuthContainer Component", () => {
         const sinks = AuthContainer({ DOM, api: apiResponse$, storage });
 
         sinks.DOM.last().subscribe(vtree => {
-            expect(vtree.children[0].text).to.be("ok app is on");
+            expect(vtree.properties.id).to.be("app");
         });
 
         sinks.api.subscribe(request => {
@@ -109,7 +109,7 @@ describe("AuthContainer Component", () => {
             user$ = Observable.just({ pseudo: "felix", login: "felix@felix.fr", password: "password" }),
             apiResponse$ = Observable.just({ action: { type: "fetchUser" }, response: user$ });
 
-        const sinks = App({ DOM, api: apiResponse$, token: "usertoken" });
+        const sinks = AuthContainer({ DOM, api: apiResponse$, token: "usertoken" });
 
         sinks
             .DOM
@@ -127,5 +127,11 @@ describe("AuthContainer Component", () => {
                 done();
             });
     });
+
+    it("should display login form with message if token is expired", (done) => {
+        //expect(false).to.be(true);
+        done();
+    });
+
 
 });

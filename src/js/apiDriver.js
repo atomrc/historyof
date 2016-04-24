@@ -21,13 +21,14 @@ function apiDriver(action$) {
     }
 
     return Observable.create((subscriber) => {
-        action$.subscribe((action) => {
-            subscriber.onNext({
-                action: action,
-                response: Observable.fromPromise(executeAction(action))
+            action$.subscribe((action) => {
+                subscriber.onNext({
+                    action: action,
+                    response: Observable.fromPromise(executeAction(action))
+                });
             });
-        });
-    });
+        })
+        .share();
 }
 
 export default apiDriver;

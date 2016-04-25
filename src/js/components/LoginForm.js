@@ -5,16 +5,16 @@ import assign from "object-assign";
 function intent(DOM, api) {
     const login$ = DOM
         .select("input[name=login]")
-        .events("keyup")
+        .events("change")
         .map(ev => ev.target.value);
 
     const password$ = DOM
         .select("input[name=password]")
-        .events("keyup")
+        .events("change")
         .map(ev => ev.target.value);
 
     const loginValues$ = Observable
-        .combineLatest(login$, password$, (login, password) => ({ login, password }))
+        .combineLatest(login$, password$, (login, password) => ({ login, password }));
 
     const loginRequest$ = DOM
         .select("form")
@@ -23,14 +23,15 @@ function intent(DOM, api) {
 
     const loginResponse$ = api
         .filter(req => req.action.type === "login")
-        .flatMap(req => req.response);
+        .flatMap(req => req.response)
 
     const loginError$ = loginResponse$
         .catch(error => Observable.just(error));
 
     return {
         loginRequest$: loginValues$.sample(loginRequest$),
-        loginSuccess$: loginResponse$,
+        loginSuccess$: loginResponse$
+            .catch(() => Observable.empty()),
         loginError$
     };
 }

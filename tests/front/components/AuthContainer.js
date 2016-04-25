@@ -24,7 +24,7 @@ describe("AuthContainer Component", () => {
         const {DOM, api, storage} = AuthContainer({ DOM: DOMSource, api: Observable.empty(), storage: storageSource });
 
         DOM.subscribe(vtree => {
-            expect(vtree.tagName).to.be("FORM");
+            expect(vtree.children[0].tagName).to.be("FORM");
         });
 
         empty([api, storage])
@@ -72,7 +72,7 @@ describe("AuthContainer Component", () => {
         const {DOM, storage} = AuthContainer({ DOM: DOMSource, api: apiSource$, storage: storageSource });
 
         DOM
-            .skip(1)
+            .skip(2)
             .subscribe(vtree => {
                 expect(vtree.properties.id).to.be("app");
             });
@@ -80,6 +80,30 @@ describe("AuthContainer Component", () => {
         empty([storage])
             .subscribe(isEmpty => {
                 expect(isEmpty).to.be(true);
+                done();
+            });
+    });
+
+    it("should display login form with message if token is expired", (done) => {
+        const DOMSource = mockDOMSource(),
+            storageSource = {
+                local: {
+                    getItem: () => Observable.just("expiredtoken")
+                }
+            },
+            errorResponse$ = Observable.fromPromise(new Promise(function (resolve, reject) {
+                reject({ error: "token expired" });
+            })),
+            apiSource$ = Observable.just({ action: { type: "fetchUser" }, response: errorResponse$ });
+
+        const {DOM, api, storage} = AuthContainer({ DOM: DOMSource, api: apiSource$, storage: storageSource });
+
+        DOM
+            .skip(2)
+            .subscribe(vtree => {
+                const errorDiv = vtree.children[0];
+                expect(errorDiv.properties.className).to.be("error")
+                expect(errorDiv.children[0].text).to.be("token expired")
                 done();
             });
     });
@@ -104,11 +128,6 @@ describe("AuthContainer Component", () => {
                 expect(isEmpty).to.be(true);
                 done();
             });
-    });
-
-    xit("should display login form with message if token is expired", (done) => {
-        //expect(false).to.be(true);
-        done();
     });
 
 

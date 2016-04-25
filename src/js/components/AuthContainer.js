@@ -13,34 +13,43 @@ function intent(api, storage) {
         .filter(res => res.action.type === "fetchUser")
         .flatMap(req => req.response);
 
+    const fetchUserError$ = fetchUserResponse$
+        .filter(() => false)
+        .catch(error => Observable.just(error));
+
     return {
         initialToken$,
-        fetchUserResponse$
+        fetchUserResponse$: fetchUserResponse$
+            .catch(() => Observable.empty()),
+        fetchUserError$
     };
 }
 
-function model(initialToken$, loginToken$, loginUser$, fetchedUser$, logoutAction$) {
-    const logoutData$ = logoutAction$.map(() => null);
+function model(initialToken$, loginToken$, loginUser$, fetchedUser$, logoutAction$, fetchUserError$) {
+    const logoutData$ = Observable.merge(logoutAction$, fetchUserError$).map(() => null);
 
     const user$ = Observable.merge(loginUser$, fetchedUser$);
     const token$ = Observable.merge(initialToken$, loginToken$, logoutData$);
 
     return {
         token$,
-        user$
+        user$,
+        error$: fetchUserError$
     };
 }
 
-function view(token$, loginForm$, app$) {
+function view(token$, loginForm$, app$, error$) {
     return Observable
         .combineLatest(
             token$.startWith(null),
             loginForm$,
             app$.startWith(null),
-            (token, loginForm, app) => ({ token, loginForm, app }))
-        .map(({token, loginForm, app}) => {
+            error$.startWith(null),
+            (token, loginForm, app, error) => ({ token, loginForm, app, error }))
+        .map(({token, loginForm, app, error}) => {
             if (!token) {
-                return loginForm;
+                const children = error ? [div(".error", error.error), loginForm] : loginForm;
+                return div(children);
             }
             if (app) {
                 return div({ id: "app" }, app.DOM);
@@ -57,8 +66,8 @@ function AuthContainer({DOM, api, storage}) {
     const loginForm = LoginForm({ DOM, api });
     const app$ = userProxy$.map(user => App({ DOM, api, user$: Observable.just(user) }));
 
-    const { initialToken$, fetchUserResponse$ } = intent(api, storage);
-    const { token$, user$ } = model(initialToken$, loginForm.token$, loginForm.user$, fetchUserResponse$, logoutActionProxy$);
+    const { initialToken$, fetchUserResponse$, fetchUserError$ } = intent(api, storage);
+    const { token$, user$, error$ } = model(initialToken$, loginForm.token$, loginForm.user$, fetchUserResponse$, logoutActionProxy$, fetchUserError$);
 
     const fetchUserRequest$ = initialToken$
         .map(token => ({type: "fetchUser", token }));
@@ -68,7 +77,7 @@ function AuthContainer({DOM, api, storage}) {
     user$.subscribe(userProxy$);
 
     return {
-        DOM: view(token$, loginForm.DOM, app$),
+        DOM: view(token$, loginForm.DOM, app$, error$),
         api: Observable.merge(loginForm.api, fetchUserRequest$),
         storage: loginForm
             .token$

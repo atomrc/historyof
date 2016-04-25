@@ -11,15 +11,15 @@ describe("LoginForm Component", () => {
     const LoginForm = require(APP_PATH + "/components/LoginForm").default;
 
     it("should display login form", (done) => {
-        const DOM = mockDOMSource();
-        const sinks = LoginForm({ DOM, api: Observable.empty() });
+        const DOMSource = mockDOMSource();
 
-        sinks.DOM.subscribe(vtree => {
+        const { DOM, api } = LoginForm({ DOM: DOMSource, api: Observable.empty() });
+
+        DOM.subscribe(vtree => {
             expect(vtree.tagName).to.be("FORM");
         });
 
-        sinks
-            .api
+        api
             .isEmpty()
             .subscribe(isEmpty => {
                 expect(isEmpty).to.be(true);
@@ -29,10 +29,10 @@ describe("LoginForm Component", () => {
 
     it("should send login request when user logs in", (done) => {
         const DOM = mockDOMSource({
-                "input[name=login]": { keyup: Observable.just({
+                "input[name=login]": { change: Observable.just({
                     target: { value: "felix@felix.fr" }
                 }) },
-                "input[name=password]": { keyup: Observable.just({
+                "input[name=password]": { change: Observable.just({
                     target: { value: "password" }
                 }) },
                 "form": { submit: Observable.just({ preventDefault: () => 1}) }
@@ -44,7 +44,6 @@ describe("LoginForm Component", () => {
             expect(request.type).to.be("login");
             done();
         });
-
     });
 
     it("should return user and token logged in", (done) => {

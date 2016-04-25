@@ -1,110 +1,77 @@
-import {Observable, Subject} from "rx";
+import {Observable, ReplaySubject, Subject} from "rx";
+import LoginForm from "./LoginForm";
 import App from "./App";
-import {div, form, input} from "@cycle/dom";
-import assign from "object-assign";
+import {div} from "@cycle/dom";
 
-function intent(DOM, api, storage) {
-    const sourceToken$ = storage
+function intent(api, storage) {
+    const initialToken$ = storage
         .local
         .getItem("token")
         .filter(token => !!token);
-
-    const login$ = DOM
-        .select("input[name=login]")
-        .events("keyup")
-        .map(ev => ev.target.value);
-
-    const password$ = DOM
-        .select("input[name=password]")
-        .events("keyup")
-        .map(ev => ev.target.value);
-
-    const loginValues$ = Observable
-        .combineLatest(login$, password$, (login, password) => ({ login, password }))
-
-    const loginRequest$ = DOM
-        .select("form")
-        .events("submit")
-        .map(ev => { ev.preventDefault(); return ev; });
-
-    const loginResponse$ = api
-        .filter(req => req.action.type === "login")
-        .flatMap(req => req.response);
 
     const fetchUserResponse$ = api
         .filter(res => res.action.type === "fetchUser")
         .flatMap(req => req.response);
 
-    const fetchUserRequest$ = sourceToken$
-        .map(token => ({ type: "fetchUser", token }))
-
     return {
-        sourceToken$,
-        loginAction$: loginValues$.sample(loginRequest$),
-        loginResponse$,
-        fetchUserResponse$,
-        fetchUserRequest$
+        initialToken$,
+        fetchUserResponse$
     };
 }
 
-function model(tokenResponse$, loginResponse$, fetchUserResponse$, logoutAction$) {
-    const userLogin$ = loginResponse$
-        .map(res => res.user);
-
-    const user$ = Observable.merge(fetchUserResponse$, userLogin$);
-
+function model(initialToken$, loginToken$, loginUser$, fetchedUser$, logoutAction$) {
     const logoutData$ = logoutAction$.map(() => null);
 
+    const user$ = Observable.merge(loginUser$, fetchedUser$);
+    const token$ = Observable.merge(initialToken$, loginToken$, logoutData$);
+
     return {
-        token$: Observable.merge(tokenResponse$, logoutData$),
-        user$: Observable.merge(user$, logoutData$)
+        token$,
+        user$
     };
 }
 
-function view(token$, app$) {
+function view(token$, loginForm$, app$) {
     return Observable
-        .combineLatest(token$.startWith(null), app$.startWith(null), (token, app) => ({ token, app }))
-        .map(({token, app}) => {
+        .combineLatest(
+            token$.startWith(null),
+            loginForm$,
+            app$.startWith(null),
+            (token, loginForm, app) => ({ token, loginForm, app }))
+        .map(({token, loginForm, app}) => {
             if (!token) {
-                return form([
-                    input({type: "text", name: "login"}),
-                    input({type: "password", name: "password"}),
-                    input({type: "submit", name: "Go!"})
-                ]);
+                return loginForm;
             }
-            if (!app) {
-                return div("login in");
+            if (app) {
+                return div({ id: "app" }, app.DOM);
             }
-            return div({ id: "app" }, app.DOM);
+            return div("login in");
         });
 }
 
 function AuthContainer({DOM, api, storage}) {
 
     const logoutActionProxy$ = new Subject();
+    const userProxy$ = new ReplaySubject();
 
-    const { sourceToken$, loginAction$, loginResponse$, fetchUserRequest$, fetchUserResponse$ } = intent(DOM, api, storage);
-    const { token$, user$ } = model(sourceToken$, loginResponse$, fetchUserResponse$, logoutActionProxy$);
+    const loginForm = LoginForm({ DOM, api });
+    const app$ = userProxy$.map(user => App({ DOM, api, user$: Observable.just(user) }));
 
-    const app$ = user$
-        .map(user => App({ DOM, api, user }));
+    const { initialToken$, fetchUserResponse$ } = intent(api, storage);
+    const { token$, user$ } = model(initialToken$, loginForm.token$, loginForm.user$, fetchUserResponse$, logoutActionProxy$);
+
+    const fetchUserRequest$ = initialToken$
+        .map(token => ({type: "fetchUser", token }));
 
     const logoutAction$ = app$.flatMap(app => app.logoutAction$);
-
-    const loginRequest$ = loginAction$
-        .map((loginValues) => assign({}, { type: "login" }, loginValues));
-
     logoutAction$.subscribe(logoutActionProxy$);
-
-    loginResponse$
-        .catch(res => console.log(res))
-        .subscribe();
+    user$.subscribe(userProxy$);
 
     return {
-        DOM: view(token$, app$),
-        api: Observable.merge(fetchUserRequest$, loginRequest$),
-        storage: loginResponse$
-            .map(res => res.token)
+        DOM: view(token$, loginForm.DOM, app$),
+        api: Observable.merge(loginForm.api, fetchUserRequest$),
+        storage: loginForm
+            .token$
             .map(token => ({ key: "token", value: token }))
     }
 }

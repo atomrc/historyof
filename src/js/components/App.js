@@ -16,21 +16,16 @@ function intent(DOM) {
 
 function view(user$) {
     return user$
-        .startWith(null)
         .map(user => {
-            if (!user) {
-                return div("login in");
-            }
             return div([
                 user.pseudo,
                 button(".logout", "Logout")
-            ])
+            ]);
         });
 }
 
-function App({DOM, api, user}) {
+function App({DOM, api, user$}) {
     const logoutAction$ = intent(DOM);
-    const user$ = Observable.just(user);
 
     const vtree$ = view(user$);
 

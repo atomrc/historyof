@@ -12,9 +12,9 @@ describe("App Component", () => {
 
     it("should display user", (done) => {
         const DOM = mockDOMSource(),
-            user = { pseudo: "felix", login: "felix@felix.fr", password: "password" };
+            user$ = Observable.just({ pseudo: "felix", login: "felix@felix.fr", password: "password" });
 
-        const sinks = App({ DOM, api: Observable.empty(), user: user });
+        const sinks = App({ DOM, api: Observable.empty(), user$ });
 
         sinks
             .DOM

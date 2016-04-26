@@ -107,6 +107,30 @@ describe("AuthContainer Component", () => {
             });
     });
 
+    it("should decorate all app api calls with user's token", (done) => {
+        const DOMSource = mockDOMSource(),
+            storageSource = { local: { getItem: () => Observable.just("usertoken") }},
+            appComponent$ = Observable.just({
+                DOM: div("app"),
+                logoutAction$: Observable.empty(),
+                api: Observable.just({ action: "getProtectedResource" })
+            });
+
+        const {api} = AuthContainer({
+            DOM: DOMSource,
+            api: Observable.empty(),
+            storage: storageSource,
+            appComponent$
+        });
+
+        api.skip(1).subscribe(request => {
+            expect(request.token).to.be("usertoken");
+            expect(request.action).to.be("getProtectedResource");
+            done();
+        });
+
+    });
+
     it("should display login form with message if token is expired", (done) => {
         const DOMSource = mockDOMSource(),
             storageSource = {
@@ -136,27 +160,32 @@ describe("AuthContainer Component", () => {
             });
     });
 
-    xit("should display login form when user logs out", (done) => {
-        const DOMSource = mockDOMSource({
-                ".logout": { click: Observable.just({}) }
-            }),
-            storageSource = { local: { getItem: () => Observable.empty() }},
-            user$ = Observable.just({ pseudo: "felix", login: "felix@felix.fr" }),
-            apiResponse$ = Observable.just({ action: { type: "fetchUser" }, response: user$ });
-
-        const {DOM, api, storage} = AuthContainer({ DOM: DOMSource, api: apiSource$, storage: storageSource });
-
-        DOM
-            .subscribe(vtree => {
-                expect(vtree.tagName).to.be("FORM");
+    it("should display login form and remove token when user logs out", (done) => {
+        const DOMSource = mockDOMSource(),
+            storageSource = { local: { getItem: () => Observable.just("usertoken") }},
+            appComponent$ = Observable.just({
+                DOM: div("app"),
+                logoutAction$: Observable.just(1)
             });
 
-        empty([api, storage])
-            .subscribe(isEmpty => {
-                expect(isEmpty).to.be(true);
+        const {DOM, storage} = AuthContainer({
+            DOM: DOMSource,
+            api: Observable.empty(),
+            storage: storageSource,
+            appComponent$
+        });
+
+        DOM
+            .skip(1)
+            .subscribe(vtree => {
+                expect(vtree.children[0].tagName).to.be("FORM");
+            });
+
+        storage
+            .subscribe(store => {
+                expect(store).to.eql({ type: "remove", key: "token" })
                 done();
             });
     });
-
 
 });

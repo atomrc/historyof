@@ -1,9 +1,9 @@
-import {Observable, ReplaySubject, Subject} from "rx";
+import {Observable} from "rx";
 import LoginForm from "./LoginForm";
-import App from "./App";
+import assign from "object-assign";
 import {div} from "@cycle/dom";
 
-function intent(api, storage) {
+function intent(api, storage, app$) {
     const initialToken$ = storage
         .local
         .getItem("token")
@@ -21,7 +21,9 @@ function intent(api, storage) {
         initialToken$,
         fetchUserResponse$: fetchUserResponse$
             .catch(() => Observable.empty()),
-        fetchUserError$
+        fetchUserError$,
+        logoutAction$: app$.flatMap(app => app.logoutAction$),
+        appApiRequest$: app$.flatMap(app => app.api)
     };
 }
 
@@ -52,36 +54,54 @@ function view(token$, loginForm$, app$, error$) {
                 return div(children);
             }
             if (app) {
-                return div({ id: "app" }, app.DOM);
+                return app.DOM;
             }
             return div("login in");
         });
 }
 
-function AuthContainer({DOM, api, storage}) {
-
-    const logoutActionProxy$ = new Subject();
-    const userProxy$ = new ReplaySubject();
+function AuthContainer({DOM, api, storage, appComponent$}) {
 
     const loginForm = LoginForm({ DOM, api });
-    const app$ = userProxy$.map(user => App({ DOM, api, user$: Observable.just(user) }));
 
-    const { initialToken$, fetchUserResponse$, fetchUserError$ } = intent(api, storage);
-    const { token$, user$, error$ } = model(initialToken$, loginForm.token$, loginForm.user$, fetchUserResponse$, logoutActionProxy$, fetchUserError$);
+    const {
+        initialToken$,
+        fetchUserResponse$,
+        fetchUserError$,
+        logoutAction$,
+        appApiRequest$
+    } = intent(api, storage, appComponent$);
+
+    const { token$, user$, error$ } = model(
+        initialToken$,
+        loginForm.token$,
+        loginForm.user$,
+        fetchUserResponse$,
+        logoutAction$,
+        fetchUserError$
+    );
 
     const fetchUserRequest$ = initialToken$
         .map(token => ({type: "fetchUser", token }));
 
-    const logoutAction$ = app$.flatMap(app => app.logoutAction$);
-    logoutAction$.subscribe(logoutActionProxy$);
-    user$.subscribe(userProxy$);
+    const tokenSave$ = loginForm
+        .token$
+        .map(token => ({ key: "token", value: token }))
+
+    const tokenRemove$ = logoutAction$
+        .map(() => ({ type: "remove", key: "token" }));
+
+    const protectedApiRequest$ = appApiRequest$
+        .withLatestFrom(
+            token$,
+            (request, token) => assign({}, request, { token: token })
+        );
 
     return {
-        DOM: view(token$, loginForm.DOM, app$, error$),
-        api: Observable.merge(loginForm.api, fetchUserRequest$),
-        storage: loginForm
-            .token$
-            .map(token => ({ key: "token", value: token }))
+        DOM: view(token$, loginForm.DOM, appComponent$, error$),
+        api: Observable.merge(loginForm.api, fetchUserRequest$, protectedApiRequest$),
+        storage: Observable.merge(tokenSave$, tokenRemove$),
+        user$: user$
     }
 }
 

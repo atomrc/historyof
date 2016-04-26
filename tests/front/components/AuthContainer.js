@@ -1,9 +1,9 @@
-/*global __dirname, xit, it, describe, require*/
+/*global __dirname, it, describe, require*/
 "use strict";
 const APP_PATH = __dirname + "/../../../src/js";
 
 import expect from "expect.js";
-import {mockDOMSource} from '@cycle/dom';
+import {div, mockDOMSource} from '@cycle/dom';
 
 import {Observable} from "rx";
 
@@ -21,13 +21,19 @@ describe("AuthContainer Component", () => {
                 getItem: () => Observable.just(null)
             }
         };
-        const {DOM, api, storage} = AuthContainer({ DOM: DOMSource, api: Observable.empty(), storage: storageSource });
+
+        const {DOM, api, storage, user$} = AuthContainer({
+            DOM: DOMSource,
+            api: Observable.empty(),
+            storage: storageSource,
+            appComponent$: Observable.empty()
+        });
 
         DOM.subscribe(vtree => {
             expect(vtree.children[0].tagName).to.be("FORM");
         });
 
-        empty([api, storage])
+        empty([api, storage, user$])
             .subscribe(isEmpty => {
                 expect(isEmpty).to.be(true);
                 done();
@@ -41,7 +47,12 @@ describe("AuthContainer Component", () => {
                 getItem: () => Observable.just("usertoken")
             }
         };
-        const {DOM, api, storage} = AuthContainer({ DOM: DOMSource, api: Observable.empty(), storage: storageSource });
+        const {DOM, api, storage, user$} = AuthContainer({
+            DOM: DOMSource,
+            api: Observable.empty(),
+            storage: storageSource,
+            appComponent$: Observable.empty()
+        });
 
         DOM.subscribe(vtree => {
             expect(vtree.children[0].text).to.be("login in");
@@ -52,30 +63,42 @@ describe("AuthContainer Component", () => {
             expect(request.token).to.be("usertoken");
         });
 
-        empty([storage])
+        empty([storage, user$])
             .subscribe(isEmpty => {
                 expect(isEmpty).to.be(true);
                 done();
             });
     });
 
-    it("should display app when user is fetched", (done) => {
+    it("should display app and return user when user is fetched", (done) => {
         const DOMSource = mockDOMSource(),
             storageSource = {
                 local: {
                     getItem: () => Observable.just("usertoken")
                 }
             },
-            user$ = Observable.just({ pseudo: "felix", login: "felix@felix.fr" }),
-            apiSource$ = Observable.just({ action: { type: "fetchUser" }, response: user$ });
+            loggedUser = { pseudo: "felix", login: "felix@felix.fr" },
+            loggedUser$ = Observable.just(loggedUser),
+            apiSource$ = Observable.just({ action: { type: "fetchUser" }, response: loggedUser$ }),
+            appComponent$ = Observable.just({
+                DOM: div("app"),
+                logoutAction$: Observable.empty()
+            });
 
-        const {DOM, storage} = AuthContainer({ DOM: DOMSource, api: apiSource$, storage: storageSource });
+        const {DOM, storage, user$} = AuthContainer({
+            DOM: DOMSource,
+            api: apiSource$,
+            storage: storageSource,
+            appComponent$
+        });
 
         DOM
             .skip(2)
             .subscribe(vtree => {
-                expect(vtree.properties.id).to.be("app");
+                expect(vtree.text).to.be("app");
             });
+
+        user$.subscribe((user) => expect(user).to.eql(loggedUser));
 
         empty([storage])
             .subscribe(isEmpty => {
@@ -96,7 +119,12 @@ describe("AuthContainer Component", () => {
             })),
             apiSource$ = Observable.just({ action: { type: "fetchUser" }, response: errorResponse$ });
 
-        const {DOM, api, storage} = AuthContainer({ DOM: DOMSource, api: apiSource$, storage: storageSource });
+        const {DOM} = AuthContainer({
+            DOM: DOMSource,
+            api: apiSource$,
+            storage: storageSource,
+            appComponent$: Observable.empty()
+        });
 
         DOM
             .skip(2)

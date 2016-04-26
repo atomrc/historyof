@@ -1,7 +1,4 @@
 import {Observable} from "rx";
-//import isolate from '@cycle/isolate';
-//import Timeline from "./Timeline/Timeline";
-//import assign from "object-assign";
 import {div, button} from "@cycle/dom";
 
 

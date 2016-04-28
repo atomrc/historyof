@@ -4,7 +4,6 @@ import api from "./api/historyOfApi";
 function apiDriver(action$) {
 
     function executeAction(action) {
-        console.log("[api action]", action);
         switch(action.type) {
             case "login":
                 return api.login(action.login, action.password);
@@ -22,9 +21,13 @@ function apiDriver(action$) {
 
     return Observable.create((subscriber) => {
             action$.subscribe((action) => {
+                const requestPromise = executeAction(action),
+                    response$ = Observable.fromPromise(requestPromise);
+
+                    response$.subscribe(console.log.bind(console));
                 subscriber.onNext({
                     action: action,
-                    response: Observable.fromPromise(executeAction(action))
+                    response: response$
                 });
             });
         })

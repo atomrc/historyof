@@ -14,7 +14,6 @@
   "dependencies": {
     "@cycle/core": "^6.0.3",
     "@cycle/dom": "^9.2.2",
-    "@cycle/http": "^8.2.2",
     "@cycle/isolate": "^1.2.0",
     "@cycle/storage": "^2.0.3",
     "babel-loader": "^6.2.4",

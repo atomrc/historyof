@@ -14,7 +14,7 @@ module.exports = {
             "rx",
             "@cycle/core",
             "@cycle/dom",
-            "@cycle/http",
+            "@cycle/storage",
             "@cycle/isolate",
             "uuid",
             "object-assign",

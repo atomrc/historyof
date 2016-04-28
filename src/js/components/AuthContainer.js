@@ -60,7 +60,7 @@ function view(token$, loginForm$, app$, error$) {
         });
 }
 
-function AuthContainer({DOM, api, storage, appComponent$}) {
+function AuthContainer({DOM, api, storage, app$}) {
 
     const loginForm = LoginForm({ DOM, api });
 
@@ -70,7 +70,7 @@ function AuthContainer({DOM, api, storage, appComponent$}) {
         fetchUserError$,
         logoutAction$,
         appApiRequest$
-    } = intent(api, storage, appComponent$);
+    } = intent(api, storage, app$);
 
     const { token$, user$, error$ } = model(
         initialToken$,
@@ -98,7 +98,7 @@ function AuthContainer({DOM, api, storage, appComponent$}) {
         );
 
     return {
-        DOM: view(token$, loginForm.DOM, appComponent$, error$),
+        DOM: view(token$, loginForm.DOM, app$, error$),
         api: Observable.merge(loginForm.api, fetchUserRequest$, protectedApiRequest$),
         storage: Observable.merge(tokenSave$, tokenRemove$),
         user$: user$

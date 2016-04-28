@@ -26,7 +26,7 @@ describe("AuthContainer Component", () => {
             DOM: DOMSource,
             api: Observable.empty(),
             storage: storageSource,
-            appComponent$: Observable.empty()
+            app$: Observable.empty()
         });
 
         DOM.subscribe(vtree => {
@@ -51,7 +51,7 @@ describe("AuthContainer Component", () => {
             DOM: DOMSource,
             api: Observable.empty(),
             storage: storageSource,
-            appComponent$: Observable.empty()
+            app$: Observable.empty()
         });
 
         DOM.subscribe(vtree => {
@@ -80,7 +80,7 @@ describe("AuthContainer Component", () => {
             loggedUser = { pseudo: "felix", login: "felix@felix.fr" },
             loggedUser$ = Observable.just(loggedUser),
             apiSource$ = Observable.just({ action: { type: "fetchUser" }, response: loggedUser$ }),
-            appComponent$ = Observable.just({
+            app$ = Observable.just({
                 DOM: div("app"),
                 logoutAction$: Observable.empty()
             });
@@ -89,7 +89,7 @@ describe("AuthContainer Component", () => {
             DOM: DOMSource,
             api: apiSource$,
             storage: storageSource,
-            appComponent$
+            app$
         });
 
         DOM
@@ -110,7 +110,7 @@ describe("AuthContainer Component", () => {
     it("should decorate all app api calls with user's token", (done) => {
         const DOMSource = mockDOMSource(),
             storageSource = { local: { getItem: () => Observable.just("usertoken") }},
-            appComponent$ = Observable.just({
+            app$ = Observable.just({
                 DOM: div("app"),
                 logoutAction$: Observable.empty(),
                 api: Observable.just({ action: "getProtectedResource" })
@@ -120,7 +120,7 @@ describe("AuthContainer Component", () => {
             DOM: DOMSource,
             api: Observable.empty(),
             storage: storageSource,
-            appComponent$
+            app$
         });
 
         api.skip(1).subscribe(request => {
@@ -143,11 +143,11 @@ describe("AuthContainer Component", () => {
             })),
             apiSource$ = Observable.just({ action: { type: "fetchUser" }, response: errorResponse$ });
 
-        const {DOM} = AuthContainer({
+        const {DOM, storage} = AuthContainer({
             DOM: DOMSource,
             api: apiSource$,
             storage: storageSource,
-            appComponent$: Observable.empty()
+            app$: Observable.empty()
         });
 
         DOM
@@ -163,7 +163,7 @@ describe("AuthContainer Component", () => {
     it("should display login form and remove token when user logs out", (done) => {
         const DOMSource = mockDOMSource(),
             storageSource = { local: { getItem: () => Observable.just("usertoken") }},
-            appComponent$ = Observable.just({
+            app$ = Observable.just({
                 DOM: div("app"),
                 logoutAction$: Observable.just(1)
             });
@@ -172,7 +172,7 @@ describe("AuthContainer Component", () => {
             DOM: DOMSource,
             api: Observable.empty(),
             storage: storageSource,
-            appComponent$
+            app$
         });
 
         DOM

@@ -131,7 +131,7 @@ describe("AuthContainer Component", () => {
 
     });
 
-    it("should display login form with message if token is expired", (done) => {
+    it("should display login form with message if token is invalid", (done) => {
         const DOMSource = mockDOMSource(),
             storageSource = {
                 local: {
@@ -156,6 +156,14 @@ describe("AuthContainer Component", () => {
                 const errorDiv = vtree.children[0];
                 expect(errorDiv.properties.className).to.be("error")
                 expect(errorDiv.children[0].text).to.be("token expired")
+            });
+
+        storage
+            .subscribe(storageAction => {
+                expect(storageAction).to.eql({
+                    action: "removeItem",
+                    key: "token"
+                });
                 done();
             });
     });
@@ -183,7 +191,7 @@ describe("AuthContainer Component", () => {
 
         storage
             .subscribe(store => {
-                expect(store).to.eql({ type: "remove", key: "token" })
+                expect(store).to.eql({ action: "removeItem", key: "token" })
                 done();
             });
     });

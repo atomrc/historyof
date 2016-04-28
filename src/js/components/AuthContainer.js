@@ -88,8 +88,8 @@ function AuthContainer({DOM, api, storage, app$}) {
         .token$
         .map(token => ({ key: "token", value: token }))
 
-    const tokenRemove$ = logoutAction$
-        .map(() => ({ type: "remove", key: "token" }));
+    const tokenRemove$ = Observable.merge(logoutAction$, fetchUserError$)
+        .map(() => ({ action: "removeItem", key: "token" }));
 
     const protectedApiRequest$ = appApiRequest$
         .withLatestFrom(

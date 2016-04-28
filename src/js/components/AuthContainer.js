@@ -6,8 +6,7 @@ import {div} from "@cycle/dom";
 function intent(api, storage, app$) {
     const initialToken$ = storage
         .local
-        .getItem("token")
-        .filter(token => !!token);
+        .getItem("token");
 
     const fetchUserResponse$ = api
         .filter(res => res.action.type === "fetchUser")
@@ -43,7 +42,7 @@ function model(initialToken$, loginToken$, loginUser$, fetchedUser$, logoutActio
 function view(token$, loginForm$, app$, error$) {
     return Observable
         .combineLatest(
-            token$.startWith(null),
+            token$,
             loginForm$,
             app$.startWith(null),
             error$.startWith(null),
@@ -82,11 +81,12 @@ function AuthContainer({DOM, api, storage, app$}) {
     );
 
     const fetchUserRequest$ = initialToken$
+        .filter(token => !!token)
         .map(token => ({type: "fetchUser", token }));
 
     const tokenSave$ = loginForm
         .token$
-        .map(token => ({ key: "token", value: token }))
+        .map(token => ({ key: "token", value: token }));
 
     const tokenRemove$ = Observable.merge(logoutAction$, fetchUserError$)
         .map(() => ({ action: "removeItem", key: "token" }));
@@ -97,10 +97,12 @@ function AuthContainer({DOM, api, storage, app$}) {
             (request, token) => assign({}, request, { token: token })
         );
 
+    const tokenStorageRequest$ = Observable.merge(tokenRemove$, tokenSave$);
+
     return {
         DOM: view(token$, loginForm.DOM, app$, error$),
         api: Observable.merge(loginForm.api, fetchUserRequest$, protectedApiRequest$),
-        storage: Observable.merge(tokenSave$, tokenRemove$),
+        storage: tokenStorageRequest$,
         user$: user$
     }
 }

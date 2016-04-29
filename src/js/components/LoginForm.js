@@ -23,15 +23,19 @@ function intent(DOM, api) {
 
     const loginResponse$ = api
         .filter(req => req.action.type === "login")
-        .flatMap(req => req.response)
+        .flatMap(req => req.response$)
+        .catch((error) => Observable.just(error));
+
+    const loginSuccess$ = loginResponse$
+        .filter((response) => !response.error);
 
     const loginError$ = loginResponse$
-        .catch(error => Observable.just(error));
+        .filter(response => response.error)
+        .map(error => error.error);
 
     return {
         loginRequest$: loginValues$.sample(loginRequest$),
-        loginSuccess$: loginResponse$
-            .catch(() => Observable.empty()),
+        loginSuccess$,
         loginError$
     };
 }
@@ -46,7 +50,7 @@ function view(loginError$) {
                 input({type: "submit", name: "Go!"})
             ]
             if (error) {
-                inputs = [div(".error", error.error)].concat(inputs);
+                inputs = [div(".error", error)].concat(inputs);
             }
             return form(inputs);
         })

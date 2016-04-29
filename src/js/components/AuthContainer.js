@@ -10,16 +10,19 @@ function intent(api, storage, app$) {
 
     const fetchUserResponse$ = api
         .filter(res => res.action.type === "fetchUser")
-        .flatMap(req => req.response);
+        .flatMap(req => req.response$)
+        .catch(error => Observable.just({ error }));
+
+    const fetchUserSuccess$ = fetchUserResponse$
+        .filter(response => !response.error);
 
     const fetchUserError$ = fetchUserResponse$
-        .filter(() => false)
-        .catch(error => Observable.just(error));
+        .filter((response) => response.error)
+        .map(response => response.error.error);
 
     return {
         initialToken$,
-        fetchUserResponse$: fetchUserResponse$
-            .catch(() => Observable.empty()),
+        fetchUserSuccess$,
         fetchUserError$,
         logoutAction$: app$.flatMap(app => app.logoutAction$),
         appApiRequest$: app$.flatMap(app => app.api)
@@ -49,7 +52,7 @@ function view(token$, loginForm$, app$, error$) {
             (token, loginForm, app, error) => ({ token, loginForm, app, error }))
         .map(({token, loginForm, app, error}) => {
             if (!token) {
-                const children = error ? [div(".error", error.error), loginForm] : loginForm;
+                const children = error ? [div(".error", error), loginForm] : loginForm;
                 return div(children);
             }
             if (app) {
@@ -65,7 +68,7 @@ function AuthContainer({DOM, api, storage, app$}) {
 
     const {
         initialToken$,
-        fetchUserResponse$,
+        fetchUserSuccess$,
         fetchUserError$,
         logoutAction$,
         appApiRequest$
@@ -75,7 +78,7 @@ function AuthContainer({DOM, api, storage, app$}) {
         initialToken$,
         loginForm.token$,
         loginForm.user$,
-        fetchUserResponse$,
+        fetchUserSuccess$,
         logoutAction$,
         fetchUserError$
     );

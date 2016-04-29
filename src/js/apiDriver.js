@@ -1,37 +1,40 @@
 import {Observable} from 'rx';
 import api from "./api/historyOfApi";
 
+function executeAction(action) {
+    switch(action.type) {
+        case "login":
+            return api.login(action.login, action.password);
+
+        case "fetchUser":
+            return api.getUser(action.token);
+
+        case "fetchStories":
+            return api.getStories(action.token);
+
+        default:
+            throw new Error("unimplemented api action: " + action.type);
+    }
+}
+
 function apiDriver(action$) {
 
-    function executeAction(action) {
-        switch(action.type) {
-            case "login":
-                return api.login(action.login, action.password);
+    const response$$ = action$
+        .map((action) => {
+            const requestPromise = () => executeAction(action),
+                response$ = Observable.fromPromise(requestPromise).replay();
 
-            case "fetchUser":
-                return api.getUser(action.token);
+            response$.connect();
 
-            case "fetchStories":
-                return api.getStories(action.token);
-
-            default:
-                throw new Error("unimplemented api action: " + action.type);
-        }
-    }
-
-    return Observable.create((subscriber) => {
-            action$.subscribe((action) => {
-                const requestPromise = executeAction(action),
-                    response$ = Observable.fromPromise(requestPromise);
-
-                    response$.subscribe(console.log.bind(console));
-                subscriber.onNext({
-                    action: action,
-                    response: response$
-                });
-            });
+            return {
+                action: action,
+                response$
+            };
         })
-        .share();
+        .replay();
+
+    response$$.connect();
+    return response$$;
 }
 
 export default apiDriver;

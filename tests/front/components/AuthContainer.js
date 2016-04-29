@@ -79,7 +79,7 @@ describe("AuthContainer Component", () => {
             },
             loggedUser = { pseudo: "felix", login: "felix@felix.fr" },
             loggedUser$ = Observable.just(loggedUser),
-            apiSource$ = Observable.just({ action: { type: "fetchUser" }, response: loggedUser$ }),
+            apiSource$ = Observable.just({ action: { type: "fetchUser" }, response$: loggedUser$ }),
             app$ = Observable.just({
                 DOM: div("app"),
                 logoutAction$: Observable.empty()
@@ -141,7 +141,7 @@ describe("AuthContainer Component", () => {
             errorResponse$ = Observable.fromPromise(new Promise(function (resolve, reject) {
                 reject({ error: "token expired" });
             })),
-            apiSource$ = Observable.just({ action: { type: "fetchUser" }, response: errorResponse$ });
+            apiSource$ = Observable.just({ action: { type: "fetchUser" }, response$: errorResponse$ });
 
         const {DOM, storage} = AuthContainer({
             DOM: DOMSource,

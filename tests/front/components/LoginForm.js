@@ -54,7 +54,7 @@ describe("LoginForm Component", () => {
                 },
                 token: "usertoken"
             }),
-            apiResponse$ = Observable.just({ action: { type: "login" }, response: loginResponse$ });
+            apiResponse$ = Observable.just({ action: { type: "login" }, response$: loginResponse$ });
 
         const sinks = LoginForm({ DOM, api: apiResponse$ });
 
@@ -74,7 +74,7 @@ describe("LoginForm Component", () => {
             loginResponse$ = Observable.fromPromise(new Promise(function (resolve, reject) {
                 reject({ error: "login/password don't match" });
             })),
-            apiResponse$ = Observable.just({ action: { type: "login" }, response: loginResponse$ });
+            apiResponse$ = Observable.just({ action: { type: "login" }, response$: loginResponse$ });
 
         const sinks = LoginForm({ DOM, api: apiResponse$ });
 

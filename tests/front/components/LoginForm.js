@@ -3,6 +3,7 @@
 const APP_PATH = __dirname + "/../../../src/js";
 
 import expect from "expect.js";
+import $ from "vdom-query";
 import {mockDOMSource} from '@cycle/dom';
 
 import {Observable} from "rx";
@@ -23,6 +24,30 @@ describe("LoginForm Component", () => {
             .isEmpty()
             .subscribe(isEmpty => {
                 expect(isEmpty).to.be(true);
+                done();
+            });
+    });
+
+    it("should not be submittable if input is not valid", (done) => {
+        const DOMSource = mockDOMSource({
+            form: {
+                    keyup: Observable.just({
+                        currentTarget: {
+                            checkValidity: () => false
+                        }
+                    })
+                }
+            }
+        );
+
+        const {DOM} = LoginForm({ DOM: DOMSource, api: Observable.empty() });
+
+        DOM
+            .last()
+            .subscribe(vtree => {
+                const render = () => vtree;
+                const submitButton = $(render).find("input[type=submit]").first().get()[0];
+                expect(submitButton.properties.disabled).to.be(true);
                 done();
             });
     });

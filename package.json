@@ -22,13 +22,12 @@
     "body-parser": "^1.15.0",
     "db-migrate": "^0.9.23",
     "dotenv": "^2.0.0",
-    "es6-promise": "^3.1.2",
     "express": "^4.13.4",
     "express-jwt": "^3.3.0",
     "gulp": "^3.9.1",
     "gulp-pug": "*",
     "gulp-sass": "^2.2.0",
-    "jsonwebtoken": "^5.7.0",
+    "jsonwebtoken": "^6.2.0",
     "moment": "^2.12.0",
     "object-assign": "^4.0.1",
     "pg": "^4.5.2",
@@ -42,6 +41,7 @@
     "whatwg-fetch": "^1.0.0"
   },
   "devDependencies": {
+    "es6-promise": "^3.1.2",
     "babel-register": "^6.7.2",
     "expect.js": "^0.3.1",
     "mocha": "^2.4.5",

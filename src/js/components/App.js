@@ -13,21 +13,17 @@ function intent(DOM) {
 
 function view(user$) {
     return user$
-        .map(user => {
-            return div([
-                user.pseudo,
-                button(".logout", "Logout")
-            ]);
-        });
+        .map(user => div([
+            user.pseudo,
+            button(".logout", "Logout")
+        ]));
 }
 
 function App({DOM, api, user$}) {
     const logoutAction$ = intent(DOM);
 
-    const vtree$ = view(user$);
-
     return {
-        DOM: vtree$,
+        DOM: view(user$),
         api: Observable.empty(),
         logoutAction$
     }

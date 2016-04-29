@@ -33,30 +33,18 @@ describe("App Component", () => {
             });
     });
 
-    it("should display login form when user logs out", (done) => {
-        return done(); //TODO
+    it("should return logout action when user logs out", (done) => {
         const DOM = mockDOMSource({
                 ".logout": { click: Observable.just({}) }
             }),
+            user$ = Observable.just({ pseudo: "felix", login: "felix@felix.fr", password: "password" });
 
-            user$ = Observable.just({ pseudo: "felix", login: "felix@felix.fr", password: "password" }),
-            apiResponse$ = Observable.just({ action: { type: "fetchUser" }, response: user$ });
+        const {logoutAction$} = App({ DOM, api: Observable.empty(), user$ });
 
-        const sinks = App({ DOM, api: apiResponse$, token: "usertoken" });
-
-        sinks
-            .DOM
-            .last()
-            .subscribe(vtree => {
-                expect(vtree.children[0].text).to.be("login in");
-            });
-
-        sinks
-            .api
+        logoutAction$
             .isEmpty()
             .subscribe(isEmpty => {
-                //we should not trigger an api request
-                expect(isEmpty).to.be(true);
+                expect(isEmpty).to.be(false);
                 done();
             });
     });

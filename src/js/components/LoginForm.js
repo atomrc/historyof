@@ -34,7 +34,7 @@ function intent(DOM, api) {
         .flatMap(req => {
             return req
                 .response$
-                .catch((error) => Observable.just(error));
+                .catch((error) => Observable.just({error}));
         });
 
     const loginSuccess$ = loginResponse$
@@ -42,7 +42,7 @@ function intent(DOM, api) {
 
     const loginError$ = loginResponse$
         .filter(response => response.error)
-        .map(error => error.error);
+        .map(({error}) => error.error);
 
     return {
         formIsValid$,

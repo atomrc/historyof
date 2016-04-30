@@ -46,8 +46,8 @@ describe("LoginForm Component", () => {
             .last()
             .subscribe(vtree => {
                 const render = () => vtree;
-                const submitButton = $(render).find("input[type=submit]").first().get()[0];
-                expect(submitButton.properties.disabled).to.be(true);
+                const submitButton = $(render).find("input[type=submit]");
+                expect(submitButton.attr("disabled")).to.be(true);
                 done();
             });
     });

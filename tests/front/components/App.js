@@ -3,6 +3,7 @@
 const APP_PATH = __dirname + "/../../../src/js";
 
 import expect from "expect.js";
+import $ from "vdom-query";
 import {mockDOMSource} from '@cycle/dom';
 
 import {Observable} from "rx";

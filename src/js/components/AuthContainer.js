@@ -10,8 +10,11 @@ function intent(api, storage, app$) {
 
     const fetchUserResponse$ = api
         .filter(res => res.action.type === "fetchUser")
-        .flatMap(req => req.response$)
-        .catch(error => Observable.just({ error }));
+        .flatMap(req => {
+            return req
+                .response$
+                .catch((error) => Observable.just({error}));
+        });
 
     const fetchUserSuccess$ = fetchUserResponse$
         .filter(response => !response.error);

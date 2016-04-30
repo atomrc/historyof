@@ -3,9 +3,11 @@ import {form, input, div} from "@cycle/dom";
 import assign from "object-assign";
 
 function intent(DOM, api) {
-    const formIsValid$ = DOM
-        .select("form")
-        .events("keyup")
+    const form = DOM.select("form");
+    const formIsValid$ = Observable.merge(
+            form.events("change"),
+            form.events("keyup")
+        )
         .map(ev => ev.currentTarget)
         .map(form => form.checkValidity ? form.checkValidity() : true);
 
@@ -29,8 +31,11 @@ function intent(DOM, api) {
 
     const loginResponse$ = api
         .filter(req => req.action.type === "login")
-        .flatMap(req => req.response$)
-        .catch((error) => Observable.just(error));
+        .flatMap(req => {
+            return req
+                .response$
+                .catch((error) => Observable.just(error));
+        });
 
     const loginSuccess$ = loginResponse$
         .filter((response) => !response.error);
@@ -49,11 +54,11 @@ function intent(DOM, api) {
 
 function view(state$) {
     return state$
-        .map(({error, formValid}) => {
+        .map(({error, formValid, isLoginIn}) => {
             var inputs = [
                 input({type: "email", name: "login", required: "required" }),
                 input({type: "password", name: "password", required: "required" }),
-                input({type: "submit", value: "Go!", disabled: !formValid })
+                input({type: "submit", value: isLoginIn ? "Login in" : "Go!", disabled: !formValid || isLoginIn })
             ]
             if (error) {
                 inputs = [div(".error", error)].concat(inputs);
@@ -62,17 +67,25 @@ function view(state$) {
         })
 }
 
-function model(loginSuccess$, loginError$, formIsValid$) {
+function model(loginRequest$, loginSuccess$, loginError$, formIsValid$) {
     const user$ = loginSuccess$
         .map(res => res.user);
 
     const token$ = loginSuccess$
         .map(res => res.token);
 
+    const isLoginIn$ = Observable.merge(
+        loginRequest$.map(() => true),
+        loginSuccess$.map(() => false),
+        loginError$.map(() => false)
+    );
+
+
     const state$ = Observable.combineLatest(
         loginError$.startWith(null),
         formIsValid$.startWith(false),
-        (error, formValid) => ({ error, formValid })
+        isLoginIn$.startWith(false),
+        (error, formValid, isLoginIn) => ({ error, formValid, isLoginIn })
     );
 
     return {
@@ -84,7 +97,7 @@ function model(loginSuccess$, loginError$, formIsValid$) {
 
 function LoginForm({DOM, api}) {
     const { formIsValid$, loginRequest$, loginSuccess$, loginError$ } = intent(DOM, api);
-    const { user$, token$, state$ } = model(loginSuccess$, loginError$, formIsValid$);
+    const { user$, token$, state$ } = model(loginRequest$, loginSuccess$, loginError$, formIsValid$);
 
 
     const apiLoginRequest$ = loginRequest$

@@ -1,53 +1,46 @@
 import {Observable} from 'rx';
-import {div, input} from '@cycle/dom';
-import assign from "object-assign";
+import {form, input} from '@cycle/dom';
 
 function intent(DOM) {
-    const keyup$ = DOM.select("input")
-        .events("keyup");
+    const editAction$ = DOM.select("input")
+        .events("change")
+        .map(ev => ({ [ev.target.name]: ev.target.value }));
 
-    const editAction$ = keyup$
-        .filter(ev => ev.key !== "Enter")
-        .map(ev => ({ [ev.target.name]: ev.target.value }))
-
-    const addAction$ = keyup$
-        .filter(ev => ev.key === "Enter")
+    const addAction$ = DOM.select(":root")
+        .events("submit")
+        .do(ev => ev.preventDefault())
         .map(() => "add");
 
     return {addAction$, editAction$};
 }
 
 function model({editAction$, addAction$}) {
+    const resetAction$ = addAction$.map(() => ({}));
+
     return Observable
-        .merge(editAction$, addAction$)
-        .scan((acc, value) => {
-            if (value === "add") {
-                return {};
-            }
-            return assign({}, acc, value);
-        })
+        .merge(editAction$, resetAction$)
         .startWith({});
 }
 
 function view(editedStory$) {
     return editedStory$
-        .map(editedStory => div([
+        .map(editedStory => form([
             input({ name: "title", value: editedStory.title || "" }),
-            input({ name: "test", value: editedStory.test || ""  })
+            input({ type: "submit", value: "Save" })
         ]));
 }
 
 function StoryForm({DOM}) {
-    const action = intent(DOM);
-    const state$ = model(action);
+    const {addAction$, editAction$} = intent(DOM);
+    const state$ = model({addAction$, editAction$});
     const vTree$ = view(state$);
 
-    const storyToAdd$ = state$.filter((story) => story.title && story.test);
+    const storyToAdd$ = state$.filter(story => story.title);
+
     return {
         DOM: vTree$,
-        action$: action
-            .addAction$
-            .withLatestFrom(storyToAdd$, (action, story) => story)
+        addAction$: storyToAdd$
+            .sample(addAction$)
             .map(story => ({ type: "add", story: story }))
     };
 }

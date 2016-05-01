@@ -1,36 +1,21 @@
 import {Observable} from "rx";
-import isolate from "@cycle/isolate";
-import StoryItem from "../StoryItem";
-import StoryForm from "../StoryForm";
 
-function intent(stories$, DOM) {
-    const storyItems$ = stories$
-        .map((stories) =>
-            stories.map((story) => {
-                const isolatedItem = isolate(StoryItem)({DOM, story$: Observable.just(story)});
-                return {
-                    DOM: isolatedItem.DOM,
-                    action$: isolatedItem
-                        .action$
-                        .map(action => ({ type: action.type, story: story }))
-                };
-            })
-        ).shareReplay(1);
+function intent(storyItems$, storyForm) {
 
-    const storyForm = isolate(StoryForm)({DOM});
+    const removeAction$ = storyItems$
+        .map((items) => items.map(item => item.removeAction$))
+        .flatMapLatest(removeActions => Observable.merge(removeActions));
 
-    const storyItemAction$ = storyItems$.flatMap(
-        (items) => Observable.merge(items.map(item => item.action$))
+    const editAction$ = storyItems$.flatMapLatest(
+        (items) => Observable.merge(items.map(item => item.editAction$))
     );
-    const storyFormAction$ = storyForm.action$;
+
+    const addAction$ = storyForm.addAction$;
 
     return {
-        actions$: Observable.merge(storyItemAction$, storyFormAction$),
-
-        components: {
-            storyItems$: storyItems$,
-            storyForm: storyForm
-        }
+        addAction$,
+        editAction$,
+        removeAction$
     };
 }
 

@@ -11,27 +11,31 @@ import {Observable} from "rx";
 describe("App Component", () => {
     const App = require(APP_PATH + "/components/App").default;
 
-    it("should display user", (done) => {
-        const DOM = mockDOMSource(),
+    describe("App init", () => {
+        const DOMSource = mockDOMSource(),
             user$ = Observable.just({ pseudo: "felix", login: "felix@felix.fr", password: "password" });
 
-        const sinks = App({ DOM, api: Observable.empty(), user$ });
+        const {DOM, api}  = App({ DOM: DOMSource, api: Observable.empty(), user$ });
 
-        sinks
-            .DOM
-            .last()
-            .subscribe(vtree => {
-                expect(vtree.children[0].text).to.be("felix");
-            });
+        it("should display user", (done) => {
+            DOM
+                .last()
+                .subscribe(vtree => {
+                    const render = () => vtree;
+                    expect($(render).find(".pseudo").text()).to.be("felix");
+                    done();
+                });
 
-        sinks
-            .api
-            .isEmpty()
-            .subscribe(isEmpty => {
-                //we should not trigger an api request
-                expect(isEmpty).to.be(true);
-                done();
-            });
+        });
+
+        it("should fetch user's stories", (done) => {
+            api
+                .subscribe(request => {
+                    //we should not trigger an api request
+                    expect(request.type).to.be("fetchStories");
+                    done();
+                });
+        });
     });
 
     it("should return logout action when user logs out", (done) => {

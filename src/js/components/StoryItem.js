@@ -12,7 +12,10 @@ function intent(DOM) {
         .events("click")
         .map(() => ({ type: "edit" }));
 
-    return Observable.merge(removeAction$, editAction$);
+    return {
+        editAction$,
+        removeAction$
+    };
 }
 
 function view(story$) {
@@ -24,12 +27,13 @@ function view(story$) {
 }
 
 function StoryItem({DOM, story$}) {
-    const action$ = intent(DOM);
+    const { editAction$, removeAction$ } = intent(DOM);
     const vTree$ = view(story$);
 
     return {
         DOM: vTree$,
-        action$
+        editAction$,
+        removeAction$
     };
 }
 

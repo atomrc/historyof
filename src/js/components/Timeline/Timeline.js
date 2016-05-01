@@ -1,19 +1,41 @@
-import {Subject} from "rx";
+import {Observable, ReplaySubject} from "rx";
+import StoryForm from "../StoryForm";
+import StoryItem from "../StoryItem";
+import isolate from "@cycle/isolate";
 import model from "./model";
 import view from "./view";
 import intent from "./intent";
 
-function Timeline({DOM, stories$}) {
-    const proxyAction$ = new Subject();
-    const storiesModel$ = model(proxyAction$, stories$);
-    const { actions$, components } = intent(storiesModel$, DOM);
-    const vTree$ = view(components.storyItems$, components.storyForm.DOM);
+function createStoryItem(DOM) {
+    return function (story) {
+        const isolatedItem = isolate(StoryItem)({DOM, story$: Observable.just(story)});
+        return {
+            DOM: isolatedItem.DOM,
+            removeAction$: isolatedItem
+                .removeAction$
+                .map(action => ({ type: action.type, story: story }))
+        };
+    };
+}
 
-    actions$.subscribe(proxyAction$);
+function Timeline({DOM, stories$}) {
+    const storiesProxy$ = new ReplaySubject();
+
+    const storyForm = isolate(StoryForm)({DOM});
+    const storyItems$ = storiesProxy$.map(stories =>
+        stories.map(createStoryItem(DOM))
+    );
+
+    const { addAction$, removeAction$ } = intent(storyItems$, storyForm);
+    const storiesModel$ = model(addAction$, removeAction$, stories$);
+    const vTree$ = view(storyItems$, storyForm.DOM);
+
+    storiesModel$.subscribe(storiesProxy$);
 
     return {
         DOM: vTree$,
-        action$: proxyAction$
+        api: addAction$
+            .map(({story}) => ({ type: "createStory", story: story }))
     };
 }
 

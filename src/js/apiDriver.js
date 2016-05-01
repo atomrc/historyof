@@ -13,7 +13,7 @@ function executeAction(action) {
             return api.getStories(action.token);
 
         default:
-            throw new Error("unimplemented api action: " + action.type);
+            console.error("unimplemented api action: " + action.type);
     }
 }
 

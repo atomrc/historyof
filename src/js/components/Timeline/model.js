@@ -1,17 +1,19 @@
+import {Observable} from "rx";
 import uuid from "uuid";
 import assign from "object-assign";
 
-function model(action$, stories$) {
-    const reducer$ = action$.map(action => (stories) => {
-        switch(action.type) {
-            case "add":
-                return stories.concat(assign({}, action.story, { id: uuid.v1() }));
-            case "remove":
-                return stories.filter((story) => story.id !== action.story.id);
-            default:
-                throw new Error("uninplemented item action: "+ action.type);
-        }
+function model(addAction$, removeAction$, stories$) {
+    const removeReducer$ = removeAction$.map(action => (stories) => {
+        return stories.filter((story) => story.id !== action.story.id);
     });
+
+    const addReducer$ = addAction$.map(action => (stories) => {
+        return stories.concat(assign({}, action.story, { id: uuid.v1() }));
+    });
+
+    const reducer$ = Observable
+        .merge(removeReducer$, addReducer$)
+        .startWith(i => i);
 
     return stories$
         .concat(reducer$)

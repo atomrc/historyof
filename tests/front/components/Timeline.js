@@ -7,7 +7,7 @@ import {mockDOMSource} from '@cycle/dom';
 
 import {Observable} from "rx";
 
-describe("Timeline Component", () => {
+describe("Timeline Component", (done) => {
     const Timeline = require(APP_PATH + "/components/Timeline/Timeline").default;
     const TimelineModel = require(APP_PATH + "/components/Timeline/model").default;
 
@@ -35,7 +35,7 @@ describe("Timeline Component", () => {
         const stories$ = Observable.just(initialStories),
             removeAction$ = Observable.just({ type: "remove", story: { id: "first-uuid"}});
 
-        const storiesSink$ = TimelineModel(removeAction$, stories$);
+        const storiesSink$ = TimelineModel(Observable.empty(), removeAction$, stories$);
 
         storiesSink$
             .last()
@@ -49,7 +49,7 @@ describe("Timeline Component", () => {
         const stories$ = Observable.just(initialStories),
             addAction$ = Observable.just({ type: "add", story: { id: "forth-uuid", title: "Forth Story" }});
 
-        const storiesSink$ = TimelineModel(addAction$, stories$);
+        const storiesSink$ = TimelineModel(addAction$, Observable.empty(), stories$);
 
         storiesSink$
             .last()

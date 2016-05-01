@@ -24,15 +24,15 @@ describe("StoryItem Component", () => {
         });
     });
 
-    it("should send the remove action when remove button is clicked", () => {
+    it("should send the remove action when remove button is clicked", (done) => {
         const story$ = Observable.just(testStory),
             DOM = mockDOMSource({
                 ".remove": { click: Observable.just({}) }
             });
 
-        const sinks = StoryItem({ DOM, story$ });
+        const { removeAction$ } = StoryItem({ DOM, story$ });
 
-        sinks.action$.subscribe(action => expect(action.type).to.be("remove"));
+        removeAction$.subscribe(() => done());
     });
 
     it("should send the edit action when edit button is clicked", () => {
@@ -41,8 +41,8 @@ describe("StoryItem Component", () => {
                 ".edit": { click: Observable.just({}) }
             });
 
-        const sinks = StoryItem({ DOM, story$ });
+        const { editAction$ } = StoryItem({ DOM, story$ });
 
-        sinks.action$.subscribe(action => expect(action.type).to.be("edit"));
+        editAction$.subscribe(action => expect(action.type).to.be("edit"));
     });
 });

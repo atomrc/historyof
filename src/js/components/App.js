@@ -1,13 +1,24 @@
-import {Observable} from "rx";
-import {div, button} from "@cycle/dom";
+import {Observable, ReplaySubject} from "rx";
+import {div, button, span} from "@cycle/dom";
+import Timeline from "./Timeline/Timeline";
 
+function render({user, timeline}) {
+    const header = div("#app-header", [
+        span(".pseudo", user.pseudo),
+        button(".logout", "Logout")
+    ]);
+
+    return div("#app", [
+        header,
+        (timeline ? timeline : "loading")
+    ]);
+}
 
 function intent(DOM, api) {
     const logoutAction$ = DOM
         .select(".logout")
         .events("click")
         .map({ type: "logout" });
-
 
     const storiesResponse$ = api
         .filter(req => req.action.type === "fetchStories")
@@ -18,31 +29,32 @@ function intent(DOM, api) {
 
     return {
         logoutAction$,
-        storiesResponse$
+        stories$: storiesResponse$.filter(res => !res.error)
     };
 }
 
-function view(user$, stories$) {
+function view(user$, timeline$) {
     return Observable.combineLatest(
             user$,
-            stories$.startWith(null),
-            (user, stories) => ({user, stories})
+            timeline$.startWith(null),
+            (user, timeline) => ({user, timeline})
         )
-        .map(({user, stories}) => div([
-            user.pseudo,
-            button(".logout", "Logout"),
-            (stories ? stories.length : "loading")
-        ]));
+        .map(render);
 }
 
 function App({DOM, api, user$}) {
-    const { logoutAction$, storiesResponse$ } = intent(DOM, api);
+    const storiesProxy$ = new ReplaySubject();
+    const timeline$ = storiesProxy$.map(stories => Timeline({ DOM, api, stories$: Observable.just(stories) }));
+    const { logoutAction$, stories$ } = intent(DOM, api);
 
     const apiRequest$ = Observable.just({ type: "fetchStories" });
+    const timelineApiRequests$ = timeline$.flatMap(timeline => timeline.api).do(console.log.bind(console));
+
+    stories$.subscribe(storiesProxy$);
 
     return {
-        DOM: view(user$, storiesResponse$),
-        api: apiRequest$,
+        DOM: view(user$, timeline$.map(timeline => timeline.DOM)),
+        api: Observable.merge(apiRequest$, timelineApiRequests$),
         logoutAction$
     }
 }

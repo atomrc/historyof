@@ -1,4 +1,4 @@
-import {Observable, ReplaySubject} from "rx";
+import {Observable} from "rx";
 import {div, button, span} from "@cycle/dom";
 import Timeline from "./Timeline/Timeline";
 
@@ -25,7 +25,8 @@ function intent(DOM, api) {
         .flatMap(({ response$ }) => {
             return response$
                 .catch(error => Observable.just({ error }));
-        });
+        })
+        .shareReplay();
 
     return {
         logoutAction$,
@@ -43,14 +44,15 @@ function view(user$, timeline$) {
 }
 
 function App({DOM, api, user$}) {
-    const storiesProxy$ = new ReplaySubject();
-    const timeline$ = storiesProxy$.map(stories => Timeline({ DOM, api, stories$: Observable.just(stories) }));
     const { logoutAction$, stories$ } = intent(DOM, api);
 
-    const apiRequest$ = Observable.just({ type: "fetchStories" });
-    const timelineApiRequests$ = timeline$.flatMap(timeline => timeline.api).do(console.log.bind(console));
+    const timeline$ = stories$
+        .map(stories => Timeline({ DOM, api, stories$: Observable.just(stories) }))
+        .shareReplay();
 
-    stories$.subscribe(storiesProxy$);
+    const timelineApiRequests$ = timeline$.flatMapLatest(timeline => timeline.api);
+
+    const apiRequest$ = Observable.just({ type: "fetchStories" });
 
     return {
         DOM: view(user$, timeline$.map(timeline => timeline.DOM)),

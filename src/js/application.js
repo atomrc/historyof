@@ -10,7 +10,10 @@ function main({DOM, api, storage}) {
 
     const userProxy$ = new ReplaySubject();
 
-    const app$ = userProxy$.map(user => App({ DOM, api, user$: Observable.just(user) }));
+    const app$ = userProxy$
+        .map(user => App({ DOM, api, user$: Observable.just(user) }))
+        .shareReplay();
+
     const authContainer = AuthContainer({DOM, api, storage, app$});
     authContainer.user$.subscribe(userProxy$);
 

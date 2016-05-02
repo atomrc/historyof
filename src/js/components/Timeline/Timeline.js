@@ -24,7 +24,8 @@ function Timeline({DOM, stories$}) {
     const storyForm = isolate(StoryForm)({DOM});
     const storyItems$ = storiesProxy$.map(stories =>
         stories.map(createStoryItem(DOM))
-    );
+    )
+    .shareReplay();
 
     const { addAction$, removeAction$ } = intent(storyItems$, storyForm);
     const storiesModel$ = model(addAction$, removeAction$, stories$);

@@ -1,5 +1,6 @@
 import {Observable} from 'rx';
 import {form, input} from '@cycle/dom';
+import assign from "object-assign";
 
 function intent(DOM) {
     const editAction$ = DOM.select("input")
@@ -41,7 +42,7 @@ function StoryForm({DOM}) {
         DOM: vTree$,
         addAction$: storyToAdd$
             .sample(addAction$)
-            .map(story => ({ type: "add", story: story }))
+            .map(story => assign({}, story, { date: new Date() }))
     };
 }
 

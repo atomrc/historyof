@@ -7,8 +7,8 @@ function model(addAction$, removeAction$, stories$) {
         return stories.filter((story) => story.id !== action.story.id);
     });
 
-    const addReducer$ = addAction$.map(action => (stories) => {
-        return stories.concat(assign({}, action.story, { id: uuid.v1() }));
+    const addReducer$ = addAction$.map(story => (stories) => {
+        return stories.concat(assign({}, story, { id: uuid.v1() }));
     });
 
     const reducer$ = Observable

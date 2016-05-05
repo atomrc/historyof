@@ -13,7 +13,7 @@ function createStoryItem(DOM) {
             DOM: isolatedItem.DOM,
             removeAction$: isolatedItem
                 .removeAction$
-                .map(action => ({ type: action.type, story: story }))
+                .map(action => ({ action: action.type, params: { story } }))
         };
     };
 }

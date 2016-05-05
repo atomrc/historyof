@@ -1,33 +1,26 @@
 import {Observable} from 'rx';
 import api from "./api/historyOfApi";
 
-function executeAction(action) {
-    switch(action.type) {
-        case "login":
-            return api.login(action.login, action.password);
+function executeRequest(request) {
+    const apiAction = api[request.action]
+        ? api[request.action]
+        : () => { throw new Error("[API ERROR] Uninplemented api action: " + request.action) };
 
-        case "fetchUser":
-            return api.getUser(action.token);
-
-        case "fetchStories":
-            return api.getStories(action.token);
-
-        default:
-            console.error("unimplemented api action: " + action.type);
-    }
+    return request.token
+        ? apiAction(request.token, request.params)
+        : apiAction(request.params);
 }
 
-function apiDriver(action$) {
+function apiDriver(request$) {
 
-    const response$$ = action$
-        .map((action) => {
-            const requestPromise = () => executeAction(action),
-                response$ = Observable.fromPromise(requestPromise).replay();
+    const response$$ = request$
+        .map((request) => {
+            const response$ = Observable.fromPromise(executeRequest(request)).replay();
 
             response$.connect();
 
             return {
-                action: action,
+                request: request,
                 response$
             };
         })

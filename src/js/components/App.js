@@ -21,7 +21,7 @@ function intent(DOM, api) {
         .map({ type: "logout" });
 
     const storiesResponse$ = api
-        .filter(req => req.action.type === "fetchStories")
+        .filter(({ request }) => request.action === "fetchStories")
         .flatMap(({ response$ }) => {
             return response$
                 .catch(error => Observable.just({ error }));
@@ -52,7 +52,7 @@ function App({DOM, api, user$}) {
 
     const timelineApiRequests$ = timeline$.flatMapLatest(timeline => timeline.api);
 
-    const apiRequest$ = Observable.just({ type: "fetchStories" });
+    const apiRequest$ = Observable.just({ action: "fetchStories" });
 
     return {
         DOM: view(user$, timeline$.map(timeline => timeline.DOM)),

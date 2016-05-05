@@ -9,12 +9,10 @@ function intent(api, storage, app$) {
         .getItem("token");
 
     const fetchUserResponse$ = api
-        .filter(res => res.action.type === "fetchUser")
-        .flatMap(req => {
-            return req
-                .response$
-                .catch((error) => Observable.just({error}));
-        });
+        .filter(({ request }) => request.action === "fetchUser")
+        .flatMap(({ response$ }) =>
+            response$.catch((error) => Observable.just({error}))
+        );
 
     const fetchUserSuccess$ = fetchUserResponse$
         .filter(response => !response.error);
@@ -88,7 +86,7 @@ function AuthContainer({DOM, api, storage, app$}) {
 
     const fetchUserRequest$ = initialToken$
         .filter(token => !!token)
-        .map(token => ({type: "fetchUser", token }));
+        .map(token => ({ action: "fetchUser", token }));
 
     const tokenSave$ = loginForm
         .token$

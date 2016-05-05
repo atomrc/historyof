@@ -1,6 +1,5 @@
 import {Observable} from "rx";
 import {form, input, div} from "@cycle/dom";
-import assign from "object-assign";
 
 function intent(DOM, api) {
     const form = DOM.select("form");
@@ -30,12 +29,10 @@ function intent(DOM, api) {
         .map(ev => { ev.preventDefault(); return ev; });
 
     const loginResponse$ = api
-        .filter(req => req.action.type === "login")
-        .flatMap(req => {
-            return req
-                .response$
-                .catch((error) => Observable.just({error}));
-        });
+        .filter(({ request }) => request.action === "login")
+        .flatMap(({ response$ }) =>
+             response$.catch((error) => Observable.just({error}))
+        );
 
     const loginSuccess$ = loginResponse$
         .filter((response) => !response.error);
@@ -101,7 +98,7 @@ function LoginForm({DOM, api}) {
 
 
     const apiLoginRequest$ = loginRequest$
-        .map(loginValues => assign({}, { type: "login" }, loginValues));
+        .map(loginValues => ({ action: "login", params:  loginValues}));
 
     return {
         DOM: view(state$),

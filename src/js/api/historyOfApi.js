@@ -61,7 +61,8 @@ function initStory (story) {
 }
 
 var api = {
-    login: function (login, password) {
+    login: function ({ login, password }) {
+
         return request(config.loginUrl, {
             method: "POST",
             body: {
@@ -79,7 +80,7 @@ var api = {
         return request("/check/pseudo/" + pseudo);
     },
 
-    getUser: function (token) {
+    fetchUser: function (token) {
         return requestProtected("/u", token);
     },
 
@@ -90,28 +91,28 @@ var api = {
         });
     },
 
-    getStories: function (token) {
+    fetchStories: function (token) {
         return requestProtected("/u/stories", token)
             .then((stories) => {
                 return stories.map(initStory)
             });
     },
 
-    createStory: function (token, story) {
+    createStory: function (token, { story }) {
         return requestProtected("/u/stories", token, {
                 method: "POST",
                 body: story
             }).then(initStory);
     },
 
-    updateStory: function (token, story) {
+    updateStory: function (token, { story }) {
         requestProtected(generateUrl(config.urlPattern, { eid: story.id }), token, {
             method: "PUT",
             body: story
         }).then(initStory);
     },
 
-    remove: function (token, story) {
+    remove: function (token, { story }) {
         requestProtected(generateUrl(config.urlPattern, { eid: story.id }), token, {
             method: "DELETE"
         });

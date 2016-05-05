@@ -36,7 +36,7 @@ function Timeline({DOM, stories$}) {
     return {
         DOM: vTree$,
         api: addAction$
-            .map(({story}) => ({ type: "createStory", story: story }))
+            .map(story => ({ action: "createStory", params: { story } }))
     };
 }
 

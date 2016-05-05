@@ -66,12 +66,12 @@ describe("LoginForm Component", () => {
         const sinks = LoginForm({ DOM, api: Observable.empty() });
 
         sinks.api.subscribe(request => {
-            expect(request.type).to.be("login");
+            expect(request.action).to.be("login");
             done();
         });
     });
 
-    it("should return user and token logged in", (done) => {
+    it("should return user and token when logged in", (done) => {
         const DOM = mockDOMSource(),
             loginResponse$ = Observable.just({
                 user: {
@@ -79,7 +79,7 @@ describe("LoginForm Component", () => {
                 },
                 token: "usertoken"
             }),
-            apiResponse$ = Observable.just({ action: { type: "login" }, response$: loginResponse$ });
+            apiResponse$ = Observable.just({ request: { action: "login" }, response$: loginResponse$ });
 
         const sinks = LoginForm({ DOM, api: apiResponse$ });
 
@@ -99,7 +99,7 @@ describe("LoginForm Component", () => {
             loginResponse$ = Observable.fromPromise(new Promise(function (resolve, reject) {
                 reject({ error: "login/password don't match" });
             })),
-            apiResponse$ = Observable.just({ action: { type: "login" }, response$: loginResponse$ });
+            apiResponse$ = Observable.just({ request: { action: "login" }, response$: loginResponse$ });
 
         const sinks = LoginForm({ DOM, api: apiResponse$ });
 

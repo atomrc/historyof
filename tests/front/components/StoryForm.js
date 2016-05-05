@@ -37,9 +37,8 @@ describe("StoryForm Component", () => {
         const { addAction$ } = StoryForm({ DOM: DOMSource });
 
         addAction$
-            .forEach(action => {
-                expect(action.type).to.be("add");
-                expect(action.story.title).to.be("story one");
+            .forEach(story => {
+                expect(story.title).to.be("story one");
                 done();
             });
     });

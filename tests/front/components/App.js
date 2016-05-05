@@ -32,7 +32,7 @@ describe("App Component", () => {
             api
                 .subscribe(request => {
                     //we should not trigger an api request
-                    expect(request.type).to.be("fetchStories");
+                    expect(request.action).to.be("fetchStories");
                     done();
                 });
         });

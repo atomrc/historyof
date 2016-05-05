@@ -33,7 +33,7 @@ describe("Timeline Component", (done) => {
 
     it("should remove items", () => {
         const stories$ = Observable.just(initialStories),
-            removeAction$ = Observable.just({ type: "remove", story: { id: "first-uuid"}});
+            removeAction$ = Observable.just({ action: "remove", story: { id: "first-uuid"}});
 
         const storiesSink$ = TimelineModel(Observable.empty(), removeAction$, stories$);
 
@@ -47,7 +47,7 @@ describe("Timeline Component", (done) => {
 
     it("should add new item", () => {
         const stories$ = Observable.just(initialStories),
-            addAction$ = Observable.just({ type: "add", story: { id: "forth-uuid", title: "Forth Story" }});
+            addAction$ = Observable.just({ id: "forth-uuid", title: "Forth Story" });
 
         const storiesSink$ = TimelineModel(addAction$, Observable.empty(), stories$);
 

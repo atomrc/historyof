@@ -7,7 +7,7 @@ import {mockDOMSource} from '@cycle/dom';
 
 import {Observable} from "rx";
 
-describe("Timeline Component", (done) => {
+describe("Timeline Component", () => {
     const Timeline = require(APP_PATH + "/components/Timeline/Timeline").default;
     const TimelineModel = require(APP_PATH + "/components/Timeline/model").default;
 
@@ -45,18 +45,21 @@ describe("Timeline Component", (done) => {
             });
     });
 
-    it("should add new item", () => {
-        const stories$ = Observable.just(initialStories),
-            addAction$ = Observable.just({ id: "forth-uuid", title: "Forth Story" });
+    describe("Edition", () => {
+        describe("Add action", () => {
+            const stories$ = Observable.just(initialStories),
+                addAction$ = Observable.just({ id: "forth-uuid", title: "Forth Story" });
 
-        const storiesSink$ = TimelineModel(addAction$, Observable.empty(), stories$);
+            const storiesSink$ = TimelineModel(addAction$, Observable.empty(), stories$);
 
-        storiesSink$
-            .last()
-            .subscribe(function (stories) {
-                expect(stories.length).to.be(initialStories.length + 1);
-                expect(stories[stories.length - 1].title).to.be("Forth Story");
+            it("should add new item", () => {
+                storiesSink$
+                    .last()
+                    .subscribe(function (stories) {
+                        expect(stories.length).to.be(initialStories.length + 1);
+                        expect(stories[stories.length - 1].title).to.be("Forth Story");
+                    });
             });
+        });
     });
-
 });

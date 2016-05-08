@@ -6,7 +6,8 @@ import {div} from "@cycle/dom";
 function intent(api, storage, app$) {
     const initialToken$ = storage
         .local
-        .getItem("token");
+        .getItem("token")
+        .take(1);
 
     const fetchUserResponse$ = api
         .filter(({ request }) => request.action === "fetchUser")
@@ -95,10 +96,10 @@ function AuthContainer({DOM, api, storage, app$}) {
     const tokenRemove$ = Observable.merge(logoutAction$, fetchUserError$)
         .map(() => ({ action: "removeItem", key: "token" }));
 
-    const protectedApiRequest$ = appApiRequest$
-        .withLatestFrom(
-            token$,
-            (request, token) => assign({}, request, { token: token })
+    const protectedApiRequest$ = Observable.combineLatest(
+            appApiRequest$,
+            token$.filter(token => !!token),
+            (request, token) => assign({}, request, { token })
         );
 
     const tokenStorageRequest$ = Observable.merge(tokenRemove$, tokenSave$);

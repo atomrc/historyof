@@ -65,12 +65,6 @@ function view(state$) {
 }
 
 function model(loginRequest$, loginSuccess$, loginError$, formIsValid$) {
-    const user$ = loginSuccess$
-        .map(res => res.user);
-
-    const token$ = loginSuccess$
-        .map(res => res.token);
-
     const isLoginIn$ = Observable.merge(
         loginRequest$.map(() => true),
         loginSuccess$.map(() => false),
@@ -86,16 +80,14 @@ function model(loginRequest$, loginSuccess$, loginError$, formIsValid$) {
     );
 
     return {
-        user$,
-        token$,
+        loginData$: loginSuccess$,
         state$
     };
 }
 
 function LoginForm({DOM, api}) {
     const { formIsValid$, loginRequest$, loginSuccess$, loginError$ } = intent(DOM, api);
-    const { user$, token$, state$ } = model(loginRequest$, loginSuccess$, loginError$, formIsValid$);
-
+    const { loginData$, state$ } = model(loginRequest$, loginSuccess$, loginError$, formIsValid$);
 
     const apiLoginRequest$ = loginRequest$
         .map(loginValues => ({ action: "login", params:  loginValues}));
@@ -103,8 +95,7 @@ function LoginForm({DOM, api}) {
     return {
         DOM: view(state$),
         api: apiLoginRequest$,
-        user$,
-        token$
+        loginData$
     }
 }
 

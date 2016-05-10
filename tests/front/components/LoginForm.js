@@ -63,9 +63,9 @@ describe("LoginForm Component", () => {
                 "form": { submit: Observable.just({ preventDefault: () => 1}) }
             });
 
-        const sinks = LoginForm({ DOM, api: Observable.empty() });
+        const {api} = LoginForm({ DOM, api: Observable.empty() });
 
-        sinks.api.subscribe(request => {
+        api.subscribe(request => {
             expect(request.action).to.be("login");
             done();
         });
@@ -81,14 +81,11 @@ describe("LoginForm Component", () => {
             }),
             apiResponse$ = Observable.just({ request: { action: "login" }, response$: loginResponse$ });
 
-        const sinks = LoginForm({ DOM, api: apiResponse$ });
+        const {loginData$} = LoginForm({ DOM, api: apiResponse$ });
 
-        sinks.user$.subscribe(user => {
+        loginData$.subscribe(({user, token}) => {
             expect(user.pseudo).to.be("felix");
             expect(user.login).to.be("felix@felix.fr");
-        });
-
-        sinks.token$.subscribe(token => {
             expect(token).to.be("usertoken");
             done();
         });

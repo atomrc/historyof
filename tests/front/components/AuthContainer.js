@@ -22,18 +22,17 @@ describe("AuthContainer Component", () => {
             }
         };
 
-        const {DOM, api, storage, user$} = AuthContainer({
+        const {DOM, api, storage} = AuthContainer({
             DOM: DOMSource,
             api: Observable.empty(),
-            storage: storageSource,
-            app$: Observable.empty()
+            storage: storageSource
         });
 
         DOM.subscribe(vtree => {
-            expect(vtree.children[0].tagName).to.be("FORM");
+            expect(vtree.tagName).to.be("FORM");
         });
 
-        empty([api, storage, user$])
+        empty([storage, api])
             .subscribe(isEmpty => {
                 expect(isEmpty).to.be(true);
                 done();

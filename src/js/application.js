@@ -1,20 +1,12 @@
-import {Observable, Subject} from "rx";
 import {run} from '@cycle/core';
 import {makeDOMDriver} from '@cycle/dom';
 import storageDriver from '@cycle/storage';
 import apiDriver from "./apiDriver";
 import AuthContainer from "./components/AuthContainer";
-import App from "./components/App";
 
 function main({DOM, api, storage}) {
 
-    const userProxy$ = new Subject();
-
-    const app$ = userProxy$
-        .map(user => App({ DOM, api, user$: Observable.just(user) }));
-
-    const authContainer = AuthContainer({DOM, api, storage, app$});
-    authContainer.user$.subscribe(userProxy$);
+    const authContainer = AuthContainer({ DOM, api, storage });
 
     return {
         DOM: authContainer.DOM,

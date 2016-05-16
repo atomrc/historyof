@@ -4,11 +4,20 @@ const APP_PATH = __dirname + "/../../../src/js";
 
 import expect from "expect.js";
 import {div, mockDOMSource} from '@cycle/dom';
+import $ from "vdom-query";
+import assign from "object-assign";
 
 import {Observable} from "rx";
 
 function empty(observables) {
     return Observable.merge(...observables).isEmpty();
+}
+
+function generateComponentBuilder(overrides) {
+    return function buildComponent(ComponentFn, props) {
+        var component = ComponentFn(props);
+        return assign({}, component, overrides);
+    }
 }
 
 describe("AuthContainer Component", () => {
@@ -17,19 +26,25 @@ describe("AuthContainer Component", () => {
     it("should display login form if no token given", (done) => {
         const DOMSource = mockDOMSource();
         const storageSource = {
-            local: {
-                getItem: () => Observable.just(null)
-            }
-        };
+                local: {
+                    getItem: () => Observable.just(null)
+                }
+            },
+            buildComponent = generateComponentBuilder({
+                DOM: Observable.just(div(".dummy-login-form"))
+            });
 
         const {DOM, api, storage} = AuthContainer({
             DOM: DOMSource,
             api: Observable.empty(),
-            storage: storageSource
+            storage: storageSource,
+            props: { buildComponent }
         });
 
         DOM.subscribe(vtree => {
-            expect(vtree.tagName).to.be("FORM");
+            const render = () => vtree;
+            const loginForm = $(render);
+            expect(loginForm.hasClass("dummy-login-form")).to.be(true);
         });
 
         empty([storage, api])
@@ -39,46 +54,25 @@ describe("AuthContainer Component", () => {
             });
     });
 
-    xit("should fetch user if token is given", (done) => {
-        const DOMSource = mockDOMSource();
-        const storageSource = {
-            local: {
-                getItem: () => Observable.just("usertoken")
-            }
-        };
-        const {DOM, api, storage, credentials$} = AuthContainer({
-            DOM: DOMSource,
-            api: Observable.empty(),
-            storage: storageSource,
-            app$: Observable.empty()
-        });
-
-        DOM.subscribe(vtree => {
-            expect(vtree.children[0].text).to.be("login in");
-        });
-
-    });
-
-    xit("should display app and return user when user is fetched", (done) => {
+    it("should display user container if token is given", (done) => {
         const DOMSource = mockDOMSource(),
             storageSource = {
                 local: {
                     getItem: () => Observable.just("usertoken")
                 }
             },
-            loggedUser = { pseudo: "felix", login: "felix@felix.fr" },
-            loggedUser$ = Observable.just(loggedUser),
-            apiSource$ = Observable.just({ request: { action: "fetchUser" }, response$: loggedUser$ }),
-            app$ = Observable.just({
-                DOM: div("app"),
-                logoutAction$: Observable.empty()
+            apiSource$ = Observable.empty(),
+            buildComponent = generateComponentBuilder({
+                DOM: Observable.just({
+                    DOM: div(".dummy-user-container")
+                })
             });
 
-        const {DOM, storage, credentials$} = AuthContainer({
+        const {DOM, storage} = AuthContainer({
             DOM: DOMSource,
             api: apiSource$,
             storage: storageSource,
-            app$
+            props: { buildComponent }
         });
 
         DOM
@@ -87,8 +81,6 @@ describe("AuthContainer Component", () => {
                 expect(vtree.text).to.be("app");
             });
 
-        credentials$.subscribe((creds) => expect(creds.user).to.eql(loggedUser));
-
         empty([storage])
             .subscribe(isEmpty => {
                 expect(isEmpty).to.be(true);
@@ -96,72 +88,57 @@ describe("AuthContainer Component", () => {
             });
     });
 
-    xit("should decorate all app api calls with user's token", (done) => {
-        const DOMSource = mockDOMSource(),
-            storageSource = { local: { getItem: () => Observable.just("usertoken") }},
-            app$ = Observable.just({
-                DOM: div("app"),
-                logoutAction$: Observable.empty(),
-                api: Observable.just({ action: "getProtectedResource" })
-            });
-
-        const {api} = AuthContainer({
-            DOM: DOMSource,
-            api: Observable.empty(),
-            storage: storageSource,
-            app$
-        });
-
-        api.skip(1).subscribe(request => {
-            expect(request.token).to.be("usertoken");
-            expect(request.action).to.be("getProtectedResource");
-            done();
-        });
-
-    });
-
-    xit("should display login form with message if token is invalid", (done) => {
+    describe("Invalid token", () => {
         const DOMSource = mockDOMSource(),
             storageSource = {
                 local: {
                     getItem: () => Observable.just("expiredtoken")
                 }
             },
-            errorResponse$ = Observable.fromPromise(new Promise(function (resolve, reject) {
-                reject({ error: "token expired" });
-            })),
-            apiSource$ = Observable.just({ request: { action: "fetchUser" }, response$: errorResponse$ });
+            buildComponent = generateComponentBuilder({
+                DOM: Observable.just({
+                    DOM: div(".dummy-user-container")
+                }),
+                tokenError$: Observable.just({ error: "token is expired" })
+            });
 
         const {DOM, storage} = AuthContainer({
             DOM: DOMSource,
-            api: apiSource$,
+            api: Observable.empty(),
             storage: storageSource,
-            app$: Observable.empty()
+            props: { buildComponent }
         });
 
-        DOM
-            .skip(2)
-            .subscribe(vtree => {
-                const errorDiv = vtree.children[0];
-                expect(errorDiv.properties.className).to.be("error")
-                expect(errorDiv.children[0].text).to.be("token expired")
-            });
-
-        storage
-            .subscribe(storageAction => {
-                expect(storageAction).to.eql({
-                    action: "removeItem",
-                    key: "token"
+        xit("should display login form with error message", (done) => {
+            DOM
+                .subscribe(vtree => {
+                    done();
                 });
-                done();
-            });
+        })
+
+        it("should ask for token removal from local storage", (done) => {
+            storage
+                .subscribe(storageAction => {
+                    expect(storageAction).to.eql({
+                        action: "removeItem",
+                        key: "token"
+                    });
+                    done();
+                });
+        });
     });
 
-    xit("should display login form and remove token when user logs out", (done) => {
+    describe("Logout", () => {
         const DOMSource = mockDOMSource(),
-            storageSource = { local: { getItem: () => Observable.just("usertoken") }},
-            app$ = Observable.just({
-                DOM: div("app"),
+            storageSource = {
+                local: {
+                    getItem: () => Observable.just("expiredtoken")
+                }
+            },
+            buildComponent = generateComponentBuilder({
+                DOM: Observable.just({
+                    DOM: div(".dummy-user-container")
+                }),
                 logoutAction$: Observable.just(1)
             });
 
@@ -169,20 +146,25 @@ describe("AuthContainer Component", () => {
             DOM: DOMSource,
             api: Observable.empty(),
             storage: storageSource,
-            app$
+            props: { buildComponent }
         });
 
-        DOM
-            .skip(1)
-            .subscribe(vtree => {
-                expect(vtree.children[0].tagName).to.be("FORM");
-            });
+        xit("should display login form", (done) => {
+            DOM
+                .subscribe(vtree => {
+                    done();
+                });
+        })
 
-        storage
-            .subscribe(store => {
-                expect(store).to.eql({ action: "removeItem", key: "token" })
-                done();
-            });
+        it("should ask for token removal from local storage", (done) => {
+            storage
+                .subscribe(storageAction => {
+                    expect(storageAction).to.eql({
+                        action: "removeItem",
+                        key: "token"
+                    });
+                    done();
+                });
+        });
     });
-
 });

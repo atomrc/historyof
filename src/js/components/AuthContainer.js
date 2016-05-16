@@ -41,18 +41,20 @@ function render(userContainer$, loginForm$) {
  * @param {storageSource} storage the storage source
  * @returns {object} streams
  */
-function AuthContainer({DOM, api, storage}) {
+function AuthContainer({DOM, api, storage, props}) {
+
+    const {buildComponent} = props;
 
     const tokenProxy$ = new ReplaySubject();
 
     const loginForm$ = tokenProxy$
         .filter(token => !token)
-        .map(() => LoginForm({DOM, api}))
+        .map(() => buildComponent(LoginForm, {DOM, api}, "login-form"))
         .shareReplay(1);
 
     const userContainer$ = tokenProxy$
         .filter(token => !!token)
-        .map(token => UserContainer({ DOM, api, token$: Observable.just(token) }))
+        .map(token => buildComponent(UserContainer, { DOM, api, token$: Observable.just(token) }, "user-container"))
         .shareReplay(1);
 
     const {

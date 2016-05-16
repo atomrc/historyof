@@ -17,7 +17,9 @@ describe("LoginForm Component", () => {
         const { DOM, api } = LoginForm({ DOM: DOMSource, api: Observable.empty() });
 
         DOM.subscribe(vtree => {
-            expect(vtree.tagName).to.be("FORM");
+            const render = () => vtree;
+            const form = $(render)
+            expect(form.attr("id")).to.be("login-form");
         });
 
         api
@@ -104,7 +106,9 @@ describe("LoginForm Component", () => {
             .DOM
             .last()
             .subscribe(vtree => {
-                expect(vtree.children[0].properties.className).to.be("error");
+                const render = () => vtree;
+                const errorDiv = $(render).find(".error");
+                expect(errorDiv.size()).to.be(1);
                 done();
             });
     });

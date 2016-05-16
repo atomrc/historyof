@@ -60,7 +60,7 @@ function view(state$) {
             if (error) {
                 inputs = [div(".error", error)].concat(inputs);
             }
-            return form("#login-form", inputs);
+            return div("#login-form", form(inputs));
         })
 }
 

@@ -29,6 +29,11 @@ function intent({ storage, loginForm$, userContainer$ }) {
 
 function render(userContainer$, loginForm$) {
 
+    userContainer$.addListener({
+        next: console.log.bind(console),
+        error: () => null,
+        complete: () => null,
+    });
     return xs
         .merge(userContainer$, loginForm$)
         .map(component => component.DOM)
@@ -59,6 +64,11 @@ function AuthContainer({DOM, api, storage, props}) {
         .filter(token => !!token)
         .map(token => buildComponent(UserContainer, { DOM, api, token$: xs.of(token) }, "user-container"))
 
+    userContainer$.addListener({
+        next: () => console.log.bind(console),
+        complete: () => console.log.bind(console),
+        error: () => console.log.bind(console),
+    });
     const {
         token$,
         loginToken$,

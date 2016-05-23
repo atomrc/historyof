@@ -3,24 +3,24 @@
 const APP_PATH = __dirname + "/../../../src/js";
 
 import expect from "expect.js";
-import $ from "vdom-query";
+import select from "snabbdom-selector";
 import {mockDOMSource} from '@cycle/dom';
 
-import {Observable} from "rx";
+import xs from "xstream";
 
 describe("UserContainer Component", () => {
     const UserContainer = require(APP_PATH + "/components/UserContainer").default;
 
     describe("UserContainer init", () => {
         const DOMSource = mockDOMSource({})
-            //user$ = Observable.just({ pseudo: "felix", login: "felix@felix.fr", password: "password" });
+            //user$ = xs.of({ pseudo: "felix", login: "felix@felix.fr", password: "password" });
 
-        const {DOM, api}  = UserContainer({ DOM: DOMSource, api: Observable.empty(), token$: Observable.just("usertoken") });
+        const {DOM, api}  = UserContainer({ DOM: DOMSource, api: xs.empty(), token$: xs.of("usertoken") });
 
         it("should display loader", (done) => {
             DOM
                 .last()
-                .subscribe(vtree => {
+                .addListener(vtree => {
                     const render = () => vtree;
                     expect($(render).find(".loading").text()).to.be("loading...");
                     done();
@@ -30,7 +30,7 @@ describe("UserContainer Component", () => {
 
         it("should fetch user", (done) => {
             api
-                .subscribe(request => {
+                .addListener(request => {
                     //we should not trigger an api request
                     expect(request.action).to.be("fetchUser");
                     done();
@@ -40,14 +40,14 @@ describe("UserContainer Component", () => {
 
     it("should display user when fetched", (done) => {
         const DOMSource = mockDOMSource({}),
-            user$ = Observable.just({ pseudo: "felix", login: "felix@felix.fr", password: "password" }),
-            apiSource$ = Observable.just({ request: { action: "fetchUser" }, response$: user$ });
+            user$ = xs.of({ pseudo: "felix", login: "felix@felix.fr", password: "password" }),
+            apiSource$ = xs.of({ request: { action: "fetchUser" }, response$: user$ });
 
-        const {DOM}  = UserContainer({ DOM: DOMSource, api: apiSource$, token$: Observable.just("usertoken") });
+        const {DOM}  = UserContainer({ DOM: DOMSource, api: apiSource$, token$: xs.of("usertoken") });
 
         DOM
             .last()
-            .subscribe(vtree => {
+            .addListener(vtree => {
                 const render = () => vtree;
                 expect($(render).find(".pseudo").text()).to.be("felix");
                 done();
@@ -58,15 +58,15 @@ describe("UserContainer Component", () => {
     it("should return logout action when user logs out", (done) => {
         const DOM = mockDOMSource({
             elements: {
-                ".logout": { click: Observable.just({}) }
+                ".logout": { click: xs.of({}) }
             }
         });
 
-        const {logoutAction$} = UserContainer({ DOM, api: Observable.empty(), token$: Observable.empty() });
+        const {logoutAction$} = UserContainer({ DOM, api: xs.empty(), token$: xs.empty() });
 
         logoutAction$
             .isEmpty()
-            .subscribe(isEmpty => {
+            .addListener(isEmpty => {
                 expect(isEmpty).to.be(false);
                 done();
             });
@@ -74,15 +74,15 @@ describe("UserContainer Component", () => {
 
     it("should return token error if token is invalid", (done) => {
         const DOM = mockDOMSource({}),
-            fetchUserError$ = Observable.fromPromise(new Promise(function (resolve, reject) {
+            fetchUserError$ = xs.fromPromise(new Promise(function (resolve, reject) {
                 reject({ error: "token is expired" });
             })),
-            apiResponse$ = Observable.just({ request: { action: "fetchUser" }, response$: fetchUserError$ });
+            apiResponse$ = xs.of({ request: { action: "fetchUser" }, response$: fetchUserError$ });
 
-        const {tokenError$} = UserContainer({ DOM, api: apiResponse$, token$: Observable.empty() });
+        const {tokenError$} = UserContainer({ DOM, api: apiResponse$, token$: xs.empty() });
 
         tokenError$
-            .subscribe(response => {
+            .addListener(response => {
                 expect(response.error).to.be("token is expired");
                 done();
             });

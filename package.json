@@ -7,7 +7,7 @@
     "install": "gulp && db-migrate up",
     "test": "npm run test:api && npm run test:front",
     "test:api": "db-migrate up && mocha tests/api/api_spec.js",
-    "test:front": "mocha --compilers js:babel-core/register tests/front/components/LoginForm.js"
+    "test:front": "mocha --compilers js:babel-core/register tests/front/components/AuthContainer.js"
   },
   "author": "Thomas Belin",
   "license": "ISC",

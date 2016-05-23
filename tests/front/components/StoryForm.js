@@ -3,10 +3,9 @@
 const APP_PATH = __dirname + "/../../../src/js";
 
 import expect from "expect.js";
-//import $ from "vdom-query";
 import {mockDOMSource} from '@cycle/dom';
 
-import {Observable} from "rx";
+import xs from "xstream";
 
 describe("StoryForm Component", () => {
     const StoryForm = require(APP_PATH + "/components/StoryForm").default;
@@ -27,12 +26,12 @@ describe("StoryForm Component", () => {
         const DOMSource = mockDOMSource({
             elements: {
                 "input": {
-                    change: Observable.just( {
+                    change: xs.of( {
                         target: { name: "title", value: "story one" }
                     })
                 },
 
-                ":root": { submit: Observable.just({ preventDefault: i => i }) }
+                ":root": { submit: xs.of({ preventDefault: i => i }) }
             }
         });
 

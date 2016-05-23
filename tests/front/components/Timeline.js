@@ -5,7 +5,7 @@ const APP_PATH = __dirname + "/../../../src/js";
 import expect from "expect.js";
 import {mockDOMSource} from '@cycle/dom';
 
-import {Observable} from "rx";
+import xs from "xstream";
 
 describe("Timeline Component", () => {
     const Timeline = require(APP_PATH + "/components/Timeline/Timeline").default;
@@ -18,12 +18,12 @@ describe("Timeline Component", () => {
     ];
 
     it("should display the given stories", () => {
-        const stories$ = Observable.just(initialStories),
+        const stories$ = xs.of(initialStories),
             DOM = mockDOMSource({});
 
         const sinks = Timeline({ DOM, stories$ });
 
-        sinks.DOM.subscribe(vtree => {
+        sinks.DOM.addListener(vtree => {
             const header = vtree.children[0].text;
             const storiesList = vtree.children[1];
             expect(header).to.be("3 stories");
@@ -32,14 +32,14 @@ describe("Timeline Component", () => {
     });
 
     it("should remove items", () => {
-        const stories$ = Observable.just(initialStories),
-            removeAction$ = Observable.just({ action: "remove", story: { id: "first-uuid"}});
+        const stories$ = xs.of(initialStories),
+            removeAction$ = xs.of({ action: "remove", story: { id: "first-uuid"}});
 
-        const storiesSink$ = TimelineModel(Observable.empty(), removeAction$, stories$);
+        const storiesSink$ = TimelineModel(xs.empty(), removeAction$, stories$);
 
         storiesSink$
             .last()
-            .subscribe(function (stories) {
+            .addListener(function (stories) {
                 expect(stories.length).to.be(initialStories.length - 1);
                 expect(stories[0].title).to.be(initialStories[1].title);
             });
@@ -47,15 +47,15 @@ describe("Timeline Component", () => {
 
     describe("Edition", () => {
         describe("Add action", () => {
-            const stories$ = Observable.just(initialStories),
-                addAction$ = Observable.just({ id: "forth-uuid", title: "Forth Story" });
+            const stories$ = xs.of(initialStories),
+                addAction$ = xs.of({ id: "forth-uuid", title: "Forth Story" });
 
-            const storiesSink$ = TimelineModel(addAction$, Observable.empty(), stories$);
+            const storiesSink$ = TimelineModel(addAction$, xs.empty(), stories$);
 
             it("should add new item", () => {
                 storiesSink$
                     .last()
-                    .subscribe(function (stories) {
+                    .addListener(function (stories) {
                         expect(stories.length).to.be(initialStories.length + 1);
                         expect(stories[stories.length - 1].title).to.be("Forth Story");
                     });

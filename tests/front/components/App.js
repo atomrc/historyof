@@ -3,24 +3,24 @@
 const APP_PATH = __dirname + "/../../../src/js";
 
 import expect from "expect.js";
-import $ from "vdom-query";
+import select from "snabbdom-selector";
 import {mockDOMSource} from '@cycle/dom';
 
-import {Observable} from "rx";
+import xs from "xstream";
 
 describe("App Component", () => {
     const App = require(APP_PATH + "/components/App").default;
 
     describe("App init", () => {
         const DOMSource = mockDOMSource({}),
-            user$ = Observable.just({ pseudo: "felix", login: "felix@felix.fr", password: "password" });
+            user$ = xs.of({ pseudo: "felix", login: "felix@felix.fr", password: "password" });
 
-        const {DOM, api}  = App({ DOM: DOMSource, api: Observable.empty(), user$ });
+        const {DOM, api}  = App({ DOM: DOMSource, api: xs.empty(), user$ });
 
         it("should display user", (done) => {
             DOM
                 .last()
-                .subscribe(vtree => {
+                .addListener(vtree => {
                     const render = () => vtree;
                     expect($(render).find(".pseudo").text()).to.be("felix");
                     done();
@@ -30,7 +30,7 @@ describe("App Component", () => {
 
         it("should fetch user's stories", (done) => {
             api
-                .subscribe(request => {
+                .addListener(request => {
                     //we should not trigger an api request
                     expect(request.action).to.be("fetchStories");
                     done();
@@ -41,16 +41,16 @@ describe("App Component", () => {
     it("should return logout action when user logs out", (done) => {
         const DOM = mockDOMSource({
                 elements: {
-                    ".logout": { click: Observable.just({}) }
+                    ".logout": { click: xs.of({}) }
                 }
             }),
-            user$ = Observable.just({ pseudo: "felix", login: "felix@felix.fr", password: "password" });
+            user$ = xs.of({ pseudo: "felix", login: "felix@felix.fr", password: "password" });
 
-        const {logoutAction$} = App({ DOM, api: Observable.empty(), user$ });
+        const {logoutAction$} = App({ DOM, api: xs.empty(), user$ });
 
         logoutAction$
             .isEmpty()
-            .subscribe(isEmpty => {
+            .addListener(isEmpty => {
                 expect(isEmpty).to.be(false);
                 done();
             });

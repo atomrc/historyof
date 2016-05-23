@@ -1,5 +1,6 @@
+import {Observable} from "rx";
 import {run} from '@cycle/core';
-import {makeDOMDriver} from '@cycle/dom';
+import {makeDOMDriver, div} from '@cycle/dom';
 import storageDriver from '@cycle/storage';
 import isolate from '@cycle/isolate';
 import apiDriver from "./apiDriver";
@@ -13,8 +14,21 @@ function main({DOM, api, storage}) {
 
     const authContainer = AuthContainer({ DOM, api, storage, props: { buildComponent } });
 
+    const vtree = Observable.combineLatest(
+            authContainer.DOM,
+            authContainer.error$.startWith(null),
+            (authContainerDom, error) => ({ authContainerDom, error })
+        )
+        .map(({ authContainerDom, error }) => {
+            var errorDiv = error ? div(".error", error.error) : null;
+            return div([
+                errorDiv,
+                authContainerDom
+            ]);
+        });
+
     return {
-        DOM: authContainer.DOM,
+        DOM: vtree,
         api: authContainer.api,
         storage: authContainer.storage
     }

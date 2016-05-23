@@ -102,16 +102,17 @@ describe("AuthContainer Component", () => {
                 tokenError$: Observable.just({ error: "token is expired" })
             });
 
-        const {DOM, storage} = AuthContainer({
+        const {storage, error$} = AuthContainer({
             DOM: DOMSource,
             api: Observable.empty(),
             storage: storageSource,
             props: { buildComponent }
         });
 
-        xit("should display login form with error message", (done) => {
-            DOM
-                .subscribe(vtree => {
+        it("should pass on userContainer's error", (done) => {
+            error$
+                .subscribe(error => {
+                    expect(error.error).to.be("token is expired");
                     done();
                 });
         })

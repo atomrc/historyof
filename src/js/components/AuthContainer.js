@@ -78,7 +78,8 @@ function AuthContainer({DOM, api, storage, props}) {
     return {
         DOM: render(userContainer$, loginForm$),
         api: apiRequest$,
-        storage: Observable.merge(tokenRemoveRequest$, tokenSaveRequest$)
+        storage: Observable.merge(tokenRemoveRequest$, tokenSaveRequest$),
+        error$: userContainer$.flatMapLatest(userContainer => userContainer.tokenError$)
     }
 }
 

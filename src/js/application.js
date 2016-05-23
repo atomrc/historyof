@@ -1,7 +1,7 @@
-import {Observable} from "rx";
-import {run} from '@cycle/core';
+import xs from "xstream";
+import {run} from '@cycle/xstream-run';
 import {makeDOMDriver, div} from '@cycle/dom';
-import storageDriver from '@cycle/storage';
+//import storageDriver from '@cycle/storage';
 import isolate from '@cycle/isolate';
 import apiDriver from "./apiDriver";
 import AuthContainer from "./components/AuthContainer";
@@ -10,14 +10,20 @@ function buildComponent(ComponentFn, props, scope) {
     return isolate(ComponentFn, scope)(props);
 }
 
-function main({DOM, api, storage}) {
+function main({DOM, api}) {
+
+    const storage = {
+        local: {
+            getItem: () => xs.merge(xs.of(null), xs.never())
+        }
+    }
 
     const authContainer = AuthContainer({ DOM, api, storage, props: { buildComponent } });
 
-    const vtree = Observable.combineLatest(
+    const vtree$ = xs.combine(
+            (authContainerDom, error) => ({ authContainerDom, error }),
             authContainer.DOM,
-            authContainer.error$.startWith(null),
-            (authContainerDom, error) => ({ authContainerDom, error })
+            authContainer.error$.startWith(null)
         )
         .map(({ authContainerDom, error }) => {
             var errorDiv = error ? div(".error", error.error) : null;
@@ -28,16 +34,16 @@ function main({DOM, api, storage}) {
         });
 
     return {
-        DOM: vtree,
+        DOM: vtree$,
         api: authContainer.api,
-        storage: authContainer.storage
+        //storage: authContainer.storage
     }
 }
 
 var drivers = {
     DOM: makeDOMDriver("#main"),
     api: apiDriver,
-    storage: storageDriver
+    //storage: storageDriver
 };
 
 run(main, drivers);

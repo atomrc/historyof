@@ -12,7 +12,7 @@ describe("App Component", () => {
     const App = require(APP_PATH + "/components/App").default;
 
     describe("App init", () => {
-        const DOMSource = mockDOMSource(),
+        const DOMSource = mockDOMSource({}),
             user$ = Observable.just({ pseudo: "felix", login: "felix@felix.fr", password: "password" });
 
         const {DOM, api}  = App({ DOM: DOMSource, api: Observable.empty(), user$ });
@@ -40,7 +40,9 @@ describe("App Component", () => {
 
     it("should return logout action when user logs out", (done) => {
         const DOM = mockDOMSource({
-                ".logout": { click: Observable.just({}) }
+                elements: {
+                    ".logout": { click: Observable.just({}) }
+                }
             }),
             user$ = Observable.just({ pseudo: "felix", login: "felix@felix.fr", password: "password" });
 

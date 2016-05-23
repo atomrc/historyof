@@ -1,7 +1,6 @@
-import {Observable, ReplaySubject} from "rx";
+import xs from "xstream";
 import UserContainer from "./UserContainer";
 import LoginForm from "./LoginForm";
-
 
 function intent({ storage, loginForm$, userContainer$ }) {
     const token$ = storage
@@ -9,26 +8,31 @@ function intent({ storage, loginForm$, userContainer$ }) {
         .getItem("token");
 
     const loginToken$ = loginForm$
-        .flatMapLatest(loginForm => loginForm.loginData$)
+        .map(loginForm => loginForm.loginData$)
+        .flatten()
         .map(({ token }) => token);
 
     const tokenError$ = userContainer$
-        .flatMapLatest(userContainer => userContainer.tokenError$);
+        .map(userContainer => userContainer.tokenError$)
+        .flatten();
 
     const logoutAction$ = userContainer$
-        .flatMapLatest(userContainer => userContainer.logoutAction$);
+        .map(userContainer => userContainer.logoutAction$)
+        .flatten();
 
     return {
         token$,
         loginToken$,
-        logoutAction$: Observable.merge(tokenError$, logoutAction$)
+        logoutAction$: xs.merge(tokenError$, logoutAction$)
     };
 }
 
 function render(userContainer$, loginForm$) {
-    return Observable
+
+    return xs
         .merge(userContainer$, loginForm$)
-        .flatMapLatest(component => component.DOM);
+        .map(component => component.DOM)
+        .flatten()
 }
 
 /**
@@ -45,17 +49,15 @@ function AuthContainer({DOM, api, storage, props}) {
 
     const {buildComponent} = props;
 
-    const tokenProxy$ = new ReplaySubject();
+    const tokenProxy$ = xs.createWithMemory();
 
     const loginForm$ = tokenProxy$
         .filter(token => !token)
-        .map(() => buildComponent(LoginForm, {DOM, api}, "login-form"))
-        .shareReplay(1);
+        .mapTo(buildComponent(LoginForm, {DOM, api}, "login-form"))
 
     const userContainer$ = tokenProxy$
         .filter(token => !!token)
-        .map(token => buildComponent(UserContainer, { DOM, api, token$: Observable.just(token) }, "user-container"))
-        .shareReplay(1);
+        .map(token => buildComponent(UserContainer, { DOM, api, token$: xs.of(token) }, "user-container"))
 
     const {
         token$,
@@ -63,9 +65,10 @@ function AuthContainer({DOM, api, storage, props}) {
         logoutAction$
     } = intent({ storage, loginForm$, userContainer$ });
 
-    const apiRequest$ = Observable
+    const apiRequest$ = xs
         .merge(loginForm$, userContainer$)
-        .flatMapLatest(component => component.api);
+        .map(component => component.api)
+        .flatten()
 
     const tokenSaveRequest$ = loginToken$
         .map(token => ({ key: "token", value: token }));
@@ -73,13 +76,14 @@ function AuthContainer({DOM, api, storage, props}) {
     const tokenRemoveRequest$ = logoutAction$
         .map(() => ({ action: "removeItem", key: "token" }));
 
-    token$.subscribe(tokenProxy$);
+    const vtree$ = render(userContainer$, loginForm$);
+    tokenProxy$.imitate(token$);
 
     return {
-        DOM: render(userContainer$, loginForm$),
+        DOM: vtree$,
         api: apiRequest$,
-        storage: Observable.merge(tokenRemoveRequest$, tokenSaveRequest$),
-        error$: userContainer$.flatMapLatest(userContainer => userContainer.tokenError$)
+        storage: xs.merge(tokenRemoveRequest$, tokenSaveRequest$),
+        error$: userContainer$.map(userContainer => userContainer.tokenError$).flatten()
     }
 }
 

@@ -12,7 +12,7 @@ describe("StoryForm Component", () => {
     const StoryForm = require(APP_PATH + "/components/StoryForm").default;
 
     it("should display empty form if no story given", (done) => {
-        const DOMSource = mockDOMSource();
+        const DOMSource = mockDOMSource({});
 
         const { DOM } = StoryForm({ DOM: DOMSource });
 
@@ -25,13 +25,15 @@ describe("StoryForm Component", () => {
     it("should return a new story when user submits form", (done) => {
 
         const DOMSource = mockDOMSource({
-            "input": {
-                change: Observable.just( {
-                    target: { name: "title", value: "story one" }
-                })
-            },
+            elements: {
+                "input": {
+                    change: Observable.just( {
+                        target: { name: "title", value: "story one" }
+                    })
+                },
 
-            ":root": { submit: Observable.just({ preventDefault: i => i }) }
+                ":root": { submit: Observable.just({ preventDefault: i => i }) }
+            }
         });
 
         const { addAction$ } = StoryForm({ DOM: DOMSource });

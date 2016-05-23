@@ -19,7 +19,7 @@ describe("Timeline Component", () => {
 
     it("should display the given stories", () => {
         const stories$ = Observable.just(initialStories),
-            DOM = mockDOMSource();
+            DOM = mockDOMSource({});
 
         const sinks = Timeline({ DOM, stories$ });
 

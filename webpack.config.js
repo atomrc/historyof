@@ -12,12 +12,12 @@ module.exports = {
         application: "./src/js/application",
         vendor: [
             "rx",
-            "@cycle/core",
+            "@cycle/xstream-run",
             "@cycle/dom",
             "@cycle/storage",
             "@cycle/isolate",
             "uuid",
-            "object-assign",
+            "object-assign"
             /*"moment",
             "pikaday",
             "whatwg-fetch",

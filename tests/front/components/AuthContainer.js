@@ -24,7 +24,7 @@ describe("AuthContainer Component", () => {
     const AuthContainer = require(APP_PATH + "/components/AuthContainer").default;
 
     it("should display login form if no token given", (done) => {
-        const DOMSource = mockDOMSource();
+        const DOMSource = mockDOMSource({});
         const storageSource = {
                 local: {
                     getItem: () => Observable.just(null)
@@ -55,7 +55,7 @@ describe("AuthContainer Component", () => {
     });
 
     it("should display user container if token is given", (done) => {
-        const DOMSource = mockDOMSource(),
+        const DOMSource = mockDOMSource({}),
             storageSource = {
                 local: {
                     getItem: () => Observable.just("usertoken")
@@ -89,7 +89,7 @@ describe("AuthContainer Component", () => {
     });
 
     describe("Invalid token", () => {
-        const DOMSource = mockDOMSource(),
+        const DOMSource = mockDOMSource({}),
             storageSource = {
                 local: {
                     getItem: () => Observable.just("expiredtoken")
@@ -130,7 +130,7 @@ describe("AuthContainer Component", () => {
     });
 
     describe("Logout", () => {
-        const DOMSource = mockDOMSource(),
+        const DOMSource = mockDOMSource({}),
             storageSource = {
                 local: {
                     getItem: () => Observable.just("expiredtoken")

@@ -7,13 +7,14 @@
     "install": "gulp && db-migrate up",
     "test": "npm run test:api && npm run test:front",
     "test:api": "db-migrate up && mocha tests/api/api_spec.js",
-    "test:front": "mocha --compilers js:babel-core/register tests/front/**"
+    "test:front": "mocha --compilers js:babel-core/register tests/front/components/LoginForm.js"
   },
   "author": "Thomas Belin",
   "license": "ISC",
   "dependencies": {
-    "@cycle/core": "^6.0.3",
-    "@cycle/dom": "^9.2.2",
+    "xstream": "^2.6.0",
+    "@cycle/xstream-run": "^1.1.0",
+    "@cycle/dom": "10.0.0-rc22",
     "@cycle/isolate": "^1.2.0",
     "@cycle/storage": "^2.0.3",
     "babel-loader": "^6.2.4",
@@ -27,13 +28,12 @@
     "gulp": "^3.9.1",
     "gulp-pug": "*",
     "gulp-sass": "^2.2.0",
-    "jsonwebtoken": "^6.2.0",
+    "jsonwebtoken": "^7.0.0",
     "moment": "^2.12.0",
     "object-assign": "^4.0.1",
     "pg": "^4.5.2",
     "pg-hstore": "^2.3.2",
     "pikaday": "^1.4.0",
-    "rx": "^4.1.0",
     "sass-loader": "^3.2.0",
     "sequelize": "^3.20.0",
     "uuid": "^2.0.1",
@@ -45,7 +45,7 @@
     "es6-promise": "^3.1.2",
     "expect.js": "^0.3.1",
     "mocha": "^2.4.5",
-    "supertest": "^1.2.0",
-    "vdom-query": "0.0.1"
+    "snabbdom-selector": "^0.4.0",
+    "supertest": "^1.2.0"
   }
 }

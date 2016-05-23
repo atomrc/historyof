@@ -15,7 +15,7 @@ describe("StoryItem Component", () => {
 
     it("should display given story", () => {
         const story$ = Observable.just(testStory),
-            DOM = mockDOMSource();
+            DOM = mockDOMSource({});
 
         const sinks = StoryItem({ DOM, story$ });
 
@@ -27,7 +27,9 @@ describe("StoryItem Component", () => {
     it("should send the remove action when remove button is clicked", (done) => {
         const story$ = Observable.just(testStory),
             DOM = mockDOMSource({
-                ".remove": { click: Observable.just({}) }
+                elements: {
+                    ".remove": { click: Observable.just({}) }
+                }
             });
 
         const { removeAction$ } = StoryItem({ DOM, story$ });
@@ -38,7 +40,9 @@ describe("StoryItem Component", () => {
     it("should send the edit action when edit button is clicked", () => {
         const story$ = Observable.just(testStory),
             DOM = mockDOMSource({
-                ".edit": { click: Observable.just({}) }
+                elements: {
+                    ".edit": { click: Observable.just({}) }
+                }
             });
 
         const { editAction$ } = StoryItem({ DOM, story$ });

@@ -12,7 +12,7 @@ describe("UserContainer Component", () => {
     const UserContainer = require(APP_PATH + "/components/UserContainer").default;
 
     describe("UserContainer init", () => {
-        const DOMSource = mockDOMSource()
+        const DOMSource = mockDOMSource({})
             //user$ = Observable.just({ pseudo: "felix", login: "felix@felix.fr", password: "password" });
 
         const {DOM, api}  = UserContainer({ DOM: DOMSource, api: Observable.empty(), token$: Observable.just("usertoken") });
@@ -39,7 +39,7 @@ describe("UserContainer Component", () => {
     });
 
     it("should display user when fetched", (done) => {
-        const DOMSource = mockDOMSource(),
+        const DOMSource = mockDOMSource({}),
             user$ = Observable.just({ pseudo: "felix", login: "felix@felix.fr", password: "password" }),
             apiSource$ = Observable.just({ request: { action: "fetchUser" }, response$: user$ });
 
@@ -57,7 +57,9 @@ describe("UserContainer Component", () => {
 
     it("should return logout action when user logs out", (done) => {
         const DOM = mockDOMSource({
-            ".logout": { click: Observable.just({}) }
+            elements: {
+                ".logout": { click: Observable.just({}) }
+            }
         });
 
         const {logoutAction$} = UserContainer({ DOM, api: Observable.empty(), token$: Observable.empty() });
@@ -71,7 +73,7 @@ describe("UserContainer Component", () => {
     });
 
     it("should return token error if token is invalid", (done) => {
-        const DOM = mockDOMSource(),
+        const DOM = mockDOMSource({}),
             fetchUserError$ = Observable.fromPromise(new Promise(function (resolve, reject) {
                 reject({ error: "token is expired" });
             })),

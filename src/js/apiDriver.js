@@ -1,4 +1,4 @@
-import {Observable} from 'rx';
+import {xs} from 'xstream';
 import api from "./api/historyOfApi";
 
 function executeRequest(request) {
@@ -15,18 +15,14 @@ function apiDriver(request$) {
 
     const response$$ = request$
         .map((request) => {
-            const response$ = Observable.fromPromise(executeRequest(request)).replay(null, null, 500);
-
-            response$.connect();
+            const response$ = xs.fromPromise(executeRequest(request))
 
             return {
                 request: request,
                 response$
             };
         })
-        .replay(null, null, 500);
 
-    response$$.connect();
     return response$$;
 }
 

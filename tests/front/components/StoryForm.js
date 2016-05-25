@@ -2,10 +2,11 @@
 "use strict";
 const APP_PATH = __dirname + "/../../../src/js";
 
+import xs from "xstream";
 import expect from "expect.js";
 import {mockDOMSource} from '@cycle/dom';
 
-import xs from "xstream";
+import {generateListener} from "../helpers";
 
 describe("StoryForm Component", () => {
     const StoryForm = require(APP_PATH + "/components/StoryForm").default;
@@ -15,10 +16,10 @@ describe("StoryForm Component", () => {
 
         const { DOM } = StoryForm({ DOM: DOMSource });
 
-        DOM.forEach((vtree) => {
-            expect(vtree.tagName).to.be("FORM");
-            done();
-        });
+        DOM.addListener(generateListener({
+            next: (vtree) => expect(vtree.tagName).to.be("FORM"),
+            complete: done
+        }));
     });
 
     it("should return a new story when user submits form", (done) => {
@@ -38,10 +39,10 @@ describe("StoryForm Component", () => {
         const { addAction$ } = StoryForm({ DOM: DOMSource });
 
         addAction$
-            .forEach(story => {
-                expect(story.title).to.be("story one");
-                done();
-            });
+            .addListener(generateListener({
+                next: story => expect(story.title).to.be("story one"),
+                complete: done
+            }));
     });
 
     xit("fill form with edited story if given", () => {

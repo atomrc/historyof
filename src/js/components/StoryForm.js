@@ -1,15 +1,20 @@
-import {Observable} from 'rx';
-import {form, input} from '@cycle/dom';
+import xs from "xstream";
+import {form, input} from "@cycle/dom";
 import assign from "object-assign";
 
 function intent(DOM) {
-    const editAction$ = DOM.select("input")
+    const editAction$ = DOM
+        .select("input")
         .events("change")
         .map(ev => ({ [ev.target.name]: ev.target.value }));
 
-    const addAction$ = DOM.select(":root")
+    const addAction$ = DOM
+        .select(":root")
         .events("submit")
-        .do(ev => ev.preventDefault())
+        .map(ev => {
+            ev.preventDefault()
+            return ev;
+        })
         .map(() => "add");
 
     return {addAction$, editAction$};
@@ -18,7 +23,7 @@ function intent(DOM) {
 function model({editAction$, addAction$}) {
     const resetAction$ = addAction$.map(() => ({}));
 
-    return Observable
+    return xs
         .merge(editAction$, resetAction$)
         .startWith({});
 }

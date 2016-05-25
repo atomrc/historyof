@@ -1,4 +1,4 @@
-import {Observable} from "rx";
+import xs from "xstream";
 import {div, button, span} from "@cycle/dom";
 import assign from "object-assign";
 
@@ -23,19 +23,21 @@ function intent(DOM, api) {
 
     const storiesResponse$ = api
         .filter(({ request }) => request.action === "fetchStories")
-        .flatMap(({ response$ }) => {
+        .map(({ response$ }) => {
             return response$
-                .catch(error => Observable.just({ error }));
+                .replaceError(error => xs.of({ error }));
         })
-        .shareReplay(1);
+        .flatten()
+        .remember()
 
     const fetchUserResponse$ = api
         .filter(({ request }) => request.action === "fetchUser")
-        .flatMapLatest(({ response$ }) => {
+        .map(({ response$ }) => {
             return response$
-                .catch(error => Observable.just({ error }));
+                .replaceError(error => xs.of({ error }));
         })
-        .shareReplay(1);
+        .flatten()
+        .remember(1)
 
     const fetchUserSuccess$ = fetchUserResponse$
         .filter(response => !response.error);
@@ -67,10 +69,10 @@ function App({DOM, api, token$}) {
 
     const user$ = fetchUserSuccess$;
 
-    const fetchUserRequest$ = Observable.just({ action: "fetchUser" });
-    const apiRequest$ = Observable
+    const fetchUserRequest$ = xs.of({ action: "fetchUser" });
+    const apiRequest$ = xs
         .merge(fetchUserRequest$)
-        .withLatestFrom(token$, (req, token) => assign({}, req, { token }));
+        .combine((req, token) => assign({}, req, { token }), token$);
 
     return {
         DOM: view(user$),

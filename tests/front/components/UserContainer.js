@@ -2,39 +2,41 @@
 "use strict";
 const APP_PATH = __dirname + "/../../../src/js";
 
+import xs from "xstream";
 import expect from "expect.js";
 import select from "snabbdom-selector";
 import {mockDOMSource} from '@cycle/dom';
 
-import xs from "xstream";
+import {generateListener} from "../helpers";
 
 describe("UserContainer Component", () => {
     const UserContainer = require(APP_PATH + "/components/UserContainer").default;
 
     describe("UserContainer init", () => {
         const DOMSource = mockDOMSource({})
-            //user$ = xs.of({ pseudo: "felix", login: "felix@felix.fr", password: "password" });
 
         const {DOM, api}  = UserContainer({ DOM: DOMSource, api: xs.empty(), token$: xs.of("usertoken") });
 
         it("should display loader", (done) => {
             DOM
-                .last()
-                .addListener(vtree => {
-                    const render = () => vtree;
-                    expect($(render).find(".loading").text()).to.be("loading...");
-                    done();
-                });
+                .take(1)
+                .addListener(generateListener({
+                    next: vtree => {
+                        const loader = select(".loading", vtree)[0];
+                        expect(loader.text).to.be("loading...");
+                    },
+                    complete: done
+                }));
 
         });
 
         it("should fetch user", (done) => {
             api
-                .addListener(request => {
-                    //we should not trigger an api request
-                    expect(request.action).to.be("fetchUser");
-                    done();
-                });
+                .take(1)
+                .addListener(generateListener({
+                    next: request => expect(request.action).to.be("fetchUser"),
+                    complete: done
+                }));
         });
     });
 
@@ -47,11 +49,13 @@ describe("UserContainer Component", () => {
 
         DOM
             .last()
-            .addListener(vtree => {
-                const render = () => vtree;
-                expect($(render).find(".pseudo").text()).to.be("felix");
-                done();
-            });
+            .addListener(generateListener({
+                next: vtree => {
+                    const pseudo = select(".pseudo", vtree)[0];
+                    expect(pseudo.text).to.be("felix");
+                },
+                complete: done
+            }));
 
     });
 
@@ -65,11 +69,10 @@ describe("UserContainer Component", () => {
         const {logoutAction$} = UserContainer({ DOM, api: xs.empty(), token$: xs.empty() });
 
         logoutAction$
-            .isEmpty()
-            .addListener(isEmpty => {
-                expect(isEmpty).to.be(false);
-                done();
-            });
+            .addListener(generateListener({
+                next: () => expect(false).to.be(true),
+                complete: done
+            }));
     });
 
     it("should return token error if token is invalid", (done) => {
@@ -82,10 +85,10 @@ describe("UserContainer Component", () => {
         const {tokenError$} = UserContainer({ DOM, api: apiResponse$, token$: xs.empty() });
 
         tokenError$
-            .addListener(response => {
-                expect(response.error).to.be("token is expired");
-                done();
-            });
+            .addListener(generateListener({
+                next: response => expect(response.error).to.be("token is expired"),
+                complete: done
+            }));
     });
 
 

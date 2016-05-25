@@ -1,4 +1,4 @@
-import {Observable} from "rx";
+import xs from "xstream";
 import {div, button, span} from "@cycle/dom";
 import Timeline from "./Timeline/Timeline";
 
@@ -22,11 +22,12 @@ function intent(DOM, api) {
 
     const storiesResponse$ = api
         .filter(({ request }) => request.action === "fetchStories")
-        .flatMap(({ response$ }) => {
+        .map(({ response$ }) => {
             return response$
-                .catch(error => Observable.just({ error }));
+                .catch(error => xs.of({ error }));
         })
-        .shareReplay();
+        .flatten()
+        .remember();
 
     return {
         logoutAction$,
@@ -35,10 +36,10 @@ function intent(DOM, api) {
 }
 
 function view(user$, timeline$) {
-    return Observable.combineLatest(
+    return xs.combine(
+            (user, timeline) => ({user, timeline}),
             user$,
-            timeline$.startWith(null),
-            (user, timeline) => ({user, timeline})
+            timeline$.startWith(null)
         )
         .map(render);
 }
@@ -47,16 +48,16 @@ function App({DOM, api, user$}) {
     const { logoutAction$, stories$ } = intent(DOM, api);
 
     const timeline$ = stories$
-        .map(stories => Timeline({ DOM, api, stories$: Observable.just(stories) }))
-        .shareReplay();
+        .map(stories => Timeline({ DOM, api, stories$: xs.of(stories) }))
+        .remember();
 
-    const timelineApiRequests$ = timeline$.flatMapLatest(timeline => timeline.api);
+    const timelineApiRequests$ = timeline$.map(timeline => timeline.api).flatten();
 
-    const apiRequest$ = Observable.just({ action: "fetchStories" });
+    const apiRequest$ = xs.of({ action: "fetchStories" });
 
     return {
         DOM: view(user$, timeline$.map(timeline => timeline.DOM)),
-        api: Observable.merge(apiRequest$, timelineApiRequests$),
+        api: xs.merge(apiRequest$, timelineApiRequests$),
         logoutAction$
     }
 }

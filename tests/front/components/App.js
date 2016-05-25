@@ -2,11 +2,12 @@
 "use strict";
 const APP_PATH = __dirname + "/../../../src/js";
 
+import xs from "xstream";
 import expect from "expect.js";
 import select from "snabbdom-selector";
 import {mockDOMSource} from '@cycle/dom';
 
-import xs from "xstream";
+import {generateListener} from "../helpers";
 
 describe("App Component", () => {
     const App = require(APP_PATH + "/components/App").default;
@@ -20,21 +21,22 @@ describe("App Component", () => {
         it("should display user", (done) => {
             DOM
                 .last()
-                .addListener(vtree => {
-                    const render = () => vtree;
-                    expect($(render).find(".pseudo").text()).to.be("felix");
-                    done();
-                });
+                .addListener(generateListener({
+                    next: vtree => {
+                        const pseudoElm = select(".pseudo", vtree)[0];
+                        expect(pseudoElm.text).to.be("felix");
+                    },
+                    complete: done
+                }));
 
         });
 
         it("should fetch user's stories", (done) => {
             api
-                .addListener(request => {
-                    //we should not trigger an api request
-                    expect(request.action).to.be("fetchStories");
-                    done();
-                });
+                .addListener(generateListener({
+                    next: request => expect(request.action).to.be("fetchStories"),
+                    complete: done
+                }));
         });
     });
 
@@ -49,11 +51,10 @@ describe("App Component", () => {
         const {logoutAction$} = App({ DOM, api: xs.empty(), user$ });
 
         logoutAction$
-            .isEmpty()
-            .addListener(isEmpty => {
-                expect(isEmpty).to.be(false);
-                done();
-            });
+            .addListener(generateListener({
+                next: isEmpty => expect(isEmpty).to.be(false),
+                complete: done
+            }));
     });
 
 });

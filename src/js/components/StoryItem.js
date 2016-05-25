@@ -1,5 +1,4 @@
-import {Observable} from "rx";
-import {li, a} from '@cycle/dom';
+import {li, a, span} from '@cycle/dom';
 
 function intent(DOM) {
     const removeAction$ = DOM
@@ -20,7 +19,7 @@ function intent(DOM) {
 
 function view(story$) {
     return story$.map((story) => li(".story", [
-        story.title,
+        span(".title", story.title),
         a(".remove", { href: "#" }, "x"),
         a(".edit", { href: "#" }, "e")
     ]));

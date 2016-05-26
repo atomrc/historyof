@@ -15,7 +15,7 @@ function intent(DOM) {
             ev.preventDefault()
             return ev;
         })
-        .map(() => "add");
+        .mapTo("add");
 
     return {addAction$, editAction$};
 }
@@ -45,8 +45,9 @@ function StoryForm({DOM}) {
 
     return {
         DOM: vTree$,
-        addAction$: storyToAdd$
-            .sample(addAction$)
+        addAction$: addAction$
+            .mapTo(storyToAdd$)
+            .flatten()
             .map(story => assign({}, story, { date: new Date() }))
     };
 }

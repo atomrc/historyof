@@ -2,19 +2,13 @@
 "use strict";
 const APP_PATH = __dirname + "/../../../src/js";
 
+import xs from "xstream";
 import expect from "expect.js";
 import {div, mockDOMSource} from '@cycle/dom';
 import select from "snabbdom-selector";
 import assign from "object-assign";
 
-import xs from "xstream";
-
-const emptyListener = {
-    next: () => null,
-    error: () => null,
-    complete: () => null
-};
-
+import {generateListener} from "../helpers";
 
 function generateComponentBuilder(overrides) {
     return function buildComponent(ComponentFn, props) {

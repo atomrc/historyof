@@ -18,7 +18,7 @@ function intent(DOM, api) {
     const logoutAction$ = DOM
         .select(".logout")
         .events("click")
-        .map({ type: "logout" });
+        .mapTo({ type: "logout" });
 
     const storiesResponse$ = api
         .filter(({ request }) => request.action === "fetchStories")

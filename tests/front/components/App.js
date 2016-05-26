@@ -25,8 +25,8 @@ describe("App Component", () => {
                     next: vtree => {
                         const pseudoElm = select(".pseudo", vtree)[0];
                         expect(pseudoElm.text).to.be("felix");
-                    },
-                    complete: done
+                        done();
+                    }
                 }));
 
         });
@@ -34,17 +34,17 @@ describe("App Component", () => {
         it("should fetch user's stories", (done) => {
             api
                 .addListener(generateListener({
-                    next: request => expect(request.action).to.be("fetchStories"),
-                    complete: done
+                    next: request => {
+                        expect(request.action).to.be("fetchStories"),
+                        done();
+                    }
                 }));
         });
     });
 
     it("should return logout action when user logs out", (done) => {
         const DOM = mockDOMSource({
-                elements: {
-                    ".logout": { click: xs.of({}) }
-                }
+                ".logout": { click: xs.of({}) }
             }),
             user$ = xs.of({ pseudo: "felix", login: "felix@felix.fr", password: "password" });
 
@@ -52,8 +52,10 @@ describe("App Component", () => {
 
         logoutAction$
             .addListener(generateListener({
-                next: isEmpty => expect(isEmpty).to.be(false),
-                complete: done
+                next: action => {
+                    expect(action.type).to.be("logout")
+                    done();
+                }
             }));
     });
 

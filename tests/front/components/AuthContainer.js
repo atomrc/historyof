@@ -30,7 +30,7 @@ describe("AuthContainer Component", () => {
         const DOMSource = mockDOMSource({});
         const storageSource = {
                 local: {
-                    getItem: () => xs.of(null)
+                    getItem: () => xs.merge(xs.of(null), xs.never())
                 }
             },
             buildComponent = generateComponentBuilder({
@@ -46,7 +46,7 @@ describe("AuthContainer Component", () => {
 
         DOM
             .take(1)
-            .addListener(Object.assign({}, emptyListener, {
+            .addListener(generateListener({
                 next: vtree => {
                     const loginForm = select(".dummy-login-form", vtree);
                     expect(loginForm.length).to.be(1);
@@ -59,7 +59,7 @@ describe("AuthContainer Component", () => {
         const DOMSource = mockDOMSource({}),
             storageSource = {
                 local: {
-                    getItem: () => xs.of("usertoken")
+                    getItem: () => xs.merge(xs.of("usertoken"), xs.never())
                 }
             },
             apiSource$ = xs.empty(),
@@ -75,11 +75,10 @@ describe("AuthContainer Component", () => {
         });
 
         DOM
-            .addListener(Object.assign({}, emptyListener, {
+            .take(1)
+            .addListener(generateListener({
                 next: vtree => {
-                    console.log(vtree);
-                    //expect(select(".dummy-user-container", vtree).length).to.be(1)
-                    //done();
+                    expect(select(".dummy-user-container", vtree).length).to.be(1)
                 },
                 complete: done
             }));
@@ -89,12 +88,12 @@ describe("AuthContainer Component", () => {
         const DOMSource = mockDOMSource({}),
             storageSource = {
                 local: {
-                    getItem: () => xs.of("expiredtoken")
+                    getItem: () => xs.merge(xs.of("expiredtoken"), xs.never())
                 }
             },
             buildComponent = generateComponentBuilder({
                 DOM: div(".dummy-user-container"),
-                tokenError$: xs.of({ error: "token is expired" })
+                tokenError$: xs.merge(xs.of({ error: "token is expired" }), xs.never())
             });
 
         const {storage, error$} = AuthContainer({
@@ -106,23 +105,26 @@ describe("AuthContainer Component", () => {
 
         it("should pass on userContainer's error", (done) => {
             error$
-                .addListener(Object.assign({}, emptyListener, {
+                .take(1)
+                .addListener(generateListener({
                     next: error => {
                         expect(error.error).to.be("token is expired")
-                        done();
-                    }
+                    },
+                    complete: done
                 }));
         })
 
         xit("should ask for token removal from local storage", (done) => {
             storage
-                .addListener(storageAction => {
-                    expect(storageAction).to.eql({
-                        action: "removeItem",
-                        key: "token"
-                    });
-                    done();
-                });
+                .addListener(generateListener({
+                    next: storageAction => {
+                        expect(storageAction).to.eql({
+                            action: "removeItem",
+                            key: "token"
+                        });
+                    },
+                    complete: done
+                }));
         });
     });
 

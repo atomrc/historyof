@@ -1,14 +1,15 @@
-import {Observable} from "rx";
+import xs from "xstream";
 
 function intent(storyItems$, storyForm) {
 
     const removeAction$ = storyItems$
         .map((items) => items.map(item => item.removeAction$))
-        .flatMapLatest(removeActions => Observable.merge(removeActions));
+        .map(removeActions => xs.merge(removeActions))
+        .flatten();
 
-    const editAction$ = storyItems$.flatMapLatest(
-        (items) => Observable.merge(items.map(item => item.editAction$))
-    );
+    const editAction$ = storyItems$
+        .map((items) => xs.merge(items.map(item => item.editAction$)))
+        .flatten();
 
     const addAction$ = storyForm.addAction$;
 

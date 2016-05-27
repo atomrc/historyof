@@ -42,14 +42,12 @@ describe("LoginForm Component", () => {
 
     it("should not be submittable if input is not valid", (done) => {
         const DOMSource = mockDOMSource({
-            elements: {
-                form: {
-                    keyup: xs.of({
-                        currentTarget: {
-                            checkValidity: () => false
-                        }
-                    })
-                }
+            form: {
+                keyup: xs.of({
+                    currentTarget: {
+                        checkValidity: () => false
+                    }
+                })
             }
         });
 

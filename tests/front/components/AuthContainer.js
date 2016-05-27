@@ -44,8 +44,8 @@ describe("AuthContainer Component", () => {
                 next: vtree => {
                     const loginForm = select(".dummy-login-form", vtree);
                     expect(loginForm.length).to.be(1);
-                },
-                complete: done
+                    done();
+                }
             }));
     });
 
@@ -73,8 +73,8 @@ describe("AuthContainer Component", () => {
             .addListener(generateListener({
                 next: vtree => {
                     expect(select(".dummy-user-container", vtree).length).to.be(1)
-                },
-                complete: done
+                    done();
+                }
             }));
     });
 
@@ -103,8 +103,8 @@ describe("AuthContainer Component", () => {
                 .addListener(generateListener({
                     next: error => {
                         expect(error.error).to.be("token is expired")
-                    },
-                    complete: done
+                        done();
+                    }
                 }));
         })
 
@@ -116,8 +116,8 @@ describe("AuthContainer Component", () => {
                             action: "removeItem",
                             key: "token"
                         });
-                    },
-                    complete: done
+                        done();
+                    }
                 }));
         });
     });

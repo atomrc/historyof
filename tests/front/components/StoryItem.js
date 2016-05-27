@@ -28,8 +28,8 @@ describe("StoryItem Component", () => {
             next: vtree => {
                 const titleElem = select(".title", vtree)[0];
                 expect(titleElem.text).to.be(testStory.title);
-            },
-            complete: done
+                done();
+            }
         }));
     });
 
@@ -42,8 +42,10 @@ describe("StoryItem Component", () => {
         const { removeAction$ } = StoryItem({ DOM, story$ });
 
         removeAction$.addListener(generateListener({
-            next: event => expect(event.type).to.be("remove"),
-            complete: done
+            next: event => {
+                expect(event.type).to.be("remove");
+                done();
+            }
         }));
     });
 
@@ -56,8 +58,10 @@ describe("StoryItem Component", () => {
         const { editAction$ } = StoryItem({ DOM, story$ });
 
         editAction$.addListener(generateListener({
-            next: event => expect(event.type).to.be("edit"),
-            complete: done
+            next: event => {
+                expect(event.type).to.be("edit");
+                done();
+            }
         }));
     });
 });

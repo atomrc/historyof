@@ -24,8 +24,8 @@ describe("UserContainer Component", () => {
                     next: vtree => {
                         const loader = select(".loading", vtree)[0];
                         expect(loader.text).to.be("loading...");
-                    },
-                    complete: done
+                        done();
+                    }
                 }));
 
         });
@@ -34,8 +34,10 @@ describe("UserContainer Component", () => {
             api
                 .take(1)
                 .addListener(generateListener({
-                    next: request => expect(request.action).to.be("fetchUser"),
-                    complete: done
+                    next: request => {
+                        expect(request.action).to.be("fetchUser"),
+                        done();
+                    }
                 }));
         });
     });
@@ -53,25 +55,25 @@ describe("UserContainer Component", () => {
                 next: vtree => {
                     const pseudo = select(".pseudo", vtree)[0];
                     expect(pseudo.text).to.be("felix");
-                },
-                complete: done
+                    done();
+                }
             }));
 
     });
 
     it("should return logout action when user logs out", (done) => {
         const DOM = mockDOMSource({
-            elements: {
-                ".logout": { click: xs.of({}) }
-            }
+            ".logout": { click: xs.of({}) }
         });
 
         const {logoutAction$} = UserContainer({ DOM, api: xs.empty(), token$: xs.empty() });
 
         logoutAction$
             .addListener(generateListener({
-                next: () => expect(false).to.be(true),
-                complete: done
+                next: (action) => {
+                    expect(action.type).to.be("logout"),
+                    done()
+                }
             }));
     });
 
@@ -86,8 +88,10 @@ describe("UserContainer Component", () => {
 
         tokenError$
             .addListener(generateListener({
-                next: response => expect(response.error).to.be("token is expired"),
-                complete: done
+                next: response => {
+                    expect(response.error).to.be("token is expired");
+                    done();
+                }
             }));
     });
 

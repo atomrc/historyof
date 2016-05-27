@@ -1,4 +1,4 @@
-import {Observable, ReplaySubject} from "rx";
+import xs from "xstream";
 import StoryForm from "../StoryForm";
 import StoryItem from "../StoryItem";
 import isolate from "@cycle/isolate";
@@ -8,7 +8,7 @@ import intent from "./intent";
 
 function createStoryItem(DOM) {
     return function (story) {
-        const isolatedItem = isolate(StoryItem)({DOM, story$: Observable.just(story)});
+        const isolatedItem = isolate(StoryItem)({DOM, story$: xs.of(story)});
         return {
             DOM: isolatedItem.DOM,
             removeAction$: isolatedItem
@@ -19,19 +19,19 @@ function createStoryItem(DOM) {
 }
 
 function Timeline({DOM, stories$}) {
-    const storiesProxy$ = new ReplaySubject();
+    const storiesProxy$ = new xs.createWithMemory();
 
     const storyForm = isolate(StoryForm)({DOM});
     const storyItems$ = storiesProxy$.map(stories =>
         stories.map(createStoryItem(DOM))
     )
-    .shareReplay();
+    .remember();
 
     const { addAction$, removeAction$ } = intent(storyItems$, storyForm);
     const storiesModel$ = model(addAction$, removeAction$, stories$);
     const vTree$ = view(storyItems$, storyForm.DOM);
 
-    storiesModel$.subscribe(storiesProxy$);
+    storiesProxy$.imitate(storiesModel$);
 
     return {
         DOM: vTree$,

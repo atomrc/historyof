@@ -19,7 +19,7 @@ function intent(DOM, api) {
     const logoutAction$ = DOM
         .select(".logout")
         .events("click")
-        .map({ type: "logout" });
+        .mapTo({ type: "logout" });
 
     const storiesResponse$ = api
         .filter(({ request }) => request.action === "fetchStories")
@@ -37,7 +37,7 @@ function intent(DOM, api) {
                 .replaceError(error => xs.of({ error }));
         })
         .flatten()
-        .remember(1)
+        .remember()
 
     const fetchUserSuccess$ = fetchUserResponse$
         .filter(response => !response.error);

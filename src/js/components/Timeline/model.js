@@ -1,4 +1,4 @@
-import {Observable} from "rx";
+import xs from "xstream";
 import uuid from "uuid";
 import assign from "object-assign";
 
@@ -11,13 +11,13 @@ function model(addAction$, removeAction$, stories$) {
         return stories.concat(assign({}, story, { id: uuid.v1() }));
     });
 
-    const reducer$ = Observable
-        .merge(removeReducer$, addReducer$)
-        .startWith(i => i);
+    const resetReducer$ = stories$.map((stories) => () => stories);
 
-    return stories$
-        .concat(reducer$)
-        .scan((stories, reduceFn) => reduceFn(stories));
+    const reducer$ = xs
+        .merge(resetReducer$, removeReducer$, addReducer$);
+
+    return reducer$
+        .fold((stories, reduceFn) => reduceFn(stories), []);
 }
 
 export default model;

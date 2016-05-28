@@ -53,7 +53,6 @@ describe("Timeline Component", () => {
                 }
             }));
     });
-    return;
 
     describe("Edition", () => {
         describe("Add action", () => {
@@ -62,13 +61,16 @@ describe("Timeline Component", () => {
 
             const storiesSink$ = TimelineModel(addAction$, xs.empty(), stories$);
 
-            it("should add new item", () => {
+            it("should add new item", (done) => {
                 storiesSink$
                     .last()
-                    .addListener(function (stories) {
-                        expect(stories.length).to.be(initialStories.length + 1);
-                        expect(stories[stories.length - 1].title).to.be("Forth Story");
-                    });
+                    .addListener(generateListener({
+                        next: (stories) => {
+                            expect(stories.length).to.be(initialStories.length + 1);
+                            expect(stories[stories.length - 1].title).to.be("Forth Story");
+                            done();
+                        }
+                    }));
             });
         });
     });

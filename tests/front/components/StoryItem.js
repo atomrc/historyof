@@ -25,12 +25,12 @@ describe("StoryItem Component", () => {
             .DOM
             .take(1)
             .addListener(generateListener({
-            next: vtree => {
-                const titleElem = select(".title", vtree)[0];
-                expect(titleElem.text).to.be(testStory.title);
-                done();
-            }
-        }));
+                next: vtree => {
+                    const titleElem = select(".title", vtree)[0];
+                    expect(titleElem.text).to.be(testStory.title);
+                    done();
+                }
+            }));
     });
 
     it("should send the remove action when remove button is clicked", (done) => {

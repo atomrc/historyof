@@ -15,7 +15,13 @@ describe("UserContainer Component", () => {
     describe("UserContainer init", () => {
         const DOMSource = mockDOMSource({})
 
-        const {DOM, api}  = UserContainer({ DOM: DOMSource, api: xs.empty(), token$: xs.of("usertoken") });
+        const {DOM, api}  = UserContainer({
+            DOM: DOMSource,
+            api: xs.empty(),
+            props: {
+                token$: xs.of("usertoken")
+            }
+        });
 
         it("should display loader", (done) => {
             DOM
@@ -42,19 +48,29 @@ describe("UserContainer Component", () => {
         });
     });
 
-    it("should display user when fetched", (done) => {
+    it("should display app when user is fetched", (done) => {
         const DOMSource = mockDOMSource({}),
-            user$ = xs.of({ pseudo: "felix", login: "felix@felix.fr", password: "password" }),
+            user$ = xs.never().startWith({ pseudo: "felix", login: "felix@felix.fr" }),
             apiSource$ = xs.of({ request: { action: "fetchUser" }, response$: user$ });
 
-        const {DOM}  = UserContainer({ DOM: DOMSource, api: apiSource$, token$: xs.of("usertoken") });
+        const {DOM}  = UserContainer({
+            DOM: DOMSource,
+            api: apiSource$,
+            props: {
+                token$: xs.of("usertoken"),
+                buildComponent: generateComponentBuilder({
+                    DOM: xs.of(div(".dummy-app", "app"))
+                })
+            }
+        });
 
         DOM
-            .last()
+            .drop(1)
+            .take(1)
             .addListener(generateListener({
                 next: vtree => {
-                    const pseudo = select(".pseudo", vtree)[0];
-                    expect(pseudo.text).to.be("felix");
+                    const app = select(".dummy-app", vtree);
+                    expect(app.length).to.be(1);
                     done();
                 }
             }));
@@ -62,11 +78,21 @@ describe("UserContainer Component", () => {
     });
 
     it("should return logout action when user logs out", (done) => {
-        const DOM = mockDOMSource({
-            ".logout": { click: xs.of({}) }
-        });
+        const DOM = mockDOMSource({}),
+            user$ = xs.never().startWith({ pseudo: "felix", login: "felix@felix.fr" }),
+            apiSource$ = xs.of({ request: { action: "fetchUser" }, response$: user$ }),
+            buildComponent = generateComponentBuilder({
+                logoutAction$: xs.never().startWith({ type: "logout" }).remember()
+            });
 
-        const {logoutAction$} = UserContainer({ DOM, api: xs.empty(), token$: xs.empty() });
+        const {logoutAction$} = UserContainer({
+            DOM,
+            api: apiSource$,
+            props: {
+                token$: xs.empty(),
+                buildComponent
+            }
+        });
 
         logoutAction$
             .addListener(generateListener({
@@ -84,7 +110,13 @@ describe("UserContainer Component", () => {
             })),
             apiResponse$ = xs.of({ request: { action: "fetchUser" }, response$: fetchUserError$ });
 
-        const {tokenError$} = UserContainer({ DOM, api: apiResponse$, token$: xs.empty() });
+        const {tokenError$} = UserContainer({
+            DOM,
+            api: apiResponse$,
+            props: {
+                token$: xs.empty()
+            }
+        });
 
         tokenError$
             .addListener(generateListener({

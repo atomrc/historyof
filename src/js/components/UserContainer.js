@@ -1,25 +1,17 @@
 import xs from "xstream";
-import {div, button, span} from "@cycle/dom";
-import assign from "object-assign";
+import {div} from "@cycle/dom";
+import App from "./App";
 
-function render(user) {
-    const header = user ?
-        div("#app-header", [
-            span(".pseudo", user.pseudo),
-            button(".logout", "Logout")
-        ]) :
+function render(appDOM) {
+   return appDOM ?
+        appDOM :
         div(".loading", "loading...");
-
-    return div("#app", [
-        header
-    ]);
 }
 
-function intent(DOM, api) {
-    const logoutAction$ = DOM
-        .select(".logout")
-        .events("click")
-        .mapTo({ type: "logout" });
+function intent(DOM, api, app$) {
+    const logoutAction$ = app$
+        .map(app => app.logoutAction$)
+        .flatten()
 
     const storiesResponse$ = api
         .filter(({ request }) => request.action === "fetchStories")
@@ -54,27 +46,37 @@ function intent(DOM, api) {
     };
 }
 
-function view(user$) {
-    return user$
+function view(appDOM$) {
+    return appDOM$
         .startWith(null)
         .map(render);
 }
 
-function UserContainer({DOM, api, token$}) {
+function UserContainer({DOM, api, props}) {
+    const { token$, buildComponent } = props;
+
+    const userProxy$ = xs.createWithMemory();
+
+    const app$ = userProxy$
+        .map(user => buildComponent(App, { DOM, api, props: { user$: xs.of(user) }}, "app"))
+        .remember();
+
     const {
             logoutAction$,
             fetchUserSuccess$,
             fetchUserError$
-        } = intent(DOM, api);
+        } = intent(DOM, api, app$);
 
     const user$ = fetchUserSuccess$;
 
     const fetchUserRequest$ = xs.of({ action: "fetchUser" });
     const apiRequest$ = fetchUserRequest$
-        .combine((req, token) => assign({}, req, { token }), token$)
+        .combine((req, token) => Object.assign({}, req, { token }), token$)
+
+    userProxy$.imitate(user$);
 
     return {
-        DOM: view(user$),
+        DOM: view(app$.map(app => app.DOM).flatten()),
         api: apiRequest$,
         logoutAction$,
         tokenError$: fetchUserError$

@@ -44,7 +44,8 @@ function view(user$, timeline$) {
         .map(render);
 }
 
-function App({DOM, api, user$}) {
+function App({DOM, api, props}) {
+    const { user$ } = props;
     const { logoutAction$, stories$ } = intent(DOM, api);
 
     const timeline$ = stories$

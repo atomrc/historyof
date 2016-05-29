@@ -16,7 +16,7 @@ describe("App Component", () => {
         const DOMSource = mockDOMSource({}),
             user$ = xs.of({ pseudo: "felix", login: "felix@felix.fr", password: "password" });
 
-        const {DOM, api}  = App({ DOM: DOMSource, api: xs.empty(), user$ });
+        const {DOM, api}  = App({ DOM: DOMSource, api: xs.empty(), props: { user$ } });
 
         it("should display user", (done) => {
             DOM
@@ -48,7 +48,7 @@ describe("App Component", () => {
             }),
             user$ = xs.of({ pseudo: "felix", login: "felix@felix.fr", password: "password" });
 
-        const {logoutAction$} = App({ DOM, api: xs.empty(), user$ });
+        const {logoutAction$} = App({ DOM, api: xs.empty(), props: { user$ } });
 
         logoutAction$
             .addListener(generateListener({

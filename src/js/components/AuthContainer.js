@@ -5,12 +5,12 @@ import LoginForm from "./LoginForm";
 function intent({ storage, loginForm$, userContainer$ }) {
     const token$ = storage
         .local
-        .getItem("token");
+        .getItem("token")
 
     const loginToken$ = loginForm$
         .map(loginForm => loginForm.loginData$)
         .flatten()
-        .map(({ token }) => token);
+        .map(({ token }) => token)
 
     const tokenError$ = userContainer$
         .map(userContainer => userContainer.tokenError$)
@@ -54,10 +54,12 @@ function AuthContainer({DOM, api, storage, props}) {
     const loginForm$ = tokenProxy$
         .filter(token => !token)
         .mapTo(buildComponent(LoginForm, {DOM, api}, "login-form"))
+        .remember()
 
     const userContainer$ = tokenProxy$
         .filter(token => !!token)
         .map(token => buildComponent(UserContainer, { DOM, api, token$: xs.of(token) }, "user-container"))
+        .remember()
 
     const {
         token$,

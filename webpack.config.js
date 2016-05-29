@@ -11,7 +11,6 @@ module.exports = {
     entry: {
         application: "./src/js/application",
         vendor: [
-            "rx",
             "@cycle/xstream-run",
             "@cycle/dom",
             "@cycle/storage",

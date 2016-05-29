@@ -60,7 +60,7 @@ function view(user$) {
         .map(render);
 }
 
-function App({DOM, api, token$}) {
+function UserContainer({DOM, api, token$}) {
     const {
             logoutAction$,
             fetchUserSuccess$,
@@ -70,9 +70,8 @@ function App({DOM, api, token$}) {
     const user$ = fetchUserSuccess$;
 
     const fetchUserRequest$ = xs.of({ action: "fetchUser" });
-    const apiRequest$ = xs
-        .merge(fetchUserRequest$)
-        .combine((req, token) => assign({}, req, { token }), token$);
+    const apiRequest$ = fetchUserRequest$
+        .combine((req, token) => assign({}, req, { token }), token$)
 
     return {
         DOM: view(user$),
@@ -82,4 +81,4 @@ function App({DOM, api, token$}) {
     }
 }
 
-export default App;
+export default UserContainer;

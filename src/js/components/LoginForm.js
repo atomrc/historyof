@@ -73,7 +73,6 @@ function model(loginRequest$, loginSuccess$, loginError$, formIsValid$) {
         loginError$.map(() => false)
     );
 
-
     const state$ = xs.combine(
         (error, formValid, isLoginIn) => ({ error, formValid, isLoginIn }),
         loginError$.startWith(null),
@@ -92,7 +91,7 @@ function LoginForm({DOM, api}) {
     const { loginData$, state$ } = model(loginRequest$, loginSuccess$, loginError$, formIsValid$);
 
     const apiLoginRequest$ = loginRequest$
-        .map(loginValues => ({ action: "login", params:  loginValues}));
+        .map(loginValues => ({ action: "login", params: loginValues}))
 
     return {
         DOM: view(state$),

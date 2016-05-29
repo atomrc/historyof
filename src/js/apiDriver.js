@@ -1,4 +1,4 @@
-import {xs} from 'xstream';
+import xs from "xstream";
 import api from "./api/historyOfApi";
 
 function executeRequest(request) {
@@ -22,6 +22,7 @@ function apiDriver(request$) {
                 response$
             };
         })
+        .remember()
 
     return response$$;
 }

@@ -82,12 +82,12 @@ describe("AuthContainer Component", () => {
         const DOMSource = mockDOMSource({}),
             storageSource = {
                 local: {
-                    getItem: () => xs.merge(xs.of("expiredtoken"), xs.never())
+                    getItem: () => xs.never().startWith("expiredtoken")
                 }
             },
             buildComponent = generateComponentBuilder({
                 DOM: div(".dummy-user-container"),
-                tokenError$: xs.merge(xs.of({ error: "token is expired" }), xs.never())
+                tokenError$: xs.never().startWith({ error: "token is expired" }).remember()
             });
 
         const {storage, error$} = AuthContainer({
@@ -108,7 +108,7 @@ describe("AuthContainer Component", () => {
                 }));
         })
 
-        xit("should ask for token removal from local storage", (done) => {
+        it("should ask for token removal from local storage", (done) => {
             storage
                 .addListener(generateListener({
                     next: storageAction => {

@@ -5,9 +5,9 @@ const APP_PATH = __dirname + "/../../../src/js";
 import xs from "xstream";
 import expect from "expect.js";
 import select from "snabbdom-selector";
-import {mockDOMSource} from '@cycle/dom';
+import {mockDOMSource, div} from '@cycle/dom';
 
-import {generateListener} from "../helpers";
+import {generateListener, generateComponentBuilder} from "../helpers";
 
 describe("UserContainer Component", () => {
     const UserContainer = require(APP_PATH + "/components/UserContainer").default;

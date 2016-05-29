@@ -6,16 +6,8 @@ import xs from "xstream";
 import expect from "expect.js";
 import {div, mockDOMSource} from '@cycle/dom';
 import select from "snabbdom-selector";
-import assign from "object-assign";
 
-import {generateListener} from "../helpers";
-
-function generateComponentBuilder(overrides) {
-    return function buildComponent(ComponentFn, props) {
-        var component = ComponentFn(props);
-        return assign({}, component, overrides);
-    }
-}
+import {generateListener, generateComponentBuilder} from "../helpers";
 
 describe("AuthContainer Component", () => {
     const AuthContainer = require(APP_PATH + "/components/AuthContainer").default;
@@ -110,6 +102,7 @@ describe("AuthContainer Component", () => {
 
         it("should ask for token removal from local storage", (done) => {
             storage
+                .take(1)
                 .addListener(generateListener({
                     next: storageAction => {
                         expect(storageAction).to.eql({

@@ -6,3 +6,8 @@ var defaultListener = {
 export function generateListener(props) {
     return Object.assign({}, defaultListener, props);
 }
+
+export function generateComponentBuilder(overrides) {
+    return (ComponentFn, props) => Object.assign({}, ComponentFn(props), overrides)
+}
+

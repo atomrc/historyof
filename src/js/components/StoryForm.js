@@ -1,5 +1,5 @@
 import xs from "xstream";
-import {form, input} from "@cycle/dom";
+import {form, input, div} from "@cycle/dom";
 import assign from "object-assign";
 
 function intent(DOM) {
@@ -9,7 +9,7 @@ function intent(DOM) {
         .map(ev => ({ [ev.target.name]: ev.target.value }));
 
     const addAction$ = DOM
-        .select(":root")
+        .select(".story-form")
         .events("submit")
         .map(ev => {
             ev.preventDefault()
@@ -30,9 +30,11 @@ function model({editAction$, addAction$}) {
 
 function view(editedStory$) {
     return editedStory$
-        .map(editedStory => form([
-            input({ name: "title", value: editedStory.title || "" }),
-            input({ type: "submit", value: "Save" })
+        .map(editedStory => div([
+            form(".story-form", [
+                input({ props: { name: "title", value: editedStory.title || "" }}),
+                input({ props: { type: "submit", value: "Save" }})
+            ])
         ]));
 }
 

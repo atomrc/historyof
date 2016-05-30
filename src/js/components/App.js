@@ -22,10 +22,9 @@ function intent(DOM, api) {
 
     const storiesResponse$ = api
         .filter(({ request }) => request.action === "fetchStories")
-        .map(({ response$ }) => {
-            return response$
-                .replaceError(error => xs.of({ error }));
-        })
+        .map(({ response$ }) =>
+            response$.replaceError(error => xs.of({ error }))
+        )
         .flatten()
         .remember();
 
@@ -58,7 +57,7 @@ function App({DOM, api, props}) {
     const apiRequest$ = xs.of({ action: "fetchStories" });
 
     return {
-        DOM: view(user$, timeline$.map(timeline => timeline.DOM)),
+        DOM: view(user$, timeline$.map(timeline => timeline.DOM).flatten()),
         api: xs.merge(apiRequest$, timelineApiRequests$),
         logoutAction$
     }

@@ -58,7 +58,7 @@ function AuthContainer({DOM, api, storage, props}) {
 
     const userContainer$ = tokenProxy$
         .filter(token => !!token)
-        .map(token => buildComponent(UserContainer, { DOM, api, props: { token$: xs.of(token), buildComponent } }, "user-container"))
+        .mapTo(buildComponent(UserContainer, { DOM, api, props: { buildComponent } }, "user-container"))
         .remember()
 
     const {

@@ -19,7 +19,7 @@ describe("StoryItem Component", () => {
         const story$ = xs.of(testStory),
             DOM = mockDOMSource({});
 
-        const sinks = StoryItem({ DOM, story$ });
+        const sinks = StoryItem({ DOM, props: { story$ } });
 
         sinks
             .DOM
@@ -39,7 +39,7 @@ describe("StoryItem Component", () => {
                 ".remove": { click: xs.of({}) }
             });
 
-        const { removeAction$ } = StoryItem({ DOM, story$ });
+        const { removeAction$ } = StoryItem({ DOM, props: { story$ }});
 
         removeAction$.addListener(generateListener({
             next: event => {
@@ -55,7 +55,7 @@ describe("StoryItem Component", () => {
                 ".edit": { click: xs.of({}) }
             });
 
-        const { editAction$ } = StoryItem({ DOM, story$ });
+        const { editAction$ } = StoryItem({ DOM, props: { story$ }});
 
         editAction$.addListener(generateListener({
             next: event => {

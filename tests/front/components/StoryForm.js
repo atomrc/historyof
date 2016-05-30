@@ -37,7 +37,7 @@ describe("StoryForm Component", () => {
                 })
             },
 
-            ":root": { submit: xs.of({ preventDefault: i => i }) }
+            ".story-form": { submit: xs.of({ preventDefault: i => i }) }
         });
 
         const { addAction$ } = StoryForm({ DOM: DOMSource });

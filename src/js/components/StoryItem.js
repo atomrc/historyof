@@ -18,14 +18,16 @@ function intent(DOM) {
 }
 
 function view(story$) {
-    return story$.map((story) => li(".story", [
-        span(".title", story.title),
-        a(".remove", { href: "#" }, "x"),
-        a(".edit", { href: "#" }, "e")
-    ]));
+    return story$
+        .map((story) => li(".story", [
+                span(".title", story.title),
+                a(".remove", { href: "#" }, "x"),
+                a(".edit", { href: "#" }, "e")
+            ])
+        );
 }
 
-function StoryItem({DOM, story$}) {
+function StoryItem({DOM, props: { story$ }}) {
     const { editAction$, removeAction$ } = intent(DOM);
     const vTree$ = view(story$);
 

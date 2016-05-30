@@ -13,15 +13,6 @@ function intent(DOM, api, app$) {
         .map(app => app.logoutAction$)
         .flatten()
 
-    const storiesResponse$ = api
-        .filter(({ request }) => request.action === "fetchStories")
-        .map(({ response$ }) => {
-            return response$
-                .replaceError(error => xs.of({ error }));
-        })
-        .flatten()
-        .remember()
-
     const fetchUserResponse$ = api
         .filter(({ request }) => request.action === "fetchUser")
         .map(({ response$ }) => {
@@ -41,8 +32,7 @@ function intent(DOM, api, app$) {
     return {
         logoutAction$,
         fetchUserSuccess$,
-        fetchUserError$,
-        stories$: storiesResponse$.filter(res => !res.error)
+        fetchUserError$
     };
 }
 

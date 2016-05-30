@@ -34,7 +34,7 @@ function request(url, params={}) {
 
 function requestProtected(url, token, params) {
     if (!token) {
-        throw new Error("[API] Requesting protected ressource (" + url + ") with no token");
+        return Promise.reject("[API] Requesting protected ressource (" + url + ") with no token");
     }
 
     var conf = assign({}, {

@@ -12,7 +12,6 @@ function executeRequest(request) {
 }
 
 function apiDriver(request$) {
-
     const response$$ = request$
         .map((request) => {
             const response$ = xs.fromPromise(executeRequest(request))

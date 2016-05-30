@@ -12,7 +12,9 @@
   "author": "Thomas Belin",
   "license": "ISC",
   "dependencies": {
-    "@cycle/dom": "10.0.0-rc22",
+    "xstream": "^2.6.0",
+    "@cycle/xstream-run": "^1.1.0",
+    "@cycle/dom": "10.0.0-rc23",
     "@cycle/isolate": "^1.2.0",
     "@cycle/storage": "github:cyclejs/storage#diversity",
     "@cycle/xstream-run": "^1.1.0",

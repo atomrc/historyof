@@ -35,7 +35,7 @@ function main({DOM, api, storage}) {
 }
 
 var drivers = {
-    DOM: makeDOMDriver("#main"),
+    DOM: makeDOMDriver("#main", { transposition: true }),
     api: apiDriver,
     storage: storageDriver
 };

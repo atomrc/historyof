@@ -24,13 +24,14 @@ function intent(DOM, api) {
         .filter(({ request }) => request.action === "fetchStories")
         .map(({ response$ }) => {
             return response$
-                .catch(error => xs.of({ error }));
+                .replaceError(error => xs.of({ error }));
         })
         .flatten()
         .remember();
 
     return {
         logoutAction$,
+        api: xs.of({ action: "fetchStories" }),
         stories$: storiesResponse$.filter(res => !res.error)
     };
 }

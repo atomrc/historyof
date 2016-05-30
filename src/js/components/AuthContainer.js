@@ -72,6 +72,11 @@ function AuthContainer({DOM, api, storage, props}) {
         .merge(loginForm$, userContainer$)
         .map(component => component.api)
         .flatten()
+        .combine(
+            (request, token) => Object.assign({}, request, { token }),
+            tokenProxy$
+        )
+
 
     const tokenSaveRequest$ = loginToken$
         .map(token => ({ key: "token", value: token }));

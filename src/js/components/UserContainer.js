@@ -53,7 +53,7 @@ function view(appDOM$) {
 }
 
 function UserContainer({DOM, api, props}) {
-    const { token$, buildComponent } = props;
+    const { buildComponent } = props;
 
     const userProxy$ = xs.createWithMemory();
 
@@ -69,15 +69,14 @@ function UserContainer({DOM, api, props}) {
 
     const user$ = fetchUserSuccess$;
 
-    const fetchUserRequest$ = xs.of({ action: "fetchUser" });
-    const apiRequest$ = fetchUserRequest$
-        .combine((req, token) => Object.assign({}, req, { token }), token$)
+    const fetchUserReques$ = xs.of({ action: "fetchUser" });
+    const appApiRequest$ = app$.map(app => app.api).flatten();
 
     userProxy$.imitate(user$);
 
     return {
         DOM: view(app$.map(app => app.DOM).flatten()),
-        api: apiRequest$,
+        api: xs.merge(fetchUserReques$, appApiRequest$),
         logoutAction$,
         tokenError$: fetchUserError$
     }

@@ -2,23 +2,16 @@ import xs from "xstream";
 import UserContainer from "./UserContainer";
 import LoginForm from "./LoginForm";
 
-function intent({ storage, loginForm$, userContainer$ }) {
+function intent({ storage, loginForm, userContainer }) {
     const token$ = storage
         .local
         .getItem("token")
 
-    const loginToken$ = loginForm$
-        .map(loginForm => loginForm.loginData$)
-        .flatten()
+    const loginToken$ = loginForm.loginData$
         .map(({ token }) => token)
 
-    const tokenError$ = userContainer$
-        .map(userContainer => userContainer.tokenError$)
-        .flatten();
-
-    const logoutAction$ = userContainer$
-        .map(userContainer => userContainer.logoutAction$)
-        .flatten();
+    const tokenError$ = userContainer.tokenError$
+    const logoutAction$ = userContainer.logoutAction$
 
     return {
         token$,
@@ -28,11 +21,9 @@ function intent({ storage, loginForm$, userContainer$ }) {
     };
 }
 
-function render(userContainer$, loginForm$) {
-    return xs
-        .merge(userContainer$, loginForm$)
-        .map(component => component.DOM)
-        .flatten()
+function render(token$, userContainerView, loginFormView) {
+    return token$
+        .map(token => token ? userContainerView : loginFormView)
 }
 
 /**
@@ -51,27 +42,18 @@ function AuthContainer({DOM, api, storage, props}) {
 
     const tokenProxy$ = xs.createWithMemory();
 
-    const loginForm$ = tokenProxy$
-        .filter(token => !token)
-        .mapTo(buildComponent(LoginForm, {DOM, api}, "login-form"))
-        .remember()
-
-    const userContainer$ = tokenProxy$
-        .filter(token => !!token)
-        .mapTo(buildComponent(UserContainer, { DOM, api, props: { buildComponent } }, "user-container"))
-        .remember()
+    const loginForm = buildComponent(LoginForm, {DOM, api}, "login-form")
+    const userContainer = buildComponent(UserContainer, { DOM, api, props: { buildComponent, token$: tokenProxy$ } }, "user-container")
 
     const {
         token$,
         loginToken$,
         tokenError$,
         logoutAction$
-    } = intent({ storage, loginForm$, userContainer$ });
+    } = intent({ storage, loginForm, userContainer });
 
     const apiRequest$ = xs
-        .merge(loginForm$, userContainer$)
-        .map(component => component.api)
-        .flatten()
+        .merge(loginForm.api, userContainer.api)
         .combine(
             (request, token) => Object.assign({}, request, { token }),
             tokenProxy$
@@ -84,7 +66,7 @@ function AuthContainer({DOM, api, storage, props}) {
     const tokenRemoveRequest$ = xs.merge(logoutAction$, tokenError$)
         .mapTo({ action: "removeItem", key: "token" });
 
-    const vtree$ = render(userContainer$, loginForm$);
+    const vtree$ = render(tokenProxy$, userContainer.DOM, loginForm.DOM);
     tokenProxy$.imitate(token$);
 
     return {

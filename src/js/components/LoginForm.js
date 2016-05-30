@@ -2,15 +2,6 @@ import xs from "xstream";
 import {form, input, div} from "@cycle/dom";
 
 function intent(DOM, api) {
-    const form = DOM.select("form");
-    const formIsValid$ = xs
-        .merge(
-            form.events("change"),
-            form.events("keyup")
-        )
-        .map(ev => ev.currentTarget)
-        .map(form => form.checkValidity ? form.checkValidity() : true);
-
     const login$ = DOM
         .select("input[name=login]")
         .events("change")
@@ -44,8 +35,7 @@ function intent(DOM, api) {
         .map(({error}) => error.error);
 
     return {
-        formIsValid$,
-        loginRequest$: loginRequest$.combine((request, value) => value, loginValues$),
+        loginRequest$: loginRequest$.combine((request, value) => value, loginValues$), //FIXME
         loginSuccess$,
         loginError$
     };
@@ -53,11 +43,11 @@ function intent(DOM, api) {
 
 function view(state$) {
     return state$
-        .map(({error, formValid, isLoginIn}) => {
+        .map(({error, isLoginIn}) => {
             var inputs = [
                 input({ attrs: {type: "email", name: "login", required: "required" }}),
                 input({ attrs: {type: "password", name: "password", required: "required" } }),
-                input({ attrs: {type: "submit", value: isLoginIn ? "Login in" : "Go!", disabled: !formValid || isLoginIn } })
+                input({ attrs: {type: "submit", value: isLoginIn ? "Login in" : "Go!" } })
             ]
             if (error) {
                 inputs = [div(".error", error)].concat(inputs);
@@ -66,7 +56,7 @@ function view(state$) {
         })
 }
 
-function model(loginRequest$, loginSuccess$, loginError$, formIsValid$) {
+function model(loginRequest$, loginSuccess$, loginError$) {
     const isLoginIn$ = xs.merge(
         loginRequest$.map(() => true),
         loginSuccess$.map(() => false),
@@ -74,9 +64,8 @@ function model(loginRequest$, loginSuccess$, loginError$, formIsValid$) {
     );
 
     const state$ = xs.combine(
-        (error, formValid, isLoginIn) => ({ error, formValid, isLoginIn }),
+        (error, isLoginIn) => ({ error, isLoginIn }),
         loginError$.startWith(null),
-        formIsValid$.startWith(false),
         isLoginIn$.startWith(false)
     );
 
@@ -87,8 +76,8 @@ function model(loginRequest$, loginSuccess$, loginError$, formIsValid$) {
 }
 
 function LoginForm({DOM, api}) {
-    const { formIsValid$, loginRequest$, loginSuccess$, loginError$ } = intent(DOM, api);
-    const { loginData$, state$ } = model(loginRequest$, loginSuccess$, loginError$, formIsValid$);
+    const { loginRequest$, loginSuccess$, loginError$ } = intent(DOM, api);
+    const { loginData$, state$ } = model(loginRequest$, loginSuccess$, loginError$);
 
     const apiLoginRequest$ = loginRequest$
         .map(loginValues => ({ action: "login", params: loginValues}))

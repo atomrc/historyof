@@ -40,7 +40,7 @@ function render(itemViews$, formView$) {
 }
 
 function createStoryItem(DOM) {
-    return function (story) {
+    return (story) => {
         const isolatedItem = isolate(StoryItem)({DOM, props: { story$: xs.of(story)}});
         return {
             DOM: isolatedItem.DOM,
@@ -51,22 +51,27 @@ function createStoryItem(DOM) {
     };
 }
 
-function Timeline({DOM, stories$}) {
-    const storiesProxy$ = new xs.createWithMemory();
+function Timeline({DOM, props}) {
+    const { stories$ } = props;
+
+    const storiesProxy$ = xs.createWithMemory();
 
     const storyForm = isolate(StoryForm)({DOM});
-    const storyItems$ = storiesProxy$.map(stories =>
-        stories.map(createStoryItem(DOM))
+    const storyItems$ = storiesProxy$.map(
+        stories => stories.map(createStoryItem(DOM))
     )
     .remember();
 
     const { addAction$, removeAction$ } = intent(storyItems$, storyForm);
     const storiesModel$ = model(addAction$, removeAction$, stories$);
-    storiesProxy$.imitate(storiesModel$);
 
     const itemViews$ = storyItems$.map(items => items.map(i => i.DOM));
+    const vtree$ = render(itemViews$, storyForm.DOM);
+
+    storiesProxy$.imitate(storiesModel$);
+
     return {
-        DOM: render(itemViews$, storyForm.DOM),
+        DOM: vtree$,
         api: addAction$
             .map(story => ({ action: "createStory", params: { story } }))
     };

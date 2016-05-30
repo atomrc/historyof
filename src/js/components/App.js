@@ -10,7 +10,7 @@ function render({user, timeline}) {
 
     return div("#app", [
         header,
-        (timeline ? timeline : "loading")
+        timeline
     ]);
 }
 
@@ -35,11 +35,11 @@ function intent(DOM, api) {
     };
 }
 
-function view(user$, timeline$) {
+function view(user$, timelineView$) {
     return xs.combine(
             (user, timeline) => ({user, timeline}),
             user$,
-            timeline$.startWith(null)
+            timelineView$
         )
         .map(render);
 }
@@ -48,17 +48,13 @@ function App({DOM, api, props}) {
     const { user$ } = props;
     const { logoutAction$, stories$ } = intent(DOM, api);
 
-    const timeline$ = stories$
-        .map(stories => Timeline({ DOM, api, stories$: xs.of(stories) }))
-        .remember();
+    const timeline = Timeline({ DOM, api, props: { stories$ }})
 
-    const timelineApiRequests$ = timeline$.map(timeline => timeline.api).flatten();
-
-    const apiRequest$ = xs.of({ action: "fetchStories" });
+    const apiRequest$ = user$.mapTo({ action: "fetchStories" });
 
     return {
-        DOM: view(user$, timeline$.map(timeline => timeline.DOM).flatten()),
-        api: xs.merge(apiRequest$, timelineApiRequests$),
+        DOM: view(user$, timeline.DOM),
+        api: xs.merge(apiRequest$, timeline.api),
         logoutAction$
     }
 }

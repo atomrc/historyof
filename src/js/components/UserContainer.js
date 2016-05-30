@@ -2,16 +2,8 @@ import xs from "xstream";
 import {div} from "@cycle/dom";
 import App from "./App";
 
-function render(appDOM) {
-   return appDOM ?
-        appDOM :
-        div(".loading", "loading...");
-}
-
-function intent(DOM, api, app$) {
-    const logoutAction$ = app$
-        .map(app => app.logoutAction$)
-        .flatten()
+function intent(DOM, api, app) {
+    const logoutAction$ = app.logoutAction$
 
     const fetchUserResponse$ = api
         .filter(({ request }) => request.action === "fetchUser")
@@ -36,37 +28,30 @@ function intent(DOM, api, app$) {
     };
 }
 
-function view(appDOM$) {
-    return appDOM$
-        .startWith(null)
-        .map(render);
-}
-
 function UserContainer({DOM, api, props}) {
-    const { buildComponent } = props;
+    const { buildComponent, token$ } = props;
 
     const userProxy$ = xs.createWithMemory();
 
-    const app$ = userProxy$
-        .map(user => buildComponent(App, { DOM, api, props: { user$: xs.of(user) }}, "app"))
-        .remember();
+    const app = buildComponent(App, { DOM, api, props: { user$: userProxy$ }}, "app")
 
     const {
             logoutAction$,
             fetchUserSuccess$,
             fetchUserError$
-        } = intent(DOM, api, app$);
+        } = intent(DOM, api, app);
 
     const user$ = fetchUserSuccess$;
 
-    const fetchUserReques$ = xs.of({ action: "fetchUser" });
-    const appApiRequest$ = app$.map(app => app.api).flatten();
+    const fetchUserReques$ = token$
+        .filter(token => !!token)
+        .mapTo({ action: "fetchUser" });
 
     userProxy$.imitate(user$);
 
     return {
-        DOM: view(app$.map(app => app.DOM).flatten()),
-        api: xs.merge(fetchUserReques$, appApiRequest$),
+        DOM: app.DOM,
+        api: xs.merge(fetchUserReques$, app.api),
         logoutAction$,
         tokenError$: fetchUserError$
     }

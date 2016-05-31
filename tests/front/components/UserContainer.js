@@ -19,7 +19,8 @@ describe("UserContainer Component", () => {
             DOM: DOMSource,
             api: xs.empty(),
             props: {
-                token$: xs.of("usertoken")
+                token$: xs.of("usertoken"),
+                buildComponent: generateComponentBuilder()
             }
         });
 
@@ -114,7 +115,8 @@ describe("UserContainer Component", () => {
             DOM,
             api: apiResponse$,
             props: {
-                token$: xs.empty()
+                token$: xs.empty(),
+                buildComponent: generateComponentBuilder()
             }
         });
 

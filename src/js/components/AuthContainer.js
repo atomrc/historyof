@@ -24,6 +24,7 @@ function intent({ storage, loginForm, userContainer }) {
 function render(token$, userContainerView, loginFormView) {
     return token$
         .map(token => token ? userContainerView : loginFormView)
+        .flatten()
 }
 
 /**

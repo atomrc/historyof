@@ -20,7 +20,7 @@ describe("App Component", () => {
 
         it("should display user", (done) => {
             DOM
-                .last()
+                .take(1)
                 .addListener(generateListener({
                     next: vtree => {
                         const pseudoElm = select(".pseudo", vtree)[0];

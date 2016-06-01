@@ -25,7 +25,8 @@ function model({editAction$, addAction$}) {
 
     return xs
         .merge(editAction$, resetAction$)
-        .startWith({});
+        .startWith({})
+        .remember();
 }
 
 function view(editedStory$) {

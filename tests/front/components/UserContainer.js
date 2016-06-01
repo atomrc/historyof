@@ -12,7 +12,7 @@ import {generateListener, generateComponentBuilder} from "../helpers";
 describe("UserContainer Component", () => {
     const UserContainer = require(APP_PATH + "/components/UserContainer").default;
 
-    describe("UserContainer init", () => {
+    describe("init", () => {
         const DOMSource = mockDOMSource({})
 
         const {DOM, api}  = UserContainer({
@@ -20,17 +20,19 @@ describe("UserContainer Component", () => {
             api: xs.empty(),
             props: {
                 token$: xs.of("usertoken"),
-                buildComponent: generateComponentBuilder()
+                buildComponent: generateComponentBuilder({
+                    DOM: xs.of(div("#dummy-app", "here I am"))
+                })
             }
         });
 
-        it("should display loader", (done) => {
+        it("should display app", (done) => {
             DOM
                 .take(1)
                 .addListener(generateListener({
                     next: vtree => {
-                        const loader = select(".loading", vtree)[0];
-                        expect(loader.text).to.be("loading...");
+                        const app = select("#dummy-app", vtree);
+                        expect(app.length).to.be(1);
                         done();
                     }
                 }));
@@ -66,7 +68,6 @@ describe("UserContainer Component", () => {
         });
 
         DOM
-            .drop(1)
             .take(1)
             .addListener(generateListener({
                 next: vtree => {

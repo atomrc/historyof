@@ -16,10 +16,8 @@ function intent(storyItems$, storyForm) {
         .map((items) => xs.merge(items.map(item => item.editAction$)))
         .flatten();
 
-    const addAction$ = storyForm.addAction$;
-
     return {
-        addAction$,
+        addAction$: storyForm.addAction$,
         editAction$,
         removeAction$
     };

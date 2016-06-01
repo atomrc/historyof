@@ -20,10 +20,10 @@ describe("Timeline Component", () => {
     ];
 
     it("should display the given stories", (done) => {
-        const stories$ = xs.of(initialStories),
+        const stories$ = xs.never().startWith(initialStories),
             DOMSource = mockDOMSource({});
 
-        const {DOM} = Timeline({ DOM: DOMSource, stories$ });
+        const {DOM} = Timeline({ DOM: DOMSource, props: { stories$ }});
 
         DOM
             .addListener(generateListener({

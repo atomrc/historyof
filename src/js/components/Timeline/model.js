@@ -11,7 +11,8 @@ function model(addAction$, removeAction$, stories$) {
         return stories.concat(assign({}, story, { id: uuid.v1() }));
     });
 
-    const resetReducer$ = stories$.map((stories) => () => stories);
+    const resetReducer$ = stories$
+        .map((stories) => () => stories);
 
     const reducer$ = xs
         .merge(resetReducer$, removeReducer$, addReducer$);

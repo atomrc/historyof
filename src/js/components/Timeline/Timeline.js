@@ -8,7 +8,7 @@ import model from "./model";
 function intent(itemActions$, addAction$) {
 
     const removeAction$ = itemActions$
-        .filter(action => action.type === "remove");
+        .filter(action => action.type === "remove")
 
     const editAction$ = itemActions$
         .filter(action => action.type === "edit");
@@ -41,7 +41,7 @@ function createStoryItem(DOM) {
             DOM: isolatedItem.DOM,
             action$: isolatedItem
                 .action$
-                .map(action => ({ action: action.type, params: { story } }))
+                .map(action => ({ type: action.type, params: { story } }))
         };
     };
 }

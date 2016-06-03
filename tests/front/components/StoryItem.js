@@ -14,7 +14,6 @@ describe("StoryItem Component", () => {
 
     const testStory = { id: "uuid-rand", title: "test story" };
 
-
     it("should display given story", (done) => {
         const story$ = xs.of(testStory),
             DOM = mockDOMSource({});
@@ -36,12 +35,14 @@ describe("StoryItem Component", () => {
     it("should send the remove action when remove button is clicked", (done) => {
         const story$ = xs.of(testStory),
             DOM = mockDOMSource({
-                ".remove": { click: xs.of({}) }
+                ".remove": { click: xs.of(1) }
             });
 
         const { action$ } = StoryItem({ DOM, props: { story$ }});
 
-        action$.addListener(generateListener({
+        action$
+            .take(1)
+            .addListener(generateListener({
             next: event => {
                 expect(event.type).to.be("remove");
                 done();
@@ -57,7 +58,9 @@ describe("StoryItem Component", () => {
 
         const { action$ } = StoryItem({ DOM, props: { story$ }});
 
-        action$.addListener(generateListener({
+        action$
+            .take(1)
+            .addListener(generateListener({
             next: event => {
                 expect(event.type).to.be("edit");
                 done();

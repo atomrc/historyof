@@ -1,15 +1,20 @@
 import xs from "xstream";
 import uuid from "uuid";
-import assign from "object-assign";
+
+function remove(stories, storyToRm) {
+    return stories.filter((story) => story.id !== storyToRm.id);
+}
+
+function add(stories, story) {
+    return stories.concat(Object.assign({}, story, { id: uuid.v1() }));
+}
 
 function model(addAction$, removeAction$, stories$) {
-    const removeReducer$ = removeAction$.map(action => (stories) => {
-        return stories.filter((story) => story.id !== action.story.id);
-    });
+    const removeReducer$ = removeAction$
+        .map(action => (stories) => remove(stories, action.params.story))
 
-    const addReducer$ = addAction$.map(story => (stories) => {
-        return stories.concat(assign({}, story, { id: uuid.v1() }));
-    });
+    const addReducer$ = addAction$
+        .map(story => (stories) =>  add(stories, story))
 
     const resetReducer$ = stories$
         .map((stories) => () => stories);

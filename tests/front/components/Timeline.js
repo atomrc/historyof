@@ -39,7 +39,7 @@ describe("Timeline Component", () => {
 
     it("should remove items", (done) => {
         const stories$ = xs.of(initialStories),
-            removeAction$ = xs.of({ action: "remove", story: { id: "first-uuid"}});
+            removeAction$ = xs.of({ action: "remove", params: { story: { id: "first-uuid"}}});
 
         const storiesSink$ = TimelineModel(xs.empty(), removeAction$, stories$);
 

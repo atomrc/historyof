@@ -84,10 +84,10 @@ describe("UserContainer Component", () => {
             user$ = xs.never().startWith({ pseudo: "felix", login: "felix@felix.fr" }),
             apiSource$ = xs.of({ request: { action: "fetchUser" }, response$: user$ }),
             buildComponent = generateComponentBuilder({
-                logoutAction$: xs.never().startWith({ type: "logout" }).remember()
+                action$: xs.of({ type: "logout" })
             });
 
-        const {logoutAction$} = UserContainer({
+        const {action$} = UserContainer({
             DOM,
             api: apiSource$,
             props: {
@@ -96,7 +96,7 @@ describe("UserContainer Component", () => {
             }
         });
 
-        logoutAction$
+        action$
             .addListener(generateListener({
                 next: (action) => {
                     expect(action.type).to.be("logout"),

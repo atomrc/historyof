@@ -30,7 +30,6 @@ function intent(DOM, api) {
 
     return {
         logoutAction$,
-        api: xs.of({ action: "fetchStories" }),
         stories$: storiesResponse$.filter(res => !res.error)
     };
 }
@@ -55,7 +54,7 @@ function App({DOM, api, props}) {
     return {
         DOM: view(user$, timeline.DOM),
         api: xs.merge(apiRequest$, timeline.api),
-        logoutAction$
+        action$: logoutAction$
     }
 }
 

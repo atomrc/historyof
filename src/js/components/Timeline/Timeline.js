@@ -5,19 +5,16 @@ import StoryItem from "../StoryItem";
 import isolate from "@cycle/isolate";
 import model from "./model";
 
-function intent(storyItems$, storyForm) {
+function intent(itemActions$, addAction$) {
 
-    const removeAction$ = storyItems$
-        .map((items) => items.map(item => item.removeAction$))
-        .map(removeActions => xs.merge(...removeActions))
-        .flatten();
+    const removeAction$ = itemActions$
+        .filter(action => action.type === "remove");
 
-    const editAction$ = storyItems$
-        .map((items) => xs.merge(items.map(item => item.editAction$)))
-        .flatten();
+    const editAction$ = itemActions$
+        .filter(action => action.type === "edit");
 
     return {
-        addAction$: storyForm.addAction$,
+        addAction$,
         editAction$,
         removeAction$
     };
@@ -42,8 +39,8 @@ function createStoryItem(DOM) {
         const isolatedItem = isolate(StoryItem)({DOM, props: { story$: xs.of(story)}});
         return {
             DOM: isolatedItem.DOM,
-            removeAction$: isolatedItem
-                .removeAction$
+            action$: isolatedItem
+                .action$
                 .map(action => ({ action: action.type, params: { story } }))
         };
     };
@@ -51,22 +48,26 @@ function createStoryItem(DOM) {
 
 function Timeline({DOM, props}) {
     const { stories$ } = props;
-
-    const storiesProxy$ = xs.createMimic();
+    const itemActionProxy$ = xs.createMimic();
 
     const storyForm = isolate(StoryForm)({DOM});
-    const storyItems$ = storiesProxy$.map(
-        stories => stories.map(createStoryItem(DOM))
-    )
-    .remember();
 
-    const { addAction$, removeAction$ } = intent(storyItems$, storyForm);
+    const { addAction$, removeAction$ } = intent(itemActionProxy$, storyForm.addAction$);
     const storiesModel$ = model(addAction$, removeAction$, stories$);
+
+    const storyItems$ = storiesModel$
+        .map(stories => stories.map(createStoryItem(DOM)))
+        .remember();
+
+    const itemsAction$ = storyItems$
+        .map((items) => items.map(item => item.action$))
+        .map(removeActions => xs.merge(...removeActions))
+        .flatten()
 
     const itemViews$ = storyItems$.map(items => items.map(i => i.DOM));
     const vtree$ = render(itemViews$, storyForm.DOM);
 
-    storiesProxy$.imitate(storiesModel$);
+    itemActionProxy$.imitate(itemsAction$);
 
     return {
         DOM: vtree$,

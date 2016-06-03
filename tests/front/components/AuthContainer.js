@@ -79,7 +79,7 @@ describe("AuthContainer Component", () => {
             },
             buildComponent = generateComponentBuilder({
                 DOM: div(".dummy-user-container"),
-                tokenError$: xs.never().startWith({ error: "token is expired" }).remember()
+                error$: xs.of({ type: "tokenError",  error: "token is expired" })
             });
 
         const {storage, error$} = AuthContainer({
@@ -126,7 +126,7 @@ describe("AuthContainer Component", () => {
                 DOM: xs.of({
                     DOM: div(".dummy-user-container")
                 }),
-                logoutAction$: xs.of(1)
+                action$: xs.of({ type: "logout" })
             });
 
         const {DOM, storage} = AuthContainer({

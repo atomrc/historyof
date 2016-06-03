@@ -35,7 +35,7 @@ function intent(DOM, api) {
         .map(({error}) => error.error);
 
     return {
-        loginRequest$: loginRequest$.combine((request, value) => value, loginValues$), //FIXME
+        loginRequest$: xs.combine((request, value) => value, loginRequest$, loginValues$), //FIXME
         loginSuccess$,
         loginError$
     };

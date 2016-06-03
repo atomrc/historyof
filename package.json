@@ -12,8 +12,8 @@
   "author": "Thomas Belin",
   "license": "ISC",
   "dependencies": {
-    "xstream": "^3.0.0",
-    "@cycle/xstream-run": "^1.1.0",
+    "xstream": "^4.0.0",
+    "@cycle/xstream-run": "^2.0.0",
     "@cycle/dom": "10.0.0-rc23",
     "@cycle/isolate": "^1.2.0",
     "@cycle/storage": "^3.0.0-rc1",

@@ -9,7 +9,7 @@ function intent(storyItems$, storyForm) {
 
     const removeAction$ = storyItems$
         .map((items) => items.map(item => item.removeAction$))
-        .map(removeActions => xs.merge(removeActions))
+        .map(removeActions => xs.merge(...removeActions))
         .flatten();
 
     const editAction$ = storyItems$
@@ -52,7 +52,7 @@ function createStoryItem(DOM) {
 function Timeline({DOM, props}) {
     const { stories$ } = props;
 
-    const storiesProxy$ = xs.createWithMemory();
+    const storiesProxy$ = xs.createMimic();
 
     const storyForm = isolate(StoryForm)({DOM});
     const storyItems$ = storiesProxy$.map(

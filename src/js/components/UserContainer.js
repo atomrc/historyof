@@ -31,7 +31,7 @@ function intent(DOM, api, app) {
 function UserContainer({DOM, api, props}) {
     const { buildComponent, token$ } = props;
 
-    const userProxy$ = xs.createWithMemory();
+    const userProxy$ = xs.createMimic();
 
     const app = buildComponent(App, { DOM, api, props: { user$: userProxy$ }}, "app")
 

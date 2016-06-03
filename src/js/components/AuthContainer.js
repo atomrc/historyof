@@ -41,7 +41,7 @@ function AuthContainer({DOM, api, storage, props}) {
 
     const {buildComponent} = props;
 
-    const tokenProxy$ = xs.createWithMemory();
+    const tokenProxy$ = xs.createMimic();
 
     const loginForm = buildComponent(LoginForm, {DOM, api}, "login-form")
     const userContainer = buildComponent(UserContainer, { DOM, api, props: { buildComponent, token$: tokenProxy$ } }, "user-container")

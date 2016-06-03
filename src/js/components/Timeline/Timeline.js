@@ -69,10 +69,15 @@ function Timeline({DOM, props}) {
 
     itemActionProxy$.imitate(itemsAction$);
 
+    const apiAddRequest$ = addAction$
+        .map(story => ({ action: "createStory", params: { story } }))
+
+    const apiRemoveRequest$ = removeAction$
+        .map(action => ({ action: "removeStory", params: { story: action.params.story } }))
+
     return {
         DOM: vtree$,
-        api: addAction$
-            .map(story => ({ action: "createStory", params: { story } }))
+        api: xs.merge(apiRemoveRequest$, apiAddRequest$)
     };
 }
 

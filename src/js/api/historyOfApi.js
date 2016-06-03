@@ -21,7 +21,10 @@ function request(url, params={}) {
             if (!response.ok) {
                 throw response;
             }
-            return response.json();
+
+            return response.status === 200 ?
+                response.json() :
+                "ok";
         })
         .catch(function (response) {
             return response
@@ -112,7 +115,7 @@ var api = {
         }).then(initStory);
     },
 
-    remove: function (token, { story }) {
+    removeStory: function (token, { story }) {
         requestProtected(generateUrl(config.urlPattern, { eid: story.id }), token, {
             method: "DELETE"
         });

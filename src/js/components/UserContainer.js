@@ -1,7 +1,7 @@
 import xs from "xstream";
 import App from "./App";
 
-function intent(DOM, api, appAction$) {
+function intent(DOM, api) {
     const fetchUserResponse$ = api
         .filter(({ request }) => request.action === "fetchUser")
         .map(({ response$ }) => {
@@ -19,7 +19,6 @@ function intent(DOM, api, appAction$) {
         .map(response => response.error);
 
     return {
-        logoutAction$: appAction$.filter(action => action.type === "logout"),
         fetchUserSuccess$,
         fetchUserError$
     };
@@ -28,29 +27,23 @@ function intent(DOM, api, appAction$) {
 function UserContainer({DOM, api, props}) {
     const { buildComponent, token$ } = props;
 
-    const appActionProxy$ = xs.createMimic();
-
     const {
-            logoutAction$,
             fetchUserSuccess$,
             fetchUserError$
-        } = intent(DOM, api, appActionProxy$);
+        } = intent(DOM, api);
 
     const user$ = fetchUserSuccess$;
 
     const app = buildComponent(App, { DOM, api, props: { user$ }}, "app")
 
-
     const fetchUserReques$ = token$
         .filter(token => !!token)
         .mapTo({ action: "fetchUser" });
 
-    appActionProxy$.imitate(app.action$);
-
     return {
         DOM: app.DOM,
         api: xs.merge(fetchUserReques$, app.api),
-        action$: logoutAction$,
+        action$: app.action$,
         tokenError$: fetchUserError$
     }
 }

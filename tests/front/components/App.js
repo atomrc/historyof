@@ -48,9 +48,9 @@ describe("App Component", () => {
             }),
             user$ = xs.of({ pseudo: "felix", login: "felix@felix.fr", password: "password" });
 
-        const {logoutAction$} = App({ DOM, api: xs.empty(), props: { user$ } });
+        const {action$} = App({ DOM, api: xs.empty(), props: { user$ } });
 
-        logoutAction$
+        action$
             .addListener(generateListener({
                 next: action => {
                     expect(action.type).to.be("logout")

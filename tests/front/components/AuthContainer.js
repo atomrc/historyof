@@ -102,7 +102,6 @@ describe("AuthContainer Component", () => {
 
         it("should ask for token removal from local storage", (done) => {
             storage
-                .take(1)
                 .addListener(generateListener({
                     next: storageAction => {
                         expect(storageAction).to.eql({

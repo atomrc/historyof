@@ -112,7 +112,7 @@ describe("UserContainer Component", () => {
             })),
             apiResponse$ = xs.of({ request: { action: "fetchUser" }, response$: fetchUserError$ });
 
-        const {tokenError$} = UserContainer({
+        const {error$} = UserContainer({
             DOM,
             api: apiResponse$,
             props: {
@@ -121,7 +121,7 @@ describe("UserContainer Component", () => {
             }
         });
 
-        tokenError$
+        error$
             .addListener(generateListener({
                 next: response => {
                     expect(response.error).to.be("token is expired");

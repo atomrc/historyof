@@ -2,7 +2,7 @@ import xs from "xstream";
 import UserContainer from "./UserContainer";
 import LoginForm from "./LoginForm";
 
-function intent({ storage, loginForm, userContainerAction$, userContainerError$ }) {
+function intent({ storage, loginForm }) {
     const token$ = storage
         .local
         .getItem("token")
@@ -10,17 +10,9 @@ function intent({ storage, loginForm, userContainerAction$, userContainerError$ 
     const loginToken$ = loginForm.loginData$
         .map(({ token }) => token)
 
-    const tokenError$ = userContainerError$
-        .filter(error => error.type === "tokenError");
-
-    const logoutAction$ = userContainerAction$
-        .filter(action => action.type === "logout")
-
     return {
         token$,
-        loginToken$,
-        tokenError$,
-        logoutAction$: logoutAction$
+        loginToken$
     };
 }
 
@@ -44,22 +36,12 @@ function AuthContainer({DOM, api, storage, props}) {
 
     const {buildComponent} = props;
 
-    const userContainerActionProxy$ = xs.createMimic();
-    const userContainerErrorProxy$ = xs.createMimic();
-
     const loginForm = buildComponent(LoginForm, {DOM, api}, "login-form")
 
     const {
         token$,
-        loginToken$,
-        tokenError$,
-        logoutAction$
-    } = intent({
-        storage,
-        loginForm,
-        userContainerAction$: userContainerActionProxy$,
-        userContainerError$: userContainerErrorProxy$
-    });
+        loginToken$
+    } = intent({ storage, loginForm });
 
     const userContainer = buildComponent(UserContainer, { DOM, api, props: { buildComponent, token$: token$ } }, "user-container")
 
@@ -70,14 +52,18 @@ function AuthContainer({DOM, api, storage, props}) {
             token$
         )
 
+    const logoutAction$ = userContainer
+        .action$
+        .filter(action => action.type === "logout")
+
     const tokenSaveRequest$ = loginToken$
         .map(token => ({ key: "token", value: token }));
 
+    const tokenError$ = userContainer.error$
+        .filter(error => error.type === "tokenError");
+
     const tokenRemoveRequest$ = xs.merge(logoutAction$, tokenError$)
         .mapTo({ action: "removeItem", key: "token" });
-
-    userContainerActionProxy$.imitate(userContainer.action$);
-    userContainerErrorProxy$.imitate(userContainer.error$);
 
     return {
         DOM: render(token$, userContainer.DOM, loginForm.DOM),

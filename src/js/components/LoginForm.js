@@ -25,7 +25,7 @@ function intent(DOM, api) {
         .map(
             ({ response$ }) => response$.replaceError((error) => xs.of({error}))
         )
-        .flatten();
+        .flatten()
 
     const loginSuccess$ = loginResponse$
         .filter((response) => !response.error);

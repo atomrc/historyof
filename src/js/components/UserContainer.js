@@ -9,7 +9,6 @@ function intent(DOM, api) {
                 .replaceError(error => xs.of({ error }));
         })
         .flatten()
-        .remember()
 
     const fetchUserSuccess$ = fetchUserResponse$
         .filter(response => !response.error);
@@ -44,7 +43,7 @@ function UserContainer({DOM, api, props}) {
         DOM: app.DOM,
         api: xs.merge(fetchUserReques$, app.api),
         action$: app.action$,
-        tokenError$: fetchUserError$
+        error$: fetchUserError$.map(error => Object.assign({}, error, { type: "tokenError" }))
     }
 }
 

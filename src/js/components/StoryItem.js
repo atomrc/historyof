@@ -19,8 +19,8 @@ function view(story$) {
     return story$
         .map((story) => li(".story", [
                 span(".title", story.title),
-                a(".remove", { href: "#" }, "x"),
-                a(".edit", { href: "#" }, "e")
+                a(".remove", { props: { href: "#" } }, "x"),
+                a(".edit", { props: { href: "#" } }, "e")
             ])
         );
 }

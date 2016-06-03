@@ -23,6 +23,8 @@ function apiDriver(request$) {
         })
         .remember()
 
+    //response$$.addListener({next: () => {}, error: () => {}, complete: () => {}});
+
     return response$$;
 }
 

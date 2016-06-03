@@ -1,3 +1,4 @@
+import xs from "xstream";
 import {li, a, span} from '@cycle/dom';
 
 function intent(DOM) {
@@ -11,10 +12,7 @@ function intent(DOM) {
         .events("click")
         .map(() => ({ type: "edit" }));
 
-    return {
-        editAction$,
-        removeAction$
-    };
+    return xs.merge(removeAction$, editAction$)
 }
 
 function view(story$) {
@@ -28,13 +26,9 @@ function view(story$) {
 }
 
 function StoryItem({DOM, props: { story$ }}) {
-    const { editAction$, removeAction$ } = intent(DOM);
-    const vTree$ = view(story$);
-
     return {
-        DOM: vTree$,
-        editAction$,
-        removeAction$
+        DOM: view(story$),
+        action$: intent(DOM)
     };
 }
 

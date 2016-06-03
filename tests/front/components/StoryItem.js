@@ -39,9 +39,9 @@ describe("StoryItem Component", () => {
                 ".remove": { click: xs.of({}) }
             });
 
-        const { removeAction$ } = StoryItem({ DOM, props: { story$ }});
+        const { action$ } = StoryItem({ DOM, props: { story$ }});
 
-        removeAction$.addListener(generateListener({
+        action$.addListener(generateListener({
             next: event => {
                 expect(event.type).to.be("remove");
                 done();
@@ -55,9 +55,9 @@ describe("StoryItem Component", () => {
                 ".edit": { click: xs.of({}) }
             });
 
-        const { editAction$ } = StoryItem({ DOM, props: { story$ }});
+        const { action$ } = StoryItem({ DOM, props: { story$ }});
 
-        editAction$.addListener(generateListener({
+        action$.addListener(generateListener({
             next: event => {
                 expect(event.type).to.be("edit");
                 done();

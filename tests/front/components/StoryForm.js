@@ -13,9 +13,14 @@ describe("StoryForm Component", () => {
     const StoryForm = require(APP_PATH + "/components/StoryForm").default;
 
     it("should display empty form if no story given", (done) => {
-        const DOMSource = mockDOMSource({});
+        const sources = {
+            DOM: mockDOMSource({}),
+            props: {
+                story$: xs.empty()
+            }
+        };
 
-        const { DOM } = StoryForm({ DOM: DOMSource });
+        const { DOM } = StoryForm(sources);
 
         DOM
             .take(1)
@@ -29,18 +34,24 @@ describe("StoryForm Component", () => {
     });
 
     it("should return a new story when user submits form", (done) => {
+        const sources = {
 
-        const DOMSource = mockDOMSource({
-            "input": {
-                change: xs.of({
-                    target: { name: "title", value: "story one" }
-                })
-            },
+            DOM: mockDOMSource({
+                "input": {
+                    change: xs.of({
+                        target: { name: "title", value: "story one" }
+                    })
+                },
 
-            ".story-form": { submit: xs.of({ preventDefault: i => i }) }
-        });
+                ".story-form": { submit: xs.of({ preventDefault: i => i }) }
+            }),
 
-        const { addAction$ } = StoryForm({ DOM: DOMSource });
+            props: {
+                story$: xs.empty()
+            }
+        };
+
+        const { addAction$ } = StoryForm(sources);
 
         addAction$
             .take(1)
@@ -52,6 +63,25 @@ describe("StoryForm Component", () => {
             }));
     });
 
-    xit("fill form with edited story if given", () => {
+    it("fill form with edited story if given", (done) => {
+        const sources = {
+            DOM: mockDOMSource({}),
+
+            props: {
+                story$: xs.of({ title: "edited story" })
+            }
+        };
+
+        const { DOM } = StoryForm(sources);
+
+        DOM
+            .last()
+            .addListener(generateListener({
+                next: vtree => {
+                    const titleInput = select("input[name=title]", vtree);
+                    expect(titleInput[0].data.props.value).to.equal("edited story");
+                    done();
+                }
+            }));
     });
 });

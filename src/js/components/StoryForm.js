@@ -20,28 +20,30 @@ function intent(DOM) {
     return {addAction$, editAction$};
 }
 
-function model({editAction$, addAction$}) {
-    const resetAction$ = addAction$.map(() => ({}));
+function model({story$, editAction$, addAction$}) {
+    const emptyStory$ = addAction$.map(() => ({}));
 
     return xs
-        .merge(editAction$, resetAction$)
+        .merge(story$, editAction$, emptyStory$)
         .startWith({})
         .remember();
 }
 
-function view(editedStory$) {
-    return editedStory$
-        .map(editedStory => div([
+function view(state$) {
+    return state$
+        .map(story => div([
             form(".story-form", [
-                input({ props: { name: "title", value: editedStory.title || "" }}),
+                input({ props: { name: "title", value: story.title || "" }}),
                 input({ props: { type: "submit", value: "Save" }})
             ])
         ]));
 }
 
-function StoryForm({DOM}) {
+function StoryForm({ DOM, props }) {
+    const { story$ } = props;
+
     const {addAction$, editAction$} = intent(DOM);
-    const state$ = model({addAction$, editAction$});
+    const state$ = model({story$, addAction$, editAction$});
     const vTree$ = view(state$);
 
     const storyToAdd$ = state$.filter(story => story.title);

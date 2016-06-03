@@ -36,7 +36,7 @@ function render(itemViews$, formView$) {
 
 function createStoryItem(DOM) {
     return (story) => {
-        const isolatedItem = isolate(StoryItem)({DOM, props: { story$: xs.of(story)}});
+        const isolatedItem = isolate(StoryItem, "story-" + story.id)({DOM, props: { story$: xs.of(story)}});
         return {
             DOM: isolatedItem.DOM,
             action$: isolatedItem
@@ -50,7 +50,7 @@ function Timeline({DOM, props}) {
     const { stories$ } = props;
     const itemActionProxy$ = xs.createMimic();
 
-    const storyForm = isolate(StoryForm)({DOM});
+    const storyForm = isolate(StoryForm)({DOM, props: { story$: xs.never() }});
 
     const { addAction$, removeAction$ } = intent(itemActionProxy$, storyForm.addAction$);
     const storiesModel$ = model(addAction$, removeAction$, stories$);
@@ -65,7 +65,6 @@ function Timeline({DOM, props}) {
         .flatten()
 
     const itemViews$ = storyItems$.map(items => items.map(i => i.DOM));
-    const vtree$ = render(itemViews$, storyForm.DOM);
 
     itemActionProxy$.imitate(itemsAction$);
 
@@ -76,7 +75,7 @@ function Timeline({DOM, props}) {
         .map(action => ({ action: "removeStory", params: { story: action.params.story } }))
 
     return {
-        DOM: vtree$,
+        DOM: render(itemViews$, storyForm.DOM),
         api: xs.merge(apiRemoveRequest$, apiAddRequest$)
     };
 }

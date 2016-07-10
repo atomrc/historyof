@@ -4,7 +4,7 @@ import Timeline from "./Timeline/Timeline";
 
 function render({user, timeline}) {
     const header = div("#app-header", [
-        span(".pseudo", user.pseudo),
+        span(".pseudo", user.nickname),
         button(".logout", "Logout")
     ]);
 

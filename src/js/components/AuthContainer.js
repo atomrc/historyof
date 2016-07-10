@@ -1,27 +1,22 @@
 import xs from "xstream";
-import UserContainer from "./UserContainer";
-import LoginForm from "./LoginForm";
+import App from "./App";
 
-function intent({ storage, loginForm }) {
+
+function model(storage, auth0) {
     const token$ = storage
         .local
-        .getItem("token")
+        .getItem("token");
 
-    const loginToken$ = loginForm.loginData$
-        .map(({ token }) => token)
+    const user$ = auth0
+        .filter(({ action }) => action.action === "getProfile")
+        .map(({ response$ }) => response$)
+        .flatten();
 
-    return {
-        token$,
-        loginToken$
-    };
+    return xs
+        .combine(token$, user$.startWith(null))
+        .map(([ token, user ]) => ({ token, user, locationHash: window.location.hash }))
+        .remember();
 }
-
-function render(token$, userContainerView, loginFormView) {
-    return token$
-        .map(token => token ? userContainerView : loginFormView)
-        .flatten()
-}
-
 /**
  * is responsible for the logged part of the app.
  * Depending on the token it gets from the local storage
@@ -32,44 +27,55 @@ function render(token$, userContainerView, loginFormView) {
  * @param {storageSource} storage the storage source
  * @returns {object} streams
  */
-function AuthContainer({DOM, api, storage, props}) {
+function AuthContainer({DOM, api, storage, auth0, props}) {
 
     const {buildComponent} = props;
 
-    const loginForm = buildComponent(LoginForm, {DOM, api}, "login-form")
+    const state$ = model(storage, auth0);
 
-    const {
-        token$,
-        loginToken$
-    } = intent({ storage, loginForm });
-
-    const userContainer = buildComponent(UserContainer, { DOM, api, props: { buildComponent, token$: token$ } }, "user-container")
+    const app = buildComponent(App, { DOM, api, props: { user$: state$.map(state => state.user).filter(user => !!user) } }, "app")
 
     const apiRequest$ = xs
-        .combine(
-            xs.merge(loginForm.api, userContainer.api),
-            token$
-        )
+        .combine(app.api, state$.map(state => state.token))
         .map(([request, token]) => Object.assign({}, request, { token }));
 
-    const logoutAction$ = userContainer
+    const logoutAction$ = app
         .action$
         .filter(action => action.type === "logout")
 
-    const tokenSaveRequest$ = loginToken$
-        .map(token => ({ key: "token", value: token }));
+    const tokenError$ = xs.empty();
 
-    const tokenError$ = userContainer.error$
-        .filter(error => error.type === "tokenError");
+    const tokenSaveRequest$ = auth0
+        .filter(({ action }) => action.action === "parseHash")
+        .map(({ response$ }) => response$)
+        .flatten()
+        .map(response => ({ key: "token", value: response }));
+        //app
+        //.error$
+        //.filter(error => error.type === "tokenError");
 
-    const tokenRemoveRequest$ = xs.merge(logoutAction$, tokenError$)
+    const tokenRemoveRequest$ = xs
+        .merge(logoutAction$, tokenError$)
         .mapTo({ action: "removeItem", key: "token" });
 
+    const showLoginRequest$ = state$
+        .filter(({ token, locationHash }) => !token && locationHash.length <= 1)
+        .mapTo({ action: "show" });
+
+    const parseHashRequest$ = state$
+        .filter(({ token, locationHash }) => !token && locationHash.length >= 1)
+        .map(({ locationHash }) => ({ action: "parseHash", params: locationHash }));
+
+    const getProfileRequest$ = state$
+        .filter(({ token, user }) => !!token && !user)
+        .map(({ token }) => ({ action: "getProfile", params: token }))
+
     return {
-        DOM: render(token$, userContainer.DOM, loginForm.DOM),
+        DOM: app.DOM,
         api: apiRequest$,
         storage: xs.merge(tokenRemoveRequest$, tokenSaveRequest$),
-        error$: tokenError$
+        error$: tokenError$,
+        auth0: xs.merge(showLoginRequest$, parseHashRequest$, getProfileRequest$)
     }
 }
 

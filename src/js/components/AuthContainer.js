@@ -47,10 +47,10 @@ function AuthContainer({DOM, api, storage, props}) {
 
     const apiRequest$ = xs
         .combine(
-            (request, token) => Object.assign({}, request, { token }),
             xs.merge(loginForm.api, userContainer.api),
             token$
         )
+        .map(([request, token]) => Object.assign({}, request, { token }));
 
     const logoutAction$ = userContainer
         .action$

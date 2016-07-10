@@ -1,7 +1,7 @@
 import xs from "xstream";
-import {run} from '@cycle/xstream-run';
-import {makeDOMDriver, div} from '@cycle/dom';
-import isolate from '@cycle/isolate';
+import {run} from "@cycle/xstream-run";
+import {makeDOMDriver, div} from "@cycle/dom";
+import isolate from "@cycle/isolate";
 import storageDriver from "@cycle/storage";
 import apiDriver from "./apiDriver";
 import AuthContainer from "./components/AuthContainer";
@@ -15,10 +15,10 @@ function main({DOM, api, storage}) {
     const authContainer = AuthContainer({ DOM, api, storage, props: { buildComponent } });
 
     const vtree$ = xs.combine(
-            (authContainerDom, error) => ({ authContainerDom, error }),
             authContainer.DOM,
             authContainer.error$.startWith(null)
         )
+        .map(([authContainerDom, error]) => ({ authContainerDom, error }))
         .map(({ authContainerDom, error }) => {
             var errorDiv = error ? div(".error", error.error) : null;
             return div([

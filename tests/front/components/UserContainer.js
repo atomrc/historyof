@@ -6,6 +6,7 @@ import xs from "xstream";
 import expect from "expect.js";
 import select from "snabbdom-selector";
 import {mockDOMSource, div} from '@cycle/dom';
+import xstreamAdapter from '@cycle/xstream-adapter';
 
 import {generateListener, generateComponentBuilder} from "../helpers";
 
@@ -13,7 +14,7 @@ describe("UserContainer Component", () => {
     const UserContainer = require(APP_PATH + "/components/UserContainer").default;
 
     describe("init", () => {
-        const DOMSource = mockDOMSource({})
+        const DOMSource = mockDOMSource(xstreamAdapter, {})
 
         const {DOM, api}  = UserContainer({
             DOM: DOMSource,
@@ -52,7 +53,7 @@ describe("UserContainer Component", () => {
     });
 
     it("should display app when user is fetched", (done) => {
-        const DOMSource = mockDOMSource({}),
+        const DOMSource = mockDOMSource(xstreamAdapter, {}),
             user$ = xs.never().startWith({ pseudo: "felix", login: "felix@felix.fr" }),
             apiSource$ = xs.of({ request: { action: "fetchUser" }, response$: user$ });
 
@@ -80,7 +81,7 @@ describe("UserContainer Component", () => {
     });
 
     it("should return logout action when user logs out", (done) => {
-        const DOM = mockDOMSource({}),
+        const DOM = mockDOMSource(xstreamAdapter, {}),
             user$ = xs.never().startWith({ pseudo: "felix", login: "felix@felix.fr" }),
             apiSource$ = xs.of({ request: { action: "fetchUser" }, response$: user$ }),
             buildComponent = generateComponentBuilder({
@@ -106,7 +107,7 @@ describe("UserContainer Component", () => {
     });
 
     it("should return token error if token is invalid", (done) => {
-        const DOM = mockDOMSource({}),
+        const DOM = mockDOMSource(xstreamAdapter, {}),
             fetchUserError$ = xs.fromPromise(new Promise(function (resolve, reject) {
                 reject({ error: "token is expired" });
             })),

@@ -13,7 +13,8 @@ function intent(DOM, api) {
         .map(ev => ev.target.value);
 
     const loginValues$ = xs
-        .combine((login, password) => ({ login, password }), login$, password$);
+        .combine(login$, password$)
+        .map(([login, password]) => ({ login, password }));
 
     const loginRequest$ = DOM
         .select("form")
@@ -35,7 +36,9 @@ function intent(DOM, api) {
         .map(({error}) => error.error);
 
     return {
-        loginRequest$: xs.combine((request, value) => value, loginRequest$, loginValues$), //FIXME
+        loginRequest$: xs
+            .combine(loginRequest$, loginValues$)
+            .map(([request, value]) => value), //FIXME
         loginSuccess$,
         loginError$
     };
@@ -64,10 +67,10 @@ function model(loginRequest$, loginSuccess$, loginError$) {
     );
 
     const state$ = xs.combine(
-        (error, isLoginIn) => ({ error, isLoginIn }),
-        loginError$.startWith(null),
-        isLoginIn$.startWith(false)
-    );
+            loginError$.startWith(null),
+            isLoginIn$.startWith(false)
+        )
+        .map(([error, isLoginIn]) => ({ error, isLoginIn }));
 
     return {
         loginData$: loginSuccess$,

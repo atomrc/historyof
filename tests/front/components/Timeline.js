@@ -4,6 +4,7 @@ const APP_PATH = __dirname + "/../../../src/js";
 
 import expect from "expect.js";
 import {mockDOMSource} from '@cycle/dom';
+import xstreamAdapter from '@cycle/xstream-adapter';
 import select from "snabbdom-selector";
 
 import {generateListener} from "../helpers";
@@ -21,7 +22,7 @@ describe("Timeline Component", () => {
 
     it("should display the given stories", (done) => {
         const sources = {
-            DOM: mockDOMSource({}),
+            DOM: mockDOMSource(xstreamAdapter, {}),
             props: {
                 stories$: xs.of(initialStories)
             }

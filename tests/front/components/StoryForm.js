@@ -6,6 +6,7 @@ import xs from "xstream";
 import expect from "expect.js";
 import select from "snabbdom-selector";
 import {mockDOMSource} from '@cycle/dom';
+import xstreamAdapter from '@cycle/xstream-adapter';
 
 import {generateListener} from "../helpers";
 
@@ -14,7 +15,7 @@ describe("StoryForm Component", () => {
 
     it("should display empty form if no story given", (done) => {
         const sources = {
-            DOM: mockDOMSource({}),
+            DOM: mockDOMSource(xstreamAdapter, {}),
             props: {
                 story$: xs.empty()
             }
@@ -36,7 +37,7 @@ describe("StoryForm Component", () => {
     it("should return a new story when user submits form", (done) => {
         const sources = {
 
-            DOM: mockDOMSource({
+            DOM: mockDOMSource(xstreamAdapter, {
                 "input": {
                     change: xs.of({
                         target: { name: "title", value: "story one" }
@@ -65,7 +66,7 @@ describe("StoryForm Component", () => {
 
     it("fill form with edited story if given", (done) => {
         const sources = {
-            DOM: mockDOMSource({}),
+            DOM: mockDOMSource(xstreamAdapter, {}),
 
             props: {
                 story$: xs.of({ title: "edited story" })

@@ -36,10 +36,10 @@ function intent(DOM, api) {
 
 function view(user$, timelineView$) {
     return xs.combine(
-            (user, timeline) => ({user, timeline}),
             user$,
             timelineView$
         )
+        .map(([user, timeline]) => ({user, timeline}))
         .map(render);
 }
 

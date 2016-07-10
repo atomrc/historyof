@@ -5,6 +5,7 @@ const APP_PATH = __dirname + "/../../../src/js";
 import xs from "xstream";
 import expect from "expect.js";
 import {div, mockDOMSource} from '@cycle/dom';
+import xstreamAdapter from '@cycle/xstream-adapter';
 import select from "snabbdom-selector";
 
 import {generateListener, generateComponentBuilder} from "../helpers";
@@ -13,7 +14,7 @@ describe("AuthContainer Component", () => {
     const AuthContainer = require(APP_PATH + "/components/AuthContainer").default;
 
     it("should display login form if no token given", (done) => {
-        const DOMSource = mockDOMSource({});
+        const DOMSource = mockDOMSource(xstreamAdapter, {});
         const storageSource = {
                 local: {
                     getItem: () => xs.merge(xs.of(null), xs.never())
@@ -42,7 +43,7 @@ describe("AuthContainer Component", () => {
     });
 
     it("should display user container if token is given", (done) => {
-        const DOMSource = mockDOMSource({}),
+        const DOMSource = mockDOMSource(xstreamAdapter, {}),
             storageSource = {
                 local: {
                     getItem: () => xs.merge(xs.of("usertoken"), xs.never())
@@ -71,7 +72,7 @@ describe("AuthContainer Component", () => {
     });
 
     describe("Invalid token", () => {
-        const DOMSource = mockDOMSource({}),
+        const DOMSource = mockDOMSource(xstreamAdapter, {}),
             storageSource = {
                 local: {
                     getItem: () => xs.never().startWith("expiredtoken")
@@ -115,7 +116,7 @@ describe("AuthContainer Component", () => {
     });
 
     describe("Logout", () => {
-        const DOMSource = mockDOMSource({}),
+        const DOMSource = mockDOMSource(xstreamAdapter, {}),
             storageSource = {
                 local: {
                     getItem: () => xs.of("expiredtoken")

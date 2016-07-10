@@ -5,6 +5,7 @@ const APP_PATH = __dirname + "/../../../src/js";
 import xs from "xstream";
 import expect from "expect.js";
 import {mockDOMSource} from '@cycle/dom';
+import xstreamAdapter from '@cycle/xstream-adapter';
 import select from "snabbdom-selector";
 
 import {generateListener} from "../helpers";
@@ -16,7 +17,7 @@ describe("StoryItem Component", () => {
 
     it("should display given story", (done) => {
         const story$ = xs.of(testStory),
-            DOM = mockDOMSource({});
+            DOM = mockDOMSource(xstreamAdapter, {});
 
         const sinks = StoryItem({ DOM, props: { story$ } });
 
@@ -34,7 +35,7 @@ describe("StoryItem Component", () => {
 
     it("should send the remove action when remove button is clicked", (done) => {
         const story$ = xs.of(testStory),
-            DOM = mockDOMSource({
+            DOM = mockDOMSource(xstreamAdapter, {
                 ".remove": { click: xs.of(1) }
             });
 
@@ -52,7 +53,7 @@ describe("StoryItem Component", () => {
 
     it("should send the edit action when edit button is clicked", (done) => {
         const story$ = xs.of(testStory),
-            DOM = mockDOMSource({
+            DOM = mockDOMSource(xstreamAdapter, {
                 ".edit": { click: xs.of({}) }
             });
 

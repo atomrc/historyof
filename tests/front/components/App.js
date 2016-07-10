@@ -6,6 +6,7 @@ import xs from "xstream";
 import expect from "expect.js";
 import select from "snabbdom-selector";
 import {mockDOMSource} from '@cycle/dom';
+import xstreamAdapter from '@cycle/xstream-adapter';
 
 import {generateListener} from "../helpers";
 
@@ -13,7 +14,7 @@ describe("App Component", () => {
     const App = require(APP_PATH + "/components/App").default;
 
     describe("App init", () => {
-        const DOMSource = mockDOMSource({}),
+        const DOMSource = mockDOMSource(xstreamAdapter, {}),
             user$ = xs.of({ pseudo: "felix", login: "felix@felix.fr", password: "password" });
 
         const {DOM, api}  = App({ DOM: DOMSource, api: xs.empty(), props: { user$ } });
@@ -43,7 +44,7 @@ describe("App Component", () => {
     });
 
     it("should return logout action when user logs out", (done) => {
-        const DOM = mockDOMSource({
+        const DOM = mockDOMSource(xstreamAdapter, {
                 ".logout": { click: xs.of({}) }
             }),
             user$ = xs.of({ pseudo: "felix", login: "felix@felix.fr", password: "password" });

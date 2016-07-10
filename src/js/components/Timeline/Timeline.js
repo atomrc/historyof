@@ -23,11 +23,10 @@ function intent(itemActions$, addAction$) {
 function render(itemViews$, formView$) {
     return xs
         .combine(
-            (itemViews, formView) => ({ itemViews, formView }),
             itemViews$,
             formView$
         )
-        .map(({itemViews, formView}) => div(".timeline", [
+        .map(([itemViews, formView]) => div(".timeline", [
             span(".header", itemViews.length + " stories"),
             ul(itemViews),
             formView
@@ -48,7 +47,7 @@ function createStoryItem(DOM) {
 
 function Timeline({DOM, props}) {
     const { stories$ } = props;
-    const itemActionProxy$ = xs.createMimic();
+    const itemActionProxy$ = xs.create();
 
     const storyForm = isolate(StoryForm)({DOM, props: { story$: xs.never() }});
 

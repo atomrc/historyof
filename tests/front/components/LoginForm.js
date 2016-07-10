@@ -5,6 +5,7 @@ const APP_PATH = __dirname + "/../../../src/js";
 import expect from "expect.js";
 import select from "snabbdom-selector";
 import {mockDOMSource} from '@cycle/dom';
+import xstreamAdapter from '@cycle/xstream-adapter';
 
 import xs from "xstream";
 
@@ -18,7 +19,7 @@ describe("LoginForm Component", () => {
     const LoginForm = require(APP_PATH + "/components/LoginForm").default;
 
     describe("Init", () => {
-        const DOMSource = mockDOMSource({});
+        const DOMSource = mockDOMSource(xstreamAdapter, {});
 
         const { DOM, api } = LoginForm({ DOM: DOMSource, api: xs.empty() });
 
@@ -41,7 +42,7 @@ describe("LoginForm Component", () => {
     });
 
     xit("should not be submittable if input is not valid", (done) => {
-        const DOMSource = mockDOMSource({
+        const DOMSource = mockDOMSource(xstreamAdapter, {
             form: {
                 keyup: xs.of({
                     currentTarget: {
@@ -66,7 +67,7 @@ describe("LoginForm Component", () => {
     });
 
     it("should send login request when user logs in", (done) => {
-        const DOM = mockDOMSource({
+        const DOM = mockDOMSource(xstreamAdapter, {
                 "input[name=login]": { change: xs.of({
                     target: { value: "felix@felix.fr" }
                 }) },
@@ -91,7 +92,7 @@ describe("LoginForm Component", () => {
     });
 
     it("should return user and token when logged in", (done) => {
-        const DOM = mockDOMSource({}),
+        const DOM = mockDOMSource(xstreamAdapter, {}),
             loginResponse$ = xs.of({
                 user: {
                     pseudo: "felix", login: "felix@felix.fr", password: "password"
@@ -114,7 +115,7 @@ describe("LoginForm Component", () => {
     });
 
     it("should display error if login fails", (done) => {
-        const DOM = mockDOMSource({}),
+        const DOM = mockDOMSource(xstreamAdapter, {}),
             loginResponse$ = xs.fromPromise(new Promise(function (resolve, reject) {
                 reject({ error: "login/password don't match" });
             })),

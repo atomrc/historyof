@@ -1,4 +1,5 @@
 import xs from "xstream";
+import {div} from "@cycle/dom";
 
 function model(storage, router) {
     const token$ = storage
@@ -28,7 +29,11 @@ function LoginForm({storage, auth0, router}) {
 
     const showLoginRequest$ = state$
         .filter(({ token, hasAccessTokenHash }) => !token && !hasAccessTokenHash)
-        .mapTo({ action: "show", params: { authParams: { scope: "openid nickname" }}});
+        .mapTo({ action: "show", params: {
+            authParams: { scope: "openid nickname" },
+            callbackURL: location.origin + "/login",
+            responseType: "token"
+        }});
 
     const parseHashRequest$ = state$
         .filter(({ token, hasAccessTokenHash }) => !token && hasAccessTokenHash)
@@ -39,6 +44,7 @@ function LoginForm({storage, auth0, router}) {
         .mapTo("/me");
 
     return {
+        DOM: xs.of(div("#login")),
         storage: tokenSaveRequest$,
         router: appRedirect$,
         auth0: xs.merge(showLoginRequest$, parseHashRequest$)

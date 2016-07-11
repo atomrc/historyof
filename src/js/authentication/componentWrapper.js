@@ -9,6 +9,10 @@ function wrap(Component) {
 
         const sinks = Component(Object.assign({}, sources, { props: { token$: token$.filter(token => !!token) }}));
 
+        const tokenRemoveRequest$ = (sinks.action$ || xs.empty())
+            .filter(action => action.type === "logout")
+            .mapTo({ action: "removeItem", key: "token" })
+
         const redirectToLogin$ = token$
             .filter(token => !token)
             .mapTo("/login");
@@ -16,6 +20,8 @@ function wrap(Component) {
         return Object.assign({}, sinks, {
             router: xs
                 .merge(redirectToLogin$, sinks.router || xs.empty()),
+
+            storage: xs.merge(tokenRemoveRequest$, sinks.storage || xs.empty()),
 
             //decorate all the component api requests with
             //the current token

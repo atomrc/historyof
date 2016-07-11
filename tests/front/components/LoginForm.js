@@ -18,118 +18,81 @@ const emptyListener = {
 describe("LoginForm Component", () => {
     const LoginForm = require(APP_PATH + "/components/LoginForm").default;
 
-    describe("Init", () => {
-        const DOMSource = mockDOMSource(xstreamAdapter, {});
+    function getDefaultSources() {
+        return {
+            DOM: mockDOMSource(xstreamAdapter, {}),
+            storage: { local: { getItem: () => xs.of(null) } },
+            router: { history$: xs.of({ hash: "empty" }) },
+            auth0: xs.empty()
+        };
+    }
 
-        const { DOM, api } = LoginForm({ DOM: DOMSource, api: xs.empty() });
 
-        it("should display login form", (done) => {
-            DOM.addListener(Object.assign({}, emptyListener, {
-                next: vtree => {
-                    const form = select("form", vtree);
-                    expect(form.length).to.be(1);
+    it("should display Auth0 login form", (done) => {
+        const { auth0 } = LoginForm(getDefaultSources());
+
+        auth0.addListener(Object.assign({}, emptyListener, {
+            next: action => {
+                expect(action.action).to.be("show");
+                done();
+            }
+        }));
+    });
+
+    it("should parse token when user is logged in", (done) => {
+        const sources = Object.assign({}, getDefaultSources(), {
+            router: { history$: xs.of({ hash: "#id_token=b64token" }) }
+        });
+
+        const {auth0} = LoginForm(sources);
+
+        auth0
+            .take(1)
+            .addListener(Object.assign({}, emptyListener, {
+                next: action => {
+                    expect(action.action).to.be("parseHash");
                     done();
                 }
             }));
-        })
-
-        it("should not sent api request", () => {
-            api
-                .addListener(Object.assign({}, emptyListener, {
-                    next: () => expect(false).to.be(true)
-                }));
-        });
     });
 
-    xit("should not be submittable if input is not valid", (done) => {
-        const DOMSource = mockDOMSource(xstreamAdapter, {
-            form: {
-                keyup: xs.of({
-                    currentTarget: {
-                        checkValidity: () => false
-                    }
-                })
+    it("should save token in local storage once parsed", (done) => {
+        const sources = Object.assign({}, getDefaultSources(), {
+            auth0: xs.of({
+                action: { action: "parseHash" },
+                response$: xs.of("b64token")
+            })
+        });
+
+        const {storage} = LoginForm(sources);
+
+        storage
+            .take(1)
+            .addListener(Object.assign({}, emptyListener, {
+                next: store => {
+                    expect(store.key).to.be("token");
+                    expect(store.value).to.be("b64token");
+                    done();
+                }
+            }));
+    });
+
+    it("should redirect to app when token is stored", (done) => {
+        const sources = Object.assign({}, getDefaultSources(), {
+            storage: {
+                local: {
+                    getItem: () => xs.of("b64token")
+                }
             }
         });
 
-        const {DOM} = LoginForm({ DOM: DOMSource, api: xs.empty() });
+        const {router} = LoginForm(sources);
 
-        DOM
-            .last()
+        router
+            .take(1)
             .addListener(Object.assign({}, emptyListener, {
-                next: vtree => {
-                    const input = select("input[type=submit]", vtree);
-                    expect(input.length).to.be(1);
-                    expect(input[0].data.attrs.disabled).to.be(true);
-                    done();
-                }
-            }));
-    });
-
-    it("should send login request when user logs in", (done) => {
-        const DOM = mockDOMSource(xstreamAdapter, {
-                "input[name=login]": { change: xs.of({
-                    target: { value: "felix@felix.fr" }
-                }) },
-                "input[name=password]": { change: xs.of({
-                    target: { value: "password" }
-                }) },
-                "form": { submit: xs.of({ preventDefault: () => 1}) }
-            });
-
-        const {api} = LoginForm({ DOM, api: xs.empty() });
-
-
-        api
-            .addListener(Object.assign({}, emptyListener, {
-                next: request => {
-                    expect(request.action).to.be("login");
-                    expect(request.params.login).to.be("felix@felix.fr");
-                    expect(request.params.password).to.be("password");
-                    done();
-                }
-            }));
-    });
-
-    it("should return user and token when logged in", (done) => {
-        const DOM = mockDOMSource(xstreamAdapter, {}),
-            loginResponse$ = xs.of({
-                user: {
-                    pseudo: "felix", login: "felix@felix.fr", password: "password"
-                },
-                token: "usertoken"
-            }),
-            apiResponse$ = xs.of({ request: { action: "login" }, response$: loginResponse$ });
-
-        const {loginData$} = LoginForm({ DOM, api: apiResponse$ });
-
-        loginData$
-            .addListener(Object.assign({}, emptyListener, {
-                next: ({user, token}) => {
-                    expect(user.pseudo).to.be("felix");
-                    expect(user.login).to.be("felix@felix.fr");
-                    expect(token).to.be("usertoken");
-                    done();
-                }
-            }));
-    });
-
-    it("should display error if login fails", (done) => {
-        const DOM = mockDOMSource(xstreamAdapter, {}),
-            loginResponse$ = xs.fromPromise(new Promise(function (resolve, reject) {
-                reject({ error: "login/password don't match" });
-            })),
-            apiResponse$ = xs.of({ request: { action: "login" }, response$: loginResponse$ });
-
-        const sinks = LoginForm({ DOM, api: apiResponse$ });
-
-        sinks
-            .DOM
-            .last()
-            .addListener(Object.assign({}, emptyListener, {
-                next: vtree => {
-                    const input = select(".error", vtree);
-                    expect(input.length).to.be(1);
+                next: path => {
+                    expect(path).to.be("/me");
                     done();
                 }
             }));

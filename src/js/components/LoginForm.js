@@ -6,13 +6,13 @@ function model(storage, router) {
         .local
         .getItem("token");
 
-    const hasAccessTokenHash$ = router
+    const accessTokenHash$ = router
         .history$
-        .map(({ hash }) => hash.indexOf("access_token") > -1);
+        .map(({ hash }) => ({ hash, isPresent: hash.indexOf("id_token") > -1 }));
 
     return xs
-        .combine(token$, hasAccessTokenHash$)
-        .map(([token, hasAccessTokenHash]) => ({ token, hasAccessTokenHash }))
+        .combine(token$, accessTokenHash$)
+        .map(([token, accessTokenHash]) => ({ token, accessTokenHash }))
         .remember();
 }
 
@@ -28,16 +28,15 @@ function LoginForm({storage, auth0, router}) {
         .map(response => ({ key: "token", value: response }));
 
     const showLoginRequest$ = state$
-        .filter(({ token, hasAccessTokenHash }) => !token && !hasAccessTokenHash)
+        .filter(({ token, accessTokenHash }) => !token && !accessTokenHash.isPresent)
         .mapTo({ action: "show", params: {
             authParams: { scope: "openid nickname" },
-            callbackURL: location.origin + "/login",
             responseType: "token"
         }});
 
     const parseHashRequest$ = state$
-        .filter(({ token, hasAccessTokenHash }) => !token && hasAccessTokenHash)
-        .map(({ locationHash }) => ({ action: "parseHash", params: locationHash }));
+        .filter(({ token, accessTokenHash }) => !token && accessTokenHash.isPresent)
+        .map(({ accessTokenHash }) => ({ action: "parseHash", params: accessTokenHash.hash }));
 
     const appRedirect$ = state$
         .filter(({ token }) => !!token)

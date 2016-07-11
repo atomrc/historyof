@@ -13,8 +13,6 @@ module.exports = {
     date: Sequelize.DATE,
     description: Sequelize.TEXT,
     user_id: {
-        type: Sequelize.UUID,
-        model: "user",
-        key: "id"
+        type: Sequelize.STRING
     }
 };

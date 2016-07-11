@@ -26,13 +26,7 @@ app.post("/user/create", UserController.create);
 app.get("/check/:property/:value", UserController.isPropertyAvailable);
 
 //Json Web Token for logged part of the app
-app.use("/u",
-    jwt({
-        secret: new Buffer(process.env.JWT_SECRET, "base64")
-    }),
-    UserController.middlewares.authenticate);
-
-app.get("/u", UserController.get);
+app.use("/u", jwt({ secret: new Buffer(process.env.JWT_SECRET, "base64") }));
 
 app.post("/u/stories", StoriesController.create);
 app.get("/u/stories", StoriesController.getAll);

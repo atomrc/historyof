@@ -5,7 +5,7 @@
 var request = require("supertest"),
     app = require("../../app"),
     setup = require("./setup"),
-    assign = require("object-assign"),
+    assign = Object.assign,
     Promise = require("es6-promise").Promise,
     expect = require("expect.js");
 

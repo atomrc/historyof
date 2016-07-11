@@ -1,8 +1,7 @@
 /*eslint-env node */
 
 "use strict";
-var db = require("../db/db"),
-    assign = require("object-assign");
+var db = require("../db/db");
 
 module.exports = {
     middlewares: {

@@ -1,6 +1,7 @@
 import xs from "xstream";
+import Auth0Lock from "auth0-lock";
 
-var lock$;
+var lock;
 
 const actions = {
     "show": function (lock, params) {
@@ -39,9 +40,8 @@ const actions = {
 };
 
 function auth0Driver(action$, streamAdapter) {
-    const response$$ = xs
-        .combine(lock$, action$)
-        .map(([lock, action]) => {
+    const response$$ = action$
+        .map(action => {
             var actionFn = actions[action.action];
             if (!actionFn) {
                 console.error(`[Auth0Driver] not available method: ${action.action}`);
@@ -64,26 +64,8 @@ function auth0Driver(action$, streamAdapter) {
     return response$$;
 }
 
-function makeAuth0Driver(key, domain, options) {
-    var params = Object.assign({}, {
-        scriptSrc: "//cdn.auth0.com/js/lock-9.1.min.js"
-    }, options);
-
-    lock$ = xs.create({
-        start: (listener) => {
-            //loading auth0 script in the DOM
-            var auth0Script = document.createElement("script");
-            auth0Script.src = params.scriptSrc;
-            document.head.appendChild(auth0Script);
-
-            auth0Script.addEventListener("load", function () {
-                //create the lock once the script has loaded
-                listener.next(new window.Auth0Lock(key, domain));
-            });
-        },
-
-        stop: () => { }
-    });
+function makeAuth0Driver(key, domain) {
+    lock = new Auth0Lock(key, domain);
 
     return auth0Driver;
 }

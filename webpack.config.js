@@ -11,12 +11,15 @@ module.exports = {
     entry: {
         application: "./src/js/application",
         vendor: [
+            "xstream",
             "@cycle/xstream-run",
             "@cycle/dom",
             "@cycle/storage",
             "@cycle/isolate",
+            "@cycle/isolate",
             "uuid",
-            "object-assign"
+            "auth0-lock",
+            "cyclic-router"
             /*"moment",
             "pikaday",
             "whatwg-fetch",
@@ -30,13 +33,31 @@ module.exports = {
     module: {
         loaders: [
             {
+                test: /node_modules[\\\/]auth0-lock[\\\/].*\.js$/,
+                loaders: [
+                    'transform-loader/cacheable?brfs',
+                    'transform-loader/cacheable?packageify'
+                ]
+            },
+            {
+                test: /node_modules[\\\/]auth0-lock[\\\/].*\.ejs$/,
+                loader: 'transform-loader/cacheable?ejsify'
+            },
+            {
+                test: /\.json$/,
+                loader: 'json-loader'
+            },
+            {
                 test: /src\/js.*\.js$/,
                 loader: 'babel',
                 query: {
                     presets: ['es2015']
                 }
             },
-            { test: /\.scss$/, loaders: ["style", "css", "sass"] }
+            {
+                test: /\.scss$/,
+                loaders: ["style", "css", "sass"]
+            }
         ]
     },
     plugins: plugins

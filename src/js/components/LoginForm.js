@@ -16,7 +16,6 @@ function model(storage, router) {
 }
 
 function LoginForm({storage, auth0, router}) {
-
     const state$ = model(storage, router);
 
     const tokenError$ = xs.empty(); //TODO
@@ -26,13 +25,10 @@ function LoginForm({storage, auth0, router}) {
         .map(({ response$ }) => response$)
         .flatten()
         .map(response => ({ key: "token", value: response }));
-        //app
-        //.error$
-        //.filter(error => error.type === "tokenError");
 
     const showLoginRequest$ = state$
         .filter(({ token, hasAccessTokenHash }) => !token && !hasAccessTokenHash)
-        .mapTo({ action: "show" });
+        .mapTo({ action: "show", params: { authParams: { scope: "openid nickname" }}});
 
     const parseHashRequest$ = state$
         .filter(({ token, hasAccessTokenHash }) => !token && hasAccessTokenHash)

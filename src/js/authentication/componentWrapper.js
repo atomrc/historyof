@@ -3,11 +3,11 @@ import xs from "xstream";
 function wrap(Component) {
     return function protectedInstanciation(sources) {
         const { storage } = sources;
-        const sinks = Component(Object.assign({}, sources, { props: { user$: xs.empty() }}));
-
         const token$ = storage
             .local
             .getItem("token")
+
+        const sinks = Component(Object.assign({}, sources, { props: { token$: token$.filter(token => !!token) }}));
 
         const redirectToLogin$ = token$
             .filter(token => !token)

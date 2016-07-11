@@ -19,7 +19,8 @@ module.exports = {
             "@cycle/isolate",
             "uuid",
             "auth0-lock",
-            "cyclic-router"
+            "cyclic-router",
+            "jwt-decode"
             /*"moment",
             "pikaday",
             "whatwg-fetch",

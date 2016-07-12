@@ -1,6 +1,5 @@
 /*global require, module, fetch*/
-var assign = require("object-assign"),
-    fetchPolyfill = require("whatwg-fetch");
+var fetchPolyfill = require("whatwg-fetch");
 
 var config = {
     loginUrl: "/user/authenticate",
@@ -9,7 +8,7 @@ var config = {
 
 function request(url, params={}) {
     params.method = params.method ? params.method : "GET";
-    params.headers = assign({}, {
+    params.headers = Object.assign({}, {
         "Accept": "application/json",
         "Content-Type": "application/json"
     }, params.headers);
@@ -40,7 +39,7 @@ function requestProtected(url, token, params) {
         return Promise.reject("[API] Requesting protected ressource (" + url + ") with no token");
     }
 
-    var conf = assign({}, {
+    var conf = Object.assign({}, {
         headers: {
             Authorization: "Bearer " + token
         }

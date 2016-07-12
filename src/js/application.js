@@ -1,43 +1,50 @@
 import xs from "xstream";
 import {run} from "@cycle/xstream-run";
-import {makeDOMDriver, div} from "@cycle/dom";
+import {makeDOMDriver} from "@cycle/dom";
 import isolate from "@cycle/isolate";
+import wrap from "./authentication/componentWrapper";
 import storageDriver from "@cycle/storage";
+import {makeRouterDriver} from 'cyclic-router'
 import apiDriver from "./apiDriver";
-import AuthContainer from "./components/AuthContainer";
+import makeAuth0Driver from "./drivers/auth0Driver";
+import {createHistory} from "history";
 
-function buildComponent(ComponentFn, props, scope) {
-    return isolate(ComponentFn, scope)(props);
-}
+import App from "./components/App";
 
-function main({DOM, api, storage}) {
+function main(sources) {
+    const {router} = sources;
 
-    const authContainer = AuthContainer({ DOM, api, storage, props: { buildComponent } });
+    const match$ = router.define({
+        "/me": wrap(App)
+    });
 
-    const vtree$ = xs.combine(
-            authContainer.DOM,
-            authContainer.error$.startWith(null)
-        )
-        .map(([authContainerDom, error]) => ({ authContainerDom, error }))
-        .map(({ authContainerDom, error }) => {
-            var errorDiv = error ? div(".error", error.error) : null;
-            return div([
-                errorDiv,
-                authContainerDom
-            ]);
-        });
+    const page$ = match$
+        .map(({ path, value }) => {
+            return value(Object.assign({}, sources, {
+                router: sources.router.path(path)
+            }));
+        })
+        .remember();
+
+    function sinkGetter(sink) {
+        return (component) => component[sink] ? component[sink] : xs.empty();
+    }
 
     return {
-        DOM: vtree$,
-        api: authContainer.api,
-        storage: authContainer.storage
-    }
+        DOM: page$.map(sinkGetter("DOM")).flatten(),
+        api: page$.map(sinkGetter("api")).flatten(),
+        storage: page$.map(sinkGetter("storage")).flatten(),
+        router: page$.map(sinkGetter("router")).flatten(),
+        auth0: page$.map(sinkGetter("auth0")).flatten()
+    };
 }
 
 var drivers = {
     DOM: makeDOMDriver("#main", { transposition: true }),
     api: apiDriver,
-    storage: storageDriver
+    storage: storageDriver,
+    auth0: makeAuth0Driver("tDjcxZrzyKB8a5SPqwn4XqJfdSvW4FXi", "atomrc.eu.auth0.com"),
+    router: makeRouterDriver(createHistory())
 };
 
 run(main, drivers);

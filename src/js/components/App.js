@@ -4,7 +4,7 @@ import Timeline from "./Timeline/Timeline";
 
 function render({user, timeline}) {
     const header = div("#app-header", [
-        span(".pseudo", user.pseudo),
+        span(".pseudo", user.nickname),
         button(".logout", "Logout")
     ]);
 
@@ -45,6 +45,7 @@ function view(user$, timelineView$) {
 
 function App({DOM, api, props}) {
     const { user$ } = props;
+
     const { logoutAction$, stories$ } = intent(DOM, api);
 
     const timeline = Timeline({ DOM, api, props: { stories$ }})

@@ -24,7 +24,7 @@
     "express": "^4.13.3",
     "express-jwt": "^3.1.0",
     "gulp": "*",
-    "gulp-jade": "*",
+    "gulp-pug": "*",
     "gulp-sass": "*",
     "history": "^1.17.0",
     "jsonwebtoken": "^6.2.0",

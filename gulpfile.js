@@ -4,7 +4,7 @@
 var production = (process.env.NODE_ENV === "production");
 
 var gulp = require("gulp"),
-    jade = require("gulp-jade"),
+    pug = require("gulp-pug"),
     sass = require("gulp-sass"),
     webpack = require("webpack"),
     webpackConfig = require("./webpack.config.js");
@@ -23,10 +23,10 @@ gulp.task("js", function (done) {
     });
 });
 
-gulp.task("jade", function () {
+gulp.task("pug", function () {
     return gulp
         .src("./src/*.jade")
-        .pipe(jade())
+        .pipe(pug())
         .pipe(gulp.dest("./public"));
 });
 
@@ -40,7 +40,7 @@ gulp.task("sass", function () {
 gulp.task("watch", function () {
     gulp.watch("src/js/**/*.js", ["js"]);
     gulp.watch("src/scss/*.scss", ["sass"]);
-    gulp.watch("src/*.jade", ["jade"]);
+    gulp.watch("src/*.jade", ["pug"]);
 });
 
-gulp.task("default", ["jade", "sass", "js"]);
+gulp.task("default", ["pug", "sass", "js"]);

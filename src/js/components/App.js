@@ -1,7 +1,6 @@
 import xs from "xstream";
 import {div, button, span} from "@cycle/dom";
 import Timeline from "./Timeline/Timeline";
-import jwtDecode from "jwt-decode";
 
 function render({user, timeline}) {
     const header = div("#app-header", [
@@ -35,11 +34,6 @@ function intent(DOM, api) {
     };
 }
 
-function model(token$) {
-    return token$
-        .map(jwtDecode);
-}
-
 function view(user$, timelineView$) {
     return xs.combine(
             user$,
@@ -50,8 +44,7 @@ function view(user$, timelineView$) {
 }
 
 function App({DOM, api, props}) {
-    const { token$ } = props;
-    const user$ = model(token$);
+    const { user$ } = props;
 
     const { logoutAction$, stories$ } = intent(DOM, api);
 

@@ -3,7 +3,6 @@
 const APP_PATH = __dirname + "/../../../src/js";
 
 import xs from "xstream";
-import jwt from "jsonwebtoken";
 import expect from "expect.js";
 import select from "snabbdom-selector";
 import {mockDOMSource} from '@cycle/dom';
@@ -13,13 +12,13 @@ import {generateListener} from "../helpers";
 
 describe("App Component", () => {
     const App = require(APP_PATH + "/components/App").default,
-        token = jwt.sign({ nickname: "felix" }, "secret");
+        user = { nickname: "felix" };
 
     function genDefaultSources(overrides) {
         const sources = {
             DOM: mockDOMSource(xstreamAdapter, {}),
             api: xs.empty(),
-            props: { token$: xs.of(token) }
+            props: { user$: xs.of(user) }
         };
 
         return Object.assign({}, sources, overrides);

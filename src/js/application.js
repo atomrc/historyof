@@ -9,14 +9,12 @@ import apiDriver from "./apiDriver";
 import makeAuth0Driver from "./drivers/auth0Driver";
 import {createHistory} from "history";
 
-import LoginForm from "./components/LoginForm";
 import App from "./components/App";
 
 function main(sources) {
     const {router} = sources;
 
     const match$ = router.define({
-        "/login": isolate(LoginForm),
         "/me": wrap(App)
     });
 

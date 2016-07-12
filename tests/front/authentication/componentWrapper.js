@@ -3,9 +3,6 @@
 const APP_PATH = __dirname + "/../../../src/js";
 
 import expect from "expect.js";
-import select from "snabbdom-selector";
-import {mockDOMSource} from '@cycle/dom';
-import xstreamAdapter from '@cycle/xstream-adapter';
 
 import xs from "xstream";
 
@@ -15,21 +12,23 @@ const emptyListener = {
     complete: () => null
 };
 
-describe("LoginForm Component", () => {
-    const LoginForm = require(APP_PATH + "/components/LoginForm").default;
+describe("Authentication Component wrapper", () => {
+    const wrap = require(APP_PATH + "/authentication/componentWrapper").default;
 
     function getDefaultSources() {
         return {
-            DOM: mockDOMSource(xstreamAdapter, {}),
             storage: { local: { getItem: () => xs.of(null) } },
-            router: { history$: xs.of({ hash: "empty" }) },
+            router: { history$: xs.of({ hash: "" }) },
             auth0: xs.empty()
         };
     }
 
+    function DummyComponent() {
+        return {};
+    }
 
     it("should display Auth0 login form", (done) => {
-        const { auth0 } = LoginForm(getDefaultSources());
+        const { auth0 } = wrap(DummyComponent)(getDefaultSources());
 
         auth0.addListener(Object.assign({}, emptyListener, {
             next: action => {
@@ -44,7 +43,8 @@ describe("LoginForm Component", () => {
             router: { history$: xs.of({ hash: "#id_token=b64token" }) }
         });
 
-        const {auth0} = LoginForm(sources);
+        const Component = wrap(DummyComponent);
+        const {auth0} = Component(sources);
 
         auth0
             .take(1)
@@ -64,7 +64,8 @@ describe("LoginForm Component", () => {
             })
         });
 
-        const {storage} = LoginForm(sources);
+        const Component = wrap(DummyComponent);
+        const {storage} = Component(sources);
 
         storage
             .take(1)
@@ -77,7 +78,13 @@ describe("LoginForm Component", () => {
             }));
     });
 
-    it("should redirect to app when token is stored", (done) => {
+    it("should display component when user is logged in", (done) => {
+        function Component() {
+            return {
+                DOM: xs.of("component DOM")
+            };
+        }
+
         const sources = Object.assign({}, getDefaultSources(), {
             storage: {
                 local: {
@@ -86,13 +93,13 @@ describe("LoginForm Component", () => {
             }
         });
 
-        const {router} = LoginForm(sources);
+        const {DOM} = wrap(Component)(sources);
 
-        router
+        DOM
             .take(1)
             .addListener(Object.assign({}, emptyListener, {
-                next: path => {
-                    expect(path).to.be("/me");
+                next: dom => {
+                    expect(dom).to.be("component DOM");
                     done();
                 }
             }));

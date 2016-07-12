@@ -3,6 +3,7 @@
 const APP_PATH = __dirname + "/../../../src/js";
 
 import xs from "xstream";
+import jwt from "jsonwebtoken";
 import expect from "expect.js";
 import select from "snabbdom-selector";
 import {mockDOMSource} from '@cycle/dom';
@@ -11,13 +12,23 @@ import xstreamAdapter from '@cycle/xstream-adapter';
 import {generateListener} from "../helpers";
 
 describe("App Component", () => {
-    const App = require(APP_PATH + "/components/App").default;
+    const App = require(APP_PATH + "/components/App").default,
+        token = jwt.sign({ nickname: "felix" }, "secret");
+
+    function genDefaultSources(overrides) {
+        const sources = {
+            DOM: mockDOMSource(xstreamAdapter, {}),
+            api: xs.empty(),
+            props: { token$: xs.of(token) }
+        };
+
+        return Object.assign({}, sources, overrides);
+    }
 
     describe("App init", () => {
-        const DOMSource = mockDOMSource(xstreamAdapter, {}),
-            user$ = xs.of({ pseudo: "felix", login: "felix@felix.fr", password: "password" });
+        const sources = genDefaultSources({});
 
-        const {DOM, api}  = App({ DOM: DOMSource, api: xs.empty(), props: { user$ } });
+        const {DOM, api}  = App(sources);
 
         it("should display user", (done) => {
             DOM
@@ -44,12 +55,13 @@ describe("App Component", () => {
     });
 
     it("should return logout action when user logs out", (done) => {
-        const DOM = mockDOMSource(xstreamAdapter, {
+        const sources = genDefaultSources({
+            DOM: mockDOMSource(xstreamAdapter, {
                 ".logout": { click: xs.of({}) }
-            }),
-            user$ = xs.of({ pseudo: "felix", login: "felix@felix.fr", password: "password" });
+            })
+        });
 
-        const {action$} = App({ DOM, api: xs.empty(), props: { user$ } });
+        const {action$} = App(sources);
 
         action$
             .addListener(generateListener({

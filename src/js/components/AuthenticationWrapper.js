@@ -33,6 +33,13 @@ function render(user$, componentDOM) {
         .flatten();
 }
 
+/**
+ * Responsible for wrapping a generic component with an authentication layer
+ * Will also decorate all api call of the child component with the user's token
+ *
+ * @param {Object} sources sources (that will also be used by the child component)
+ * @returns {Object} sinks
+ */
 function AuthenticationWrapper(sources) {
     const { storage, router, auth0 } = sources;
     const { Child } = sources.props;

@@ -1,14 +1,14 @@
 import xs from "xstream";
 import {run} from "@cycle/xstream-run";
+
 import {makeDOMDriver} from "@cycle/dom";
-import isolate from "@cycle/isolate";
-import wrap from "./authentication/componentWrapper";
 import storageDriver from "@cycle/storage";
 import {makeRouterDriver} from 'cyclic-router'
 import apiDriver from "./apiDriver";
 import makeAuth0Driver from "./drivers/auth0Driver";
 import {createHistory} from "history";
 
+import wrap from "./authentication/componentWrapper";
 import App from "./components/App";
 
 function main(sources) {

@@ -10,4 +10,4 @@ install:
   - psql -c 'create database historyoftest;' -U postgres
   - npm install
 env:
-  - POSTGRESQL_ADDON_HOST=localhost POSTGRESQL_ADDON_USER="" POSTGRESQL_ADDON_PASSWORD="" POSTGRESQL_ADDON_DB=historyoftest
+  - POSTGRESQL_ADDON_HOST=localhost POSTGRESQL_ADDON_USER="" POSTGRESQL_ADDON_PASSWORD="" POSTGRESQL_ADDON_DB=historyoftest JWT_SECRET="secret"

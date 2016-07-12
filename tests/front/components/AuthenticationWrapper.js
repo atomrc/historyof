@@ -14,24 +14,23 @@ const emptyListener = {
     complete: () => null
 };
 
-describe("Authentication Component wrapper", () => {
-    const wrap = require(APP_PATH + "/authentication/componentWrapper").default,
+describe("AuthenticationWrapper", () => {
+    const AuthenticationWrapper = require(APP_PATH + "/components/AuthenticationWrapper").default,
         token = jwt.sign({ nickname: "felix" }, "secret");
 
     function getDefaultSources() {
         return {
             storage: { local: { getItem: () => xs.of(null) } },
             router: { history$: xs.of({ hash: "" }) },
-            auth0: xs.empty()
+            auth0: xs.empty(),
+            props: {
+                Child: () => ({})
+            }
         };
     }
 
-    function DummyComponent() {
-        return {};
-    }
-
     describe("Unlogged", function () {
-        const { auth0, DOM } = wrap(DummyComponent)(getDefaultSources());
+        const { auth0, DOM } = AuthenticationWrapper(getDefaultSources());
 
         it("should trigger Auth0 login form", (done) => {
             auth0.addListener(Object.assign({}, emptyListener, {
@@ -57,8 +56,7 @@ describe("Authentication Component wrapper", () => {
             router: { history$: xs.of({ hash: "#id_token=b64token" }) }
         });
 
-        const Component = wrap(DummyComponent);
-        const {auth0} = Component(sources);
+        const {auth0} = AuthenticationWrapper(sources);
 
         auth0
             .take(1)
@@ -78,8 +76,7 @@ describe("Authentication Component wrapper", () => {
             })
         });
 
-        const Component = wrap(DummyComponent);
-        const {storage} = Component(sources);
+        const {storage} = AuthenticationWrapper(sources);
 
         storage
             .take(1)
@@ -105,10 +102,11 @@ describe("Authentication Component wrapper", () => {
                 local: {
                     getItem: () => xs.of(token)
                 }
-            }
+            },
+            props: { Child: Component }
         });
 
-        const {DOM, router} = wrap(Component)(sources);
+        const {DOM, router} = AuthenticationWrapper(sources);
 
         it("should display component when user is logged in", (done) => {
             DOM
@@ -146,10 +144,11 @@ describe("Authentication Component wrapper", () => {
                 local: {
                     getItem: () => xs.of("b64token")
                 }
-            }
+            },
+            props: { Child: Component }
         });
 
-        const { storage } = wrap(Component)(sources);
+        const { storage } = AuthenticationWrapper(sources);
 
         storage
             .take(1)

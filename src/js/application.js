@@ -8,14 +8,21 @@ import apiDriver from "./apiDriver";
 import makeAuth0Driver from "./drivers/auth0Driver";
 import {createHistory} from "history";
 
-import wrap from "./authentication/componentWrapper";
+import AuthenticationWrapper from "./components/AuthenticationWrapper";
 import App from "./components/App";
+
+function protect(Component) {
+    return (sources) => {
+        const decoratedSources = Object.assign({}, sources, { props: { Child: Component } });
+        return AuthenticationWrapper(decoratedSources);
+    };
+}
 
 function main(sources) {
     const {router} = sources;
 
     const match$ = router.define({
-        "/me": wrap(App)
+        "/me": protect(App)
     });
 
     const page$ = match$

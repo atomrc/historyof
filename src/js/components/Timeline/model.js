@@ -9,7 +9,7 @@ function add(stories, story) {
     return stories.concat(Object.assign({}, story, { id: uuid.v1() }));
 }
 
-function model(showFormAction$, addAction$, removeAction$, api) {
+function model(showFormAction$, cancelEditAction$, addAction$, removeAction$, api) {
 
     const initialStories$ = api
         .filter(({ request }) => request.action === "fetchStories")
@@ -34,8 +34,11 @@ function model(showFormAction$, addAction$, removeAction$, api) {
     const stories$ = reducer$
         .fold((stories, reduceFn) => reduceFn(stories), []);
 
-    const showForm$ = showFormAction$
-        .mapTo(true)
+    const showForm$ = xs.merge(
+            showFormAction$.mapTo(true),
+            cancelEditAction$.mapTo(false),
+            addAction$.mapTo(false)
+        )
         .startWith(false);
 
     return xs

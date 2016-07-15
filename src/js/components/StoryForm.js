@@ -1,5 +1,5 @@
 import xs from "xstream";
-import {form, input, div} from "@cycle/dom";
+import {form, input, div, button} from "@cycle/dom";
 import assign from "object-assign";
 
 function intent(DOM) {
@@ -17,7 +17,12 @@ function intent(DOM) {
         })
         .mapTo("add");
 
-    return {addAction$, editAction$};
+    const cancelAction$ = DOM
+        .select("button.cancel")
+        .events("click")
+        .mapTo("cancel");
+
+    return {addAction$, editAction$, cancelAction$};
 }
 
 function model({story$, editAction$, addAction$}) {
@@ -34,7 +39,8 @@ function view(state$) {
         .map(story => div([
             form(".story-form", [
                 input({ props: { name: "title", value: story.title || "" }}),
-                input({ props: { type: "submit", value: "Save" }})
+                input({ props: { type: "submit", value: "Save" }}),
+                button(".cancel", { props: { type: "button" }}, "Cancel")
             ])
         ]));
 }
@@ -42,18 +48,24 @@ function view(state$) {
 function StoryForm({ DOM, props }) {
     const { story$ } = props;
 
-    const {addAction$, editAction$} = intent(DOM);
+    const {addAction$, editAction$, cancelAction$} = intent(DOM);
     const state$ = model({story$, addAction$, editAction$});
     const vTree$ = view(state$);
 
     const storyToAdd$ = state$.filter(story => story.title);
 
+    const cancelActionSink$ = cancelAction$
+        .mapTo({ type: "cancel" });
+
+    const addActionSink$ = addAction$
+        .mapTo(storyToAdd$)
+        .flatten()
+        .map(story => assign({}, story, { date: new Date() }))
+        .map(story => ({ type: "add", story: story }));
+
     return {
         DOM: vTree$,
-        addAction$: addAction$
-            .mapTo(storyToAdd$)
-            .flatten()
-            .map(story => assign({}, story, { date: new Date() }))
+        action$: xs.merge(cancelActionSink$, addActionSink$)
     };
 }
 

@@ -5,7 +5,7 @@ import StoryItem from "../StoryItem";
 import isolate from "@cycle/isolate";
 import model from "./model";
 
-function intent(DOM, itemActions$, addAction$) {
+function intent(DOM, itemActions$, formAction$) {
     const showFormAction$ = DOM
         .select("button.show-form")
         .events("click");
@@ -18,7 +18,11 @@ function intent(DOM, itemActions$, addAction$) {
 
     return {
         showFormAction$,
-        addAction$,
+        addAction$: formAction$
+            .filter(action => action.type === "add")
+            .map(action => action.story),
+        cancelEditAction$: formAction$
+            .filter(action => action.type === "cancel"),
         editAction$,
         removeAction$
     };
@@ -33,7 +37,13 @@ function render(state$, user$, itemViews$, formView$) {
             formView$
         )
         .map(([state, user, itemViews, formView]) => {
-            const form = state.showForm ? formView : null;
+            const form = state.showForm ?
+                div("#form-container", {
+                    hooks: {
+                        remove: () => console.log("remove")
+                    }
+                }, [formView]) :
+                null;
             return div(".timeline", [
                 div(".timeline-header", [
                     table(".fluid-content", [
@@ -76,8 +86,8 @@ function Timeline({DOM, api, props}) {
 
     const storyForm = isolate(StoryForm)({DOM, props: { story$: xs.never() }});
 
-    const { showFormAction$, addAction$, removeAction$ } = intent(DOM, itemActionProxy$, storyForm.addAction$);
-    const state$ = model(showFormAction$, addAction$, removeAction$, api);
+    const { showFormAction$, addAction$, cancelEditAction$, removeAction$ } = intent(DOM, itemActionProxy$, storyForm.action$);
+    const state$ = model(showFormAction$, cancelEditAction$, addAction$, removeAction$, api);
 
     const storyItems$ = state$
         .map(({ stories }) => stories.map(createStoryItem(DOM)))

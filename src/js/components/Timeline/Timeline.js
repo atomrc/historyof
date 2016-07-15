@@ -5,7 +5,11 @@ import StoryItem from "../StoryItem";
 import isolate from "@cycle/isolate";
 import model from "./model";
 
-function intent(itemActions$, addAction$) {
+function intent(DOM, itemActions$, addAction$) {
+    const showFormAction$ = DOM
+        .select("button.show-form")
+        .events("click");
+
     const removeAction$ = itemActions$
         .filter(action => action.type === "remove")
 
@@ -13,6 +17,7 @@ function intent(itemActions$, addAction$) {
         .filter(action => action.type === "edit");
 
     return {
+        showFormAction$,
         addAction$,
         editAction$,
         removeAction$
@@ -35,7 +40,7 @@ function render(user$, itemViews$, formView$) {
                             span(itemViews.length + " stories")
                         ]),
                         td([
-                            button(".flat-button", [
+                            button(".flat-button.show-form", [
                                 i(".fa.fa-book"),
                                 " I feel like writting :)"
                             ])
@@ -67,11 +72,11 @@ function Timeline({DOM, api, props}) {
 
     const storyForm = isolate(StoryForm)({DOM, props: { story$: xs.never() }});
 
-    const { addAction$, removeAction$ } = intent(itemActionProxy$, storyForm.addAction$);
-    const stories$ = model(addAction$, removeAction$, api);
+    const { showFormAction$, addAction$, removeAction$ } = intent(DOM, itemActionProxy$, storyForm.addAction$);
+    const state$ = model(showFormAction$, addAction$, removeAction$, api);
 
-    const storyItems$ = stories$
-        .map(stories => stories.map(createStoryItem(DOM)))
+    const storyItems$ = state$
+        .map(({ stories }) => stories.map(createStoryItem(DOM)))
         .remember();
 
     const itemsAction$ = storyItems$

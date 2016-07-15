@@ -24,33 +24,37 @@ function intent(DOM, itemActions$, addAction$) {
     };
 }
 
-function render(user$, itemViews$, formView$) {
+function render(state$, user$, itemViews$, formView$) {
     return xs
         .combine(
+            state$,
             user$,
             itemViews$,
             formView$
         )
-        .map(([user, itemViews, formView]) => div(".timeline", [
-            div(".timeline-header", [
-                table(".fluid-content", [
-                    tr([
-                        td([
-                            h1(user.nickname + "'s timeline"),
-                            span(itemViews.length + " stories")
-                        ]),
-                        td([
-                            button(".flat-button.show-form", [
-                                i(".fa.fa-book"),
-                                " I feel like writting :)"
+        .map(([state, user, itemViews, formView]) => {
+            const form = state.showForm ? formView : null;
+            return div(".timeline", [
+                div(".timeline-header", [
+                    table(".fluid-content", [
+                        tr([
+                            td([
+                                h1(user.nickname + "'s timeline"),
+                                span(itemViews.length + " stories")
+                            ]),
+                            td([
+                                button(".flat-button.show-form", [
+                                    i(".fa.fa-book"),
+                                    " I feel like writting :)"
+                                ])
                             ])
                         ])
                     ])
-                ])
-            ]),
-            ul(itemViews),
-            formView
-        ]));
+                ]),
+                ul(itemViews),
+                form
+            ])
+        });
 }
 
 function createStoryItem(DOM) {
@@ -97,7 +101,7 @@ function Timeline({DOM, api, props}) {
     const apiFetchStoriesRequest$ = xs.of({ action: "fetchStories" });
 
     return {
-        DOM: render(user$, itemViews$, storyForm.DOM),
+        DOM: render(state$, user$, itemViews$, storyForm.DOM),
         api: xs.merge(apiRemoveRequest$, apiAddRequest$, apiFetchStoriesRequest$)
     };
 }

@@ -45,16 +45,17 @@ function createStoryItem(DOM) {
     };
 }
 
-function Timeline({DOM, props}) {
-    const { stories$ } = props;
+function Timeline({DOM, api, props}) {
+    const { user$ } = props;
+
     const itemActionProxy$ = xs.create();
 
     const storyForm = isolate(StoryForm)({DOM, props: { story$: xs.never() }});
 
     const { addAction$, removeAction$ } = intent(itemActionProxy$, storyForm.addAction$);
-    const storiesModel$ = model(addAction$, removeAction$, stories$);
+    const stories$ = model(addAction$, removeAction$, api);
 
-    const storyItems$ = storiesModel$
+    const storyItems$ = stories$
         .map(stories => stories.map(createStoryItem(DOM)))
         .remember();
 
@@ -73,9 +74,11 @@ function Timeline({DOM, props}) {
     const apiRemoveRequest$ = removeAction$
         .map(action => ({ action: "removeStory", params: { story: action.params.story } }))
 
+    const apiFetchStoriesRequest$ = xs.of({ action: "fetchStories" });
+
     return {
-        DOM: render(itemViews$, storyForm.DOM),
-        api: xs.merge(apiRemoveRequest$, apiAddRequest$)
+        DOM: render(user$, itemViews$, storyForm.DOM),
+        api: xs.merge(apiRemoveRequest$, apiAddRequest$, apiFetchStoriesRequest$)
     };
 }
 

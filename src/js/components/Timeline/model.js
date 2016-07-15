@@ -9,7 +9,15 @@ function add(stories, story) {
     return stories.concat(Object.assign({}, story, { id: uuid.v1() }));
 }
 
-function model(addAction$, removeAction$, stories$) {
+function model(addAction$, removeAction$, api) {
+    const stories$ = api
+        .filter(({ request }) => request.action === "fetchStories")
+        .map(({ response$ }) =>
+            response$.replaceError(error => xs.of({ error }))
+        )
+        .flatten()
+        .remember();
+
     const removeReducer$ = removeAction$
         .map(action => (stories) => remove(stories, action.params.story))
 

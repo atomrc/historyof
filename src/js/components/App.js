@@ -1,8 +1,7 @@
 import xs from "xstream";
 import {div, button, span} from "@cycle/dom";
-import Timeline from "./Timeline/Timeline";
 
-function render({user, timeline}) {
+function render({user, childDOM}) {
     const header = div("#app-header", [
         span(".pseudo", user.nickname),
         button(".logout", "Logout")
@@ -10,51 +9,41 @@ function render({user, timeline}) {
 
     return div("#app", [
         header,
-        timeline
+        childDOM
     ]);
 }
 
-function intent(DOM, api) {
+function intent(DOM) {
     const logoutAction$ = DOM
         .select(".logout")
         .events("click")
         .mapTo({ type: "logout" });
 
-    const storiesResponse$ = api
-        .filter(({ request }) => request.action === "fetchStories")
-        .map(({ response$ }) =>
-            response$.replaceError(error => xs.of({ error }))
-        )
-        .flatten()
-        .remember();
-
-    return {
-        logoutAction$,
-        stories$: storiesResponse$.filter(res => !res.error)
-    };
+    return logoutAction$;
 }
 
-function view(user$, timelineView$) {
+function view(user$, childDOM$) {
     return xs.combine(
             user$,
-            timelineView$
+            childDOM$
         )
-        .map(([user, timeline]) => ({user, timeline}))
+        .map(([user, childDOM]) => ({user, childDOM}))
         .map(render);
 }
 
-function App({DOM, api, props}) {
-    const { user$ } = props;
+function App(sources) {
+    const {DOM, api, props} = sources;
+    const { Child, user$ } = props;
 
-    const { logoutAction$, stories$ } = intent(DOM, api);
+    const logoutAction$ = intent(DOM, api);
 
-    const timeline = Timeline({ DOM, api, props: { stories$ }})
-
-    const apiRequest$ = user$.mapTo({ action: "fetchStories" });
+    const child = Child(Object.assign({}, sources, {
+        props: { user$ }
+    }));
 
     return {
-        DOM: view(user$, timeline.DOM),
-        api: xs.merge(apiRequest$, timeline.api),
+        DOM: view(user$, child.DOM),
+        api: child.api,
         action$: logoutAction$
     }
 }

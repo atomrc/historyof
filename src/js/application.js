@@ -10,6 +10,9 @@ import {createHistory} from "history";
 
 import AuthenticationWrapper from "./components/AuthenticationWrapper";
 import App from "./components/App";
+import Timeline from "./components/Timeline/Timeline";
+
+const assign = Object.assign;
 
 function protect(Component) {
     return (sources) => {
@@ -18,11 +21,20 @@ function protect(Component) {
     };
 }
 
+function compose(Parent, Child) {
+    return function (sources) {
+        const parentProps = assign({}, sources.props, { Child });
+        const parentSources = assign({}, sources, { props: parentProps });
+
+        return Parent(parentSources);
+    }
+}
+
 function main(sources) {
     const {router} = sources;
 
     const match$ = router.define({
-        "/me": protect(App)
+        "/me": protect(compose(App, Timeline))
     });
 
     const page$ = match$

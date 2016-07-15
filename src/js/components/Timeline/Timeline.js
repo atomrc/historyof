@@ -47,6 +47,7 @@ function render(state$, user$, itemViews$, formView$) {
                     }
                 }, [formView]) :
                 null;
+
             return div(".timeline", [
                 div(".timeline-header", [
                     table(".fluid-content", [

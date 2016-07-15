@@ -1,5 +1,5 @@
 import xs from "xstream";
-import {form, input, div, button} from "@cycle/dom";
+import {form, input, div, a, button, textarea} from "@cycle/dom";
 import assign from "object-assign";
 
 function intent(DOM) {
@@ -9,7 +9,7 @@ function intent(DOM) {
         .map(ev => ({ [ev.target.name]: ev.target.value }));
 
     const addAction$ = DOM
-        .select(".story-form")
+        .select("#story-form")
         .events("submit")
         .map(ev => {
             ev.preventDefault()
@@ -18,7 +18,7 @@ function intent(DOM) {
         .mapTo("add");
 
     const cancelAction$ = DOM
-        .select("button.cancel")
+        .select(".cancel")
         .events("click")
         .mapTo("cancel");
 
@@ -37,10 +37,26 @@ function model({story$, editAction$, addAction$}) {
 function view(state$) {
     return state$
         .map(story => div([
-            form(".story-form", [
-                input({ props: { name: "title", value: story.title || "" }}),
-                input({ props: { type: "submit", value: "Save" }}),
-                button(".cancel", { props: { type: "button" }}, "Cancel")
+            form("#story-form", [
+                div([
+                    input({ props: {
+                        placeholder: "Title",
+                        name: "title",
+                        value: story.title || ""
+                    }})
+                ]),
+                div([
+                    textarea({ props: {
+                        rows: "2",
+                        name: "description",
+                        placeholder: "Your story",
+                        value: story.description || ""
+                    }})
+                ]),
+                div(".actions", [
+                    button(".flat-button", { props: { type: "submit" }}, "Save"),
+                    a(".cancel", { props: { href: "#" }}, "Cancel")
+                ])
             ])
         ]));
 }

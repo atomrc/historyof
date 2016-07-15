@@ -39,8 +39,11 @@ function render(state$, user$, itemViews$, formView$) {
         .map(([state, user, itemViews, formView]) => {
             const form = state.showForm ?
                 div("#form-container", {
-                    hooks: {
-                        remove: () => console.log("remove")
+                    style: {
+                        opacity: "0",
+                        transition: "opacity .5s",
+                        delayed: { opacity: "1" },
+                        remove: { opacity: "0" }
                     }
                 }, [formView]) :
                 null;

@@ -1,12 +1,11 @@
 import xs from "xstream";
-import {div, span, ul} from "@cycle/dom";
+import {div, span, ul, h1, table, tr, td, i, button} from "@cycle/dom";
 import StoryForm from "../StoryForm";
 import StoryItem from "../StoryItem";
 import isolate from "@cycle/isolate";
 import model from "./model";
 
 function intent(itemActions$, addAction$) {
-
     const removeAction$ = itemActions$
         .filter(action => action.type === "remove")
 
@@ -20,14 +19,30 @@ function intent(itemActions$, addAction$) {
     };
 }
 
-function render(itemViews$, formView$) {
+function render(user$, itemViews$, formView$) {
     return xs
         .combine(
+            user$,
             itemViews$,
             formView$
         )
-        .map(([itemViews, formView]) => div(".timeline", [
-            span(".header", itemViews.length + " stories"),
+        .map(([user, itemViews, formView]) => div(".timeline", [
+            div(".timeline-header", [
+                table(".fluid-content", [
+                    tr([
+                        td([
+                            h1(user.nickname + "'s timeline"),
+                            span(itemViews.length + " stories")
+                        ]),
+                        td([
+                            button(".flat-button", [
+                                i(".fa.fa-book"),
+                                " I feel like writting :)"
+                            ])
+                        ])
+                    ])
+                ])
+            ]),
             ul(itemViews),
             formView
         ]));

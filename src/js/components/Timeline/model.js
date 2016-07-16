@@ -32,6 +32,23 @@ function model(showFormAction$, addAction$, edit$, removeAction$, api) {
     const stories$ = reducer$
         .fold((stories, reduceFn) => reduceFn(stories), []);
 
+    const groupedStories$ = stories$
+        .map(stories => {
+            const groups = {};
+            const years = [];
+            for (var story of stories) {
+                const year = story.date.getFullYear();
+                groups[year] = groups[year] ? groups[year] : [];
+
+                groups[year].push(story);
+            }
+
+            for (var year of Object.keys(groups)) {
+                years.push({ year: year, stories: groups[year] });
+            }
+            return years;
+        });
+
     const editedStory$ = edit$
         .map(storyData => {
             if (!storyData) {
@@ -53,7 +70,8 @@ function model(showFormAction$, addAction$, edit$, removeAction$, api) {
 
     return {
         editedStory$,
-        stories$
+        stories$,
+        years$: groupedStories$
     };
 }
 

@@ -2,7 +2,7 @@ import xs from "xstream";
 import {div, span, ul, h1, table, tr, td, i, a} from "@cycle/dom";
 import Collection from '@cycle/collection';
 import StoryForm from "../StoryForm";
-import StoryItem from "../StoryItem";
+import Year from "../Year";
 import isolate from "@cycle/isolate";
 import model from "./model";
 
@@ -34,16 +34,16 @@ function intent(DOM, itemActions$, formAction$) {
     };
 }
 
-function render(editedStory$, user$, itemViews$, formView$) {
+function render(editedStory$, user$, yearsView$, formView$) {
     return xs
         .combine(
             editedStory$,
             user$,
-            itemViews$,
+            yearsView$,
             formView$
         )
-        .map(([editedStory, user, itemViews, formView]) => {
-            const form = editedStory ? 
+        .map(([editedStory, user, yearsView, formView]) => {
+            const form = editedStory ?
                 div("#form-container", {
                     style: {
                         opacity: "0",
@@ -60,7 +60,7 @@ function render(editedStory$, user$, itemViews$, formView$) {
                         tr([
                             td([
                                 h1(user.nickname + "'s timeline"),
-                                span(itemViews.length + " stories")
+                                span(yearsView.length + " stories")
                             ]),
                             td([
                                 a(".flat-button.show-form", {
@@ -73,7 +73,7 @@ function render(editedStory$, user$, itemViews$, formView$) {
                         ])
                     ])
                 ]),
-                ul(itemViews),
+                ul(yearsView),
                 form
             ])
         });
@@ -83,7 +83,7 @@ function Timeline(sources) {
     const {DOM, api, props} = sources;
     const { user$, edit$ = xs.of(null) } = props;
 
-    const itemActionProxy$ = xs.create();
+    const yearsActionProxy$ = xs.create();
     const storyFormActionProxy$ = xs.create();
 
     const {
@@ -91,31 +91,28 @@ function Timeline(sources) {
         addAction$,
         removeAction$,
         navigate$
-    } = intent(DOM, itemActionProxy$, storyFormActionProxy$);
+    } = intent(DOM, yearsActionProxy$, storyFormActionProxy$);
 
     const {
         editedStory$,
+        years$,
         stories$
     } = model(showFormAction$, addAction$, edit$, removeAction$, api);
 
-    const storyItems$ = Collection
+    const yearsItems$ = Collection
         .gather(
-            StoryItem,
+            Year,
             sources,
-            stories$.map(stories => stories.map(story => ({ id: story.id, story$: story })))
+            years$.map(years => years.map(year => ({ id: year.year, year$: { year: year.year, stories: year.stories }})))
         );
-
-    const itemsAction$ = storyItems$
-        .map((items) => items.map(item => item.action$))
-        .map(actions => xs.merge(...actions))
-        .flatten()
 
     const storyForm = isolate(StoryForm)({DOM, props: { story$: editedStory$ }});
 
-    const itemNavigate$ = Collection.merge(storyItems$, item => item.router);
-    const itemViews$ = Collection.pluck(storyItems$, item => item.DOM);
+    const itemNavigate$ = Collection.merge(yearsItems$, item => item.router);
+    const yearsAction$ = Collection.merge(yearsItems$, item => item.action$);
+    const yearsView$ = Collection.pluck(yearsItems$, item => item.DOM);
 
-    itemActionProxy$.imitate(itemsAction$);
+    yearsActionProxy$.imitate(yearsAction$);
     storyFormActionProxy$.imitate(storyForm.action$);
 
     const apiAddRequest$ = addAction$
@@ -139,7 +136,7 @@ function Timeline(sources) {
         .flatten()
 
     return {
-        DOM: render(editedStory$, user$, itemViews$, storyForm.DOM),
+        DOM: render(editedStory$, user$, yearsView$, storyForm.DOM),
         api: xs.merge(apiRemoveRequest$, apiAddRequest$, apiFetchStoriesRequest$),
         router: xs.merge(navigate$, itemNavigate$, storyForm.router, storySaved$.mapTo("/me"))
     };

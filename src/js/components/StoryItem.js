@@ -21,7 +21,7 @@ function intent(DOM) {
     };
 }
 
-function view(story$) {
+function view(story$, router) {
     return story$
         .map((story) => div(".story", [
             header([
@@ -38,7 +38,7 @@ function view(story$) {
                     ]),
                     div([strong(story.title)]),
                     div(".actions", [
-                        a(".edit", { props: { href: "/me/story/" + story.id + "/edit" } }, [
+                        a(".edit", { props: { href: router.createHref("/story/" + story.id + "/edit") } }, [
                             i(".fa.fa-pencil")
                         ]),
                         " ",
@@ -55,7 +55,7 @@ function view(story$) {
         ]));
 }
 
-function StoryItem({DOM, story$}) {
+function StoryItem({DOM, router, story$}) {
     const { action$, navigate$ } = intent(DOM);
 
     const decoratedAction$ = action$
@@ -63,7 +63,7 @@ function StoryItem({DOM, story$}) {
         .flatten();
 
     return {
-        DOM: view(story$),
+        DOM: view(story$, router),
         action$: decoratedAction$,
         router: navigate$
     };

@@ -7,6 +7,7 @@ import {makeRouterDriver} from 'cyclic-router'
 import apiDriver from "./apiDriver";
 import makeAuth0Driver from "./drivers/auth0Driver";
 import {createHistory} from "history";
+import dropRepeats from 'xstream/extra/dropRepeats'
 
 import AuthenticationWrapper from "./components/AuthenticationWrapper";
 import App from "./components/App";
@@ -29,21 +30,12 @@ function main(sources) {
     const {router} = sources;
 
     const match$ = router.define({
-        "/me": protect(compose(App, Timeline)),
-        "/me/story/create": sources => {
-            return protect(compose(App, Timeline))({ ...sources, props: { edit$: xs.of({}) }})
-        },
-        "/me/story/:id/edit": id => sources => {
-            return protect(compose(App, Timeline))({ ...sources, props: { edit$: xs.of(id) }})
-        }
+        "/me": protect(compose(App, Timeline))
     });
 
     const page$ = match$
-        .map(({ path, value }) => {
-            return value(Object.assign({}, sources, {
-                router: sources.router.path(path)
-            }));
-        })
+        .compose(dropRepeats((a, b) => a.path === b.path))
+        .map(({ path, value }) => value({ ...sources, router: sources.router.path(path) }))
         .remember();
 
     function sinkGetter(sink) {

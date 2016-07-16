@@ -34,7 +34,7 @@ function intent(DOM, itemActions$, formAction$) {
     };
 }
 
-function render(editedStory$, user$, yearsView$, formView$) {
+function render(editedStory$, user$, yearsView$, formView$, router) {
     return xs
         .combine(
             editedStory$,
@@ -64,7 +64,7 @@ function render(editedStory$, user$, yearsView$, formView$) {
                             ]),
                             td([
                                 a(".flat-button.show-form", {
-                                    props: { href: "/me/story/create" }
+                                    props: { href: router.createHref("/story/create") }
                                 }, [
                                     i(".fa.fa-book"),
                                     " I feel like writting :)"
@@ -80,11 +80,21 @@ function render(editedStory$, user$, yearsView$, formView$) {
 }
 
 function Timeline(sources) {
-    const {DOM, api, props} = sources;
-    const { user$, edit$ = xs.of(null) } = props;
+    const {DOM, api, router, props} = sources;
+    const { user$ } = props;
 
     const yearsActionProxy$ = xs.create();
     const storyFormActionProxy$ = xs.create();
+
+    const match$ = router.define({
+        "/": false,
+        "/story/create": {},
+        "/story/:id/edit": id => id
+    });
+
+    const edit$ = match$
+        .map(({ value }) => value)
+        .remember();
 
     const {
         showFormAction$,
@@ -136,7 +146,7 @@ function Timeline(sources) {
         .flatten()
 
     return {
-        DOM: render(editedStory$, user$, yearsView$, storyForm.DOM),
+        DOM: render(editedStory$, user$, yearsView$, storyForm.DOM, router),
         api: xs.merge(apiRemoveRequest$, apiAddRequest$, apiFetchStoriesRequest$),
         router: xs.merge(navigate$, itemNavigate$, storyForm.router, storySaved$.mapTo("/me"))
     };

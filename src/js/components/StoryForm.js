@@ -29,16 +29,24 @@ function intent(DOM) {
     return {update$, submit$, navigate$};
 }
 
-function model(story$, update$) {
+function model(initialStory$, update$, submit$) {
+    const story$ = xs
+        .merge(initialStory$, update$)
+        .map(story => story ? story : {});
+
+    const submitted$ = submit$
+        .mapTo(true)
+        .startWith(false);
+
     return xs
-        .merge(story$, update$)
+        .combine(story$, submitted$)
+        .map(([story, submitted]) => ({ story, submitted }))
         .remember();
 }
 
 function view(state$) {
     return state$
-        .map(story => story ? story : {})
-        .map(story => div([
+        .map(({ story, submitted }) => div([
                 form("#story-form", [
                     div([
                         input({ props: {
@@ -56,7 +64,7 @@ function view(state$) {
                         }})
                     ]),
                     div(".actions", [
-                        button(".flat-button", { props: { type: "submit" }}, "Save"),
+                        button(".flat-button", { props: { type: "submit", disabled: submitted }}, (submitted ? "Saving..." : "Save")),
                         a(".cancel", { props: { href: "/me" }}, "Cancel")
                     ])
                 ])
@@ -68,12 +76,15 @@ function StoryForm({ DOM, props }) {
     const { story$ } = props;
 
     const {submit$, update$, navigate$} = intent(DOM);
-    const state$ = model(story$, update$);
+    const state$ = model(story$, update$, submit$);
     const vTree$ = view(state$);
 
-    const storyToAdd$ = state$.filter(story => story.title);
+    const storyToAdd$ = state$
+        .filter(({ story }) => story.title)
+        .map(({ story }) => story);
 
-    const addActionSink$ = submit$
+    const addActionSink$ = state$
+        .filter(state => state.submitted)
         .mapTo(storyToAdd$)
         .flatten()
         .map(story => assign({}, story, { date: new Date() }))

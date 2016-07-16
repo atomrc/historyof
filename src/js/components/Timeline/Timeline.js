@@ -73,7 +73,7 @@ function render(editedStory$, user$, yearsView$, formView$) {
                         ])
                     ])
                 ]),
-                ul(yearsView),
+                div(".fluid-content.stories-container", yearsView),
                 form
             ])
         });

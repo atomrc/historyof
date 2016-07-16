@@ -18,7 +18,7 @@ function model(showFormAction$, addAction$, edit$, removeAction$, api) {
         .flatten()
 
     const removeReducer$ = removeAction$
-        .map(action => (stories) => remove(stories, action.params.story))
+        .map(action => (stories) => remove(stories, action.story))
 
     const addReducer$ = addAction$
         .map(story => (stories) =>  add(stories, story))

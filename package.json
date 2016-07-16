@@ -12,6 +12,7 @@
   "author": "Thomas Belin",
   "license": "ISC",
   "dependencies": {
+    "@cycle/collection": "^0.3.0",
     "@cycle/dom": "^10.0.0-rc28",
     "@cycle/isolate": "^1.2.0",
     "@cycle/storage": "^3.0.0-rc3",

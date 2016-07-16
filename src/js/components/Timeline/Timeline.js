@@ -1,5 +1,6 @@
 import xs from "xstream";
 import {div, span, ul, h1, table, tr, td, i, a} from "@cycle/dom";
+import Collection from '@cycle/collection';
 import StoryForm from "../StoryForm";
 import StoryItem from "../StoryItem";
 import isolate from "@cycle/isolate";
@@ -78,20 +79,8 @@ function render(editedStory$, user$, itemViews$, formView$) {
         });
 }
 
-function createStoryItem(DOM) {
-    return (story) => {
-        const isolatedItem = isolate(StoryItem, "story-" + story.id)({DOM, props: { story$: xs.of(story)}});
-        return {
-            ...isolatedItem,
-            action$: isolatedItem
-                .action$
-                .map(action => ({ type: action.type, params: { story } }))
-        };
-    };
-}
-
-function Timeline({DOM, api, props}) {
-
+function Timeline(sources) {
+    const {DOM, api, props} = sources;
     const { user$, edit$ = xs.of(null) } = props;
 
     const itemActionProxy$ = xs.create();
@@ -109,7 +98,12 @@ function Timeline({DOM, api, props}) {
         stories$
     } = model(showFormAction$, addAction$, edit$, removeAction$, api);
 
-    const storyItems$ = stories$.map(stories => stories.map(createStoryItem(DOM)))
+    const storyItems$ = Collection
+        .gather(
+            StoryItem,
+            sources,
+            stories$.map(stories => stories.map(story => ({ id: story.id, story$: story })))
+        );
 
     const itemsAction$ = storyItems$
         .map((items) => items.map(item => item.action$))
@@ -118,12 +112,8 @@ function Timeline({DOM, api, props}) {
 
     const storyForm = isolate(StoryForm)({DOM, props: { story$: editedStory$ }});
 
-    const itemNavigate$ = storyItems$
-        .map(items => items.map(i => i.router))
-        .map(navigates => xs.merge(...navigates))
-        .flatten();
-
-    const itemViews$ = storyItems$.map(items => items.map(i => i.DOM));
+    const itemNavigate$ = Collection.merge(storyItems$, item => item.router);
+    const itemViews$ = Collection.pluck(storyItems$, item => item.DOM);
 
     itemActionProxy$.imitate(itemsAction$);
     storyFormActionProxy$.imitate(storyForm.action$);
@@ -135,7 +125,7 @@ function Timeline({DOM, api, props}) {
         }))
 
     const apiRemoveRequest$ = removeAction$
-        .map(action => ({ action: "removeStory", params: { story: action.params.story } }))
+        .map(action => ({ action: "removeStory", params: { story: action.story } }))
 
     const apiFetchStoriesRequest$ = stories$
         .filter(stories => stories.length === 0)

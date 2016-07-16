@@ -5,7 +5,7 @@ function intent(DOM) {
     const removeAction$ = DOM
         .select(".remove")
         .events("click")
-        .map(() => ({ type: "remove" }));
+        .map((ev) => ({ type: "remove" }));
 
     const navigate$ = DOM
         .select("a.edit")
@@ -26,18 +26,23 @@ function view(story$) {
     return story$
         .map((story) => li(".story", [
                 span(".title", story.title),
-                a(".remove", { props: { href: "#" } }, "x"),
+                span(" "),
+                a(".remove", { props: { href: "javascript:void(0)", "storyid": story.id } }, "x"),
                 a(".edit", { props: { href: "/me/story/" + story.id + "/edit" } }, "e")
             ])
         );
 }
 
-function StoryItem({DOM, props: { story$ }}) {
+function StoryItem({DOM, story$}) {
     const { action$, navigate$ } = intent(DOM);
+
+    const decoratedAction$ = action$
+        .map(action => story$.map(story => ({ ...action, story })))
+        .flatten();
 
     return {
         DOM: view(story$),
-        action$: action$,
+        action$: decoratedAction$,
         router: navigate$
     };
 }

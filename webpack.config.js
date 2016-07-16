@@ -16,7 +16,7 @@ module.exports = {
             "@cycle/dom",
             "@cycle/storage",
             "@cycle/isolate",
-            "@cycle/isolate",
+            "@cycle/collection",
             "uuid",
             "auth0-lock",
             "cyclic-router",

@@ -4,7 +4,7 @@ import assign from "object-assign";
 
 function intent(DOM) {
     const update$ = DOM
-        .select("input")
+        .select("input, textarea")
         .events("keyup")
         .map(ev => ({ [ev.target.name]: ev.target.value }));
 
@@ -30,9 +30,15 @@ function intent(DOM) {
 }
 
 function model(initialStory$, update$, submit$) {
+    const resetReducer$ = initialStory$
+        .map(story => () => story || {});
+
+    const updateReducer$ = update$
+        .map(updates => (story) => ({ ...story, ...updates }))
+
     const story$ = xs
-        .merge(initialStory$, update$)
-        .map(story => story ? story : {});
+        .merge(resetReducer$, updateReducer$)
+        .fold((acc, reducerFn) => reducerFn(acc), {})
 
     const submitted$ = submit$
         .mapTo(true)

@@ -108,7 +108,7 @@ var api = {
     },
 
     updateStory: function (token, { story }) {
-        requestProtected(generateUrl(config.urlPattern, { eid: story.id }), token, {
+        return requestProtected(generateUrl(config.urlPattern, { eid: story.id }), token, {
             method: "PUT",
             body: story
         }).then(initStory);

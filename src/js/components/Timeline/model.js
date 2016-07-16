@@ -32,21 +32,24 @@ function model(showFormAction$, addAction$, edit$, removeAction$, api) {
     const stories$ = reducer$
         .fold((stories, reduceFn) => reduceFn(stories), []);
 
-    const editedStory$ = xs
-        .combine(stories$, edit$)
-        .map(([stories, storyData]) => {
+    const editedStory$ = edit$
+        .map(storyData => {
             if (!storyData) {
-                return null;
+                return xs.of(null);
             }
             if (typeof storyData === "object") {
-                return storyData;
+                return xs.of(storyData);
             }
 
-            const story = stories
-                .filter(story => story.id === storyData)
-
-            return story[0] || {};
-        });
+            return stories$
+                .filter(stories => stories.length > 0)
+                .take(1)
+                .map(stories => {
+                    const story = stories.filter(story => story.id === storyData)
+                    return story[0] || {};
+                })
+        })
+        .flatten()
 
     return {
         editedStory$,

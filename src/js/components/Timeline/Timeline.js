@@ -129,7 +129,10 @@ function Timeline({DOM, api, props}) {
     storyFormActionProxy$.imitate(storyForm.action$);
 
     const apiAddRequest$ = addAction$
-        .map(story => ({ action: "createStory", params: { story } }))
+        .map(story => ({
+            action: story.id ? "updateStory" : "createStory",
+            params: { story }
+        }))
 
     const apiRemoveRequest$ = removeAction$
         .map(action => ({ action: "removeStory", params: { story: action.params.story } }))
@@ -138,10 +141,17 @@ function Timeline({DOM, api, props}) {
         .filter(stories => stories.length === 0)
         .mapTo({ action: "fetchStories" });
 
+    const storySaved$ = api
+        .filter(({ request }) => request.action === "createStory" || request.action === "updateStory")
+        .map(({ response$ }) =>
+            response$.replaceError(error => xs.of({ error }))
+        )
+        .flatten()
+
     return {
         DOM: render(editedStory$, user$, itemViews$, storyForm.DOM),
         api: xs.merge(apiRemoveRequest$, apiAddRequest$, apiFetchStoriesRequest$),
-        router: xs.merge(navigate$, itemNavigate$, storyForm.router)
+        router: xs.merge(navigate$, itemNavigate$, storyForm.router, storySaved$.mapTo("/me"))
     };
 }
 

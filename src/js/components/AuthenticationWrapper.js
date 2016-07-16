@@ -92,9 +92,10 @@ function AuthenticationWrapper(sources) {
         auth0: xs.merge(showLoginRequest$, parseHashRequest$, sinks.auth0 || xs.empty()),
         //decorate all the component api requests with
         //the current token
-        api: xs
-            .combine(sinks.api, state$)
-            .map(([apiRequest, state]) => Object.assign({}, apiRequest, { token: state.token }))
+        api: sinks
+            .api
+            .map(request => state$.map(state => ({ ...request, token: state.token })).take(1))
+            .flatten()
     });
 }
 

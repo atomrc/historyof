@@ -43,7 +43,11 @@ function model(showFormAction$, createAction$, updateAction$, edit$, removeActio
         .merge(resetReducer$, removeReducer$, addReducer$, updateReducer$);
 
     const stories$ = reducer$
-        .fold((stories, reduceFn) => reduceFn(stories), []);
+        .fold((stories, reduceFn) => reduceFn(stories), [])
+        .map(stories => stories.sort((s1, s2) => {
+            if (s1.date === s2.date) { return 0; }
+            return s1.date < s2.date ? 1 : -1;
+        }));
 
     const groupedStories$ = stories$
         .map(stories => {

@@ -40,8 +40,10 @@ function model(initialStory$, update$, submit$) {
         .merge(resetReducer$, updateReducer$)
         .fold((acc, reducerFn) => reducerFn(acc), {})
 
-    const submitted$ = submit$
-        .mapTo(true)
+    const submitted$ = xs.merge(
+            submit$.mapTo(true),
+            initialStory$.mapTo(false)
+        )
         .startWith(false);
 
     return xs
@@ -89,17 +91,16 @@ function StoryForm({ DOM, props }) {
         .filter(({ story }) => story.title)
         .map(({ story }) => story);
 
-    const addActionSink$ = state$
-        .filter(state => state.submitted)
-        .mapTo(storyToAdd$)
+    const addActionSink$ = submit$
+        .mapTo(storyToAdd$.take(1))
         .flatten()
-        .map(story => assign({}, story, { date: new Date() }))
-        .map(story => ({ type: "add", story: story }));
+        .map(story => ({ ...story, date: new Date() }))
+        .map(story => ({ type: (story.id ? "update" : "create"), story: story }));
 
     return {
         DOM: vTree$,
-        action$: addActionSink$,
-        router: navigate$
+        router: navigate$,
+        action$: addActionSink$
     };
 }
 

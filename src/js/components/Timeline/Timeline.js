@@ -1,5 +1,5 @@
 import xs from "xstream";
-import {div, span, ul, h1, table, tr, td, i, a} from "@cycle/dom";
+import {div, span, h1, table, tr, td, i, a} from "@cycle/dom";
 import Collection from '@cycle/collection';
 import StoryForm from "../StoryForm";
 import Year from "../Year";
@@ -26,8 +26,11 @@ function intent(DOM, itemActions$, formAction$) {
 
     return {
         showFormAction$,
-        addAction$: formAction$
-            .filter(action => action.type === "add")
+        createAction$: formAction$
+            .filter(action => action.type === "create")
+            .map(action => action.story),
+        updateAction$: formAction$
+            .filter(action => action.type === "update")
             .map(action => action.story),
         removeAction$,
         navigate$
@@ -98,7 +101,8 @@ function Timeline(sources) {
 
     const {
         showFormAction$,
-        addAction$,
+        createAction$,
+        updateAction$,
         removeAction$,
         navigate$
     } = intent(DOM, yearsActionProxy$, storyFormActionProxy$);
@@ -107,7 +111,7 @@ function Timeline(sources) {
         editedStory$,
         years$,
         stories$
-    } = model(showFormAction$, addAction$, edit$, removeAction$, api);
+    } = model(showFormAction$, createAction$, updateAction$, edit$, removeAction$, api);
 
     const yearsItems$ = Collection
         .gather(
@@ -125,9 +129,15 @@ function Timeline(sources) {
     yearsActionProxy$.imitate(yearsAction$);
     storyFormActionProxy$.imitate(storyForm.action$);
 
-    const apiAddRequest$ = addAction$
+    const apiCreateRequest$ = createAction$
         .map(story => ({
-            action: story.id ? "updateStory" : "createStory",
+            action: "createStory",
+            params: { story }
+        }))
+
+    const apiUpdateRequest$ = updateAction$
+        .map(story => ({
+            action: "updateStory",
             params: { story }
         }))
 
@@ -147,7 +157,7 @@ function Timeline(sources) {
 
     return {
         DOM: render(editedStory$, user$, yearsView$, storyForm.DOM, router),
-        api: xs.merge(apiRemoveRequest$, apiAddRequest$, apiFetchStoriesRequest$),
+        api: xs.merge(apiRemoveRequest$, apiCreateRequest$, apiUpdateRequest$, apiFetchStoriesRequest$),
         router: xs.merge(navigate$, itemNavigate$, storyForm.router, storySaved$.mapTo("/me"))
     };
 }

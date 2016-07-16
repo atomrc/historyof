@@ -47,7 +47,9 @@ function AuthenticationWrapper(sources) {
     const { user$, state$ } = model(storage, router);
     const loggedUser$ = user$.filter(user => !!user).remember();
 
-    const sinks = Child(Object.assign({}, sources, { props: { user$: loggedUser$ }}));
+    const childSourcesProps = { ...sources.props, user$: loggedUser$ };
+    const childSources = { ...sources, props: childSourcesProps};
+    const sinks = Child(childSources);
 
     const tokenSaveRequest$ = auth0
         .filter(({ action }) => action.action === "parseHash")

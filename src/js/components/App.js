@@ -37,13 +37,11 @@ function App(sources) {
 
     const logoutAction$ = intent(DOM, api);
 
-    const child = Child(Object.assign({}, sources, {
-        props: { user$ }
-    }));
+    const child = Child({ ...sources, props: { ...sources.props, user$: user$ }});
 
     return {
+        ...child,
         DOM: view(user$, child.DOM),
-        api: child.api,
         action$: logoutAction$
     }
 }

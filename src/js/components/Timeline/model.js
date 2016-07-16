@@ -9,15 +9,13 @@ function add(stories, story) {
     return stories.concat(Object.assign({}, story, { id: uuid.v1() }));
 }
 
-function model(showFormAction$, cancelEditAction$, addAction$, removeAction$, api) {
-
+function model(showFormAction$, addAction$, edit$, removeAction$, api) {
     const initialStories$ = api
         .filter(({ request }) => request.action === "fetchStories")
         .map(({ response$ }) =>
             response$.replaceError(error => xs.of({ error }))
         )
         .flatten()
-        .remember();
 
     const removeReducer$ = removeAction$
         .map(action => (stories) => remove(stories, action.params.story))
@@ -34,16 +32,26 @@ function model(showFormAction$, cancelEditAction$, addAction$, removeAction$, ap
     const stories$ = reducer$
         .fold((stories, reduceFn) => reduceFn(stories), []);
 
-    const showForm$ = xs.merge(
-            showFormAction$.mapTo(true),
-            cancelEditAction$.mapTo(false),
-            addAction$.mapTo(false)
-        )
-        .startWith(false);
+    const editedStory$ = xs
+        .combine(stories$, edit$)
+        .map(([stories, storyData]) => {
+            if (!storyData) {
+                return null;
+            }
+            if (typeof storyData === "object") {
+                return storyData;
+            }
 
-    return xs
-        .combine(showForm$, stories$)
-        .map(([showForm, stories]) => ({ showForm, stories }))
+            const story = stories
+                .filter(story => story.id === storyData)
+
+            return story[0] || {};
+        });
+
+    return {
+        editedStory$,
+        stories$
+    };
 }
 
 export default model;

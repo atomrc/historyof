@@ -12,21 +12,16 @@ import AuthenticationWrapper from "./components/AuthenticationWrapper";
 import App from "./components/App";
 import Timeline from "./components/Timeline/Timeline";
 
-const assign = Object.assign;
-
 function protect(Component) {
-    return (sources) => {
-        const decoratedSources = Object.assign({}, sources, { props: { Child: Component } });
-        return AuthenticationWrapper(decoratedSources);
-    };
+    return compose(AuthenticationWrapper, Component);
 }
 
 function compose(Parent, Child) {
     return function (sources) {
-        const parentProps = assign({}, sources.props, { Child });
-        const parentSources = assign({}, sources, { props: parentProps });
+        const props = { ...sources.props, Child: Child };
+        const decoratedSources = { ...sources, props };
 
-        return Parent(parentSources);
+        return Parent(decoratedSources);
     }
 }
 
@@ -34,7 +29,13 @@ function main(sources) {
     const {router} = sources;
 
     const match$ = router.define({
-        "/me": protect(compose(App, Timeline))
+        "/me": protect(compose(App, Timeline)),
+        "/me/story/create": sources => {
+            return protect(compose(App, Timeline))({ ...sources, props: { edit$: xs.of({}) }})
+        },
+        "/me/story/:id/edit": id => sources => {
+            return protect(compose(App, Timeline))({ ...sources, props: { edit$: xs.of(id) }})
+        }
     });
 
     const page$ = match$

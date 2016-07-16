@@ -7,12 +7,19 @@ function intent(DOM) {
         .events("click")
         .map(() => ({ type: "remove" }));
 
-    const editAction$ = DOM
-        .select(".edit")
+    const navigate$ = DOM
+        .select("a.edit")
         .events("click")
-        .map(() => ({ type: "edit" }));
+        .map(ev => {
+            ev.preventDefault()
+            return ev;
+        })
+        .map(ev => ev.target.pathname);
 
-    return xs.merge(removeAction$, editAction$)
+    return {
+        action$: removeAction$,
+        navigate$
+    };
 }
 
 function view(story$) {
@@ -20,15 +27,18 @@ function view(story$) {
         .map((story) => li(".story", [
                 span(".title", story.title),
                 a(".remove", { props: { href: "#" } }, "x"),
-                a(".edit", { props: { href: "#" } }, "e")
+                a(".edit", { props: { href: "/me/story/" + story.id + "/edit" } }, "e")
             ])
         );
 }
 
 function StoryItem({DOM, props: { story$ }}) {
+    const { action$, navigate$ } = intent(DOM);
+
     return {
         DOM: view(story$),
-        action$: intent(DOM)
+        action$: action$,
+        router: navigate$
     };
 }
 

@@ -1,5 +1,5 @@
 import xs from "xstream";
-import {div, span, ul, h1, table, tr, td, i, button} from "@cycle/dom";
+import {div, span, ul, h1, table, tr, td, i, a} from "@cycle/dom";
 import StoryForm from "../StoryForm";
 import StoryItem from "../StoryItem";
 import isolate from "@cycle/isolate";
@@ -13,31 +13,36 @@ function intent(DOM, itemActions$, formAction$) {
     const removeAction$ = itemActions$
         .filter(action => action.type === "remove")
 
-    const editAction$ = itemActions$
-        .filter(action => action.type === "edit");
+    const navigate$ = DOM
+        .select("a")
+        .events("click")
+        .map(ev => {
+            ev.preventDefault()
+            return ev;
+        })
+        .map(ev => ev.target.pathname);
+
 
     return {
         showFormAction$,
         addAction$: formAction$
             .filter(action => action.type === "add")
             .map(action => action.story),
-        cancelEditAction$: formAction$
-            .filter(action => action.type === "cancel"),
-        editAction$,
-        removeAction$
+        removeAction$,
+        navigate$
     };
 }
 
-function render(state$, user$, itemViews$, formView$) {
+function render(editedStory$, user$, itemViews$, formView$) {
     return xs
         .combine(
-            state$,
+            editedStory$,
             user$,
             itemViews$,
             formView$
         )
-        .map(([state, user, itemViews, formView]) => {
-            const form = state.showForm ?
+        .map(([editedStory, user, itemViews, formView]) => {
+            const form = editedStory ? 
                 div("#form-container", {
                     style: {
                         opacity: "0",
@@ -57,7 +62,9 @@ function render(state$, user$, itemViews$, formView$) {
                                 span(itemViews.length + " stories")
                             ]),
                             td([
-                                button(".flat-button.show-form", [
+                                a(".flat-button.show-form", {
+                                    props: { href: "/me/story/create" }
+                                }, [
                                     i(".fa.fa-book"),
                                     " I feel like writting :)"
                                 ])
@@ -75,7 +82,7 @@ function createStoryItem(DOM) {
     return (story) => {
         const isolatedItem = isolate(StoryItem, "story-" + story.id)({DOM, props: { story$: xs.of(story)}});
         return {
-            DOM: isolatedItem.DOM,
+            ...isolatedItem,
             action$: isolatedItem
                 .action$
                 .map(action => ({ type: action.type, params: { story } }))
@@ -84,27 +91,42 @@ function createStoryItem(DOM) {
 }
 
 function Timeline({DOM, api, props}) {
-    const { user$ } = props;
+
+    const { user$, edit$ = xs.of(null) } = props;
 
     const itemActionProxy$ = xs.create();
+    const storyFormActionProxy$ = xs.create();
 
-    const storyForm = isolate(StoryForm)({DOM, props: { story$: xs.never() }});
+    const {
+        showFormAction$,
+        addAction$,
+        removeAction$,
+        navigate$
+    } = intent(DOM, itemActionProxy$, storyFormActionProxy$);
 
-    const { showFormAction$, addAction$, cancelEditAction$, removeAction$ } = intent(DOM, itemActionProxy$, storyForm.action$);
-    const state$ = model(showFormAction$, cancelEditAction$, addAction$, removeAction$, api);
+    const {
+        editedStory$,
+        stories$
+    } = model(showFormAction$, addAction$, edit$, removeAction$, api);
 
-    const storyItems$ = state$
-        .map(({ stories }) => stories.map(createStoryItem(DOM)))
-        .remember();
+    const storyItems$ = stories$.map(stories => stories.map(createStoryItem(DOM)))
 
     const itemsAction$ = storyItems$
         .map((items) => items.map(item => item.action$))
-        .map(removeActions => xs.merge(...removeActions))
+        .map(actions => xs.merge(...actions))
         .flatten()
+
+    const storyForm = isolate(StoryForm)({DOM, props: { story$: editedStory$ }});
+
+    const itemNavigate$ = storyItems$
+        .map(items => items.map(i => i.router))
+        .map(navigates => xs.merge(...navigates))
+        .flatten();
 
     const itemViews$ = storyItems$.map(items => items.map(i => i.DOM));
 
     itemActionProxy$.imitate(itemsAction$);
+    storyFormActionProxy$.imitate(storyForm.action$);
 
     const apiAddRequest$ = addAction$
         .map(story => ({ action: "createStory", params: { story } }))
@@ -112,11 +134,14 @@ function Timeline({DOM, api, props}) {
     const apiRemoveRequest$ = removeAction$
         .map(action => ({ action: "removeStory", params: { story: action.params.story } }))
 
-    const apiFetchStoriesRequest$ = xs.of({ action: "fetchStories" });
+    const apiFetchStoriesRequest$ = stories$
+        .filter(stories => stories.length === 0)
+        .mapTo({ action: "fetchStories" });
 
     return {
-        DOM: render(state$, user$, itemViews$, storyForm.DOM),
-        api: xs.merge(apiRemoveRequest$, apiAddRequest$, apiFetchStoriesRequest$)
+        DOM: render(editedStory$, user$, itemViews$, storyForm.DOM),
+        api: xs.merge(apiRemoveRequest$, apiAddRequest$, apiFetchStoriesRequest$),
+        router: xs.merge(navigate$, itemNavigate$, storyForm.router)
     };
 }
 

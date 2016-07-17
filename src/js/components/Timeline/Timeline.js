@@ -145,8 +145,8 @@ function Timeline(sources) {
     const apiRemoveRequest$ = removeAction$
         .map(action => ({ action: "removeStory", params: { story: action.story } }))
 
-    const apiFetchStoriesRequest$ = stories$
-        .filter(stories => stories.length === 0)
+    const apiFetchStoriesRequest$ = user$
+        .filter(user => user)
         .mapTo({ action: "fetchStories" });
 
     const storySaved$ = api
@@ -158,7 +158,7 @@ function Timeline(sources) {
 
     return {
         DOM: render(editedStory$, user$, yearsView$, storyForm.DOM, router),
-        api: xs.merge(apiRemoveRequest$, apiCreateRequest$, apiUpdateRequest$, apiFetchStoriesRequest$),
+        api: xs.merge(apiRemoveRequest$, apiCreateRequest$, apiUpdateRequest$, apiFetchStoriesRequest$).debug("api"),
         router: xs.merge(navigate$, itemNavigate$, storyForm.router, storySaved$.mapTo("/me"))
     };
 }

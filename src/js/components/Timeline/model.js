@@ -12,7 +12,7 @@ function model(showFormAction$, createAction$, updateAction$, edit$, removeActio
     const initialStories$ = api
         .filter(({ request }) => request.action === "fetchStories")
         .map(({ response$ }) =>
-            response$.replaceError(error => xs.of({ error }))
+            response$.replaceError(() => xs.empty())
         )
         .flatten()
 

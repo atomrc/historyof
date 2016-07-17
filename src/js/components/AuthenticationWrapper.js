@@ -10,15 +10,15 @@ function model(storage, router) {
     const user$ = token$
         .map(token => token ? jwtDecode(token) : null);
 
-    const hasHashToken$ = router
+    const location$ = router
         .history$
-        .map(location => location.hash.indexOf("id_token") > -1);
+        .map(location => ({ ...location, hasToken: location.hash.indexOf("id_token") > -1 }))
 
     return {
         user$: user$.remember(),
         state$: xs
-            .combine(token$, router.history$, hasHashToken$)
-            .map(([ token, location, hasHashToken ]) => ({ token, location, hasHashToken }))
+            .combine(token$, location$)
+            .map(([ token, location ]) => ({ token, location }))
             .remember()
     };
 }
@@ -41,14 +41,19 @@ function render(user$, componentDOM) {
  * @returns {Object} sinks
  */
 function AuthenticationWrapper(sources) {
-    const { storage, router, auth0 } = sources;
+    const { storage, router, auth0, api } = sources;
     const { Child } = sources.props;
+
+    const invalidToken$ = api
+        .map(({ response$ }) => response$)
+        .flatten()
+        .replaceError(error => xs.of(error))
+        .filter(response => response.status === 401)
 
     const { user$, state$ } = model(storage, router);
     const loggedUser$ = user$.filter(user => !!user).remember();
 
-    const childSourcesProps = { ...sources.props, user$: loggedUser$ };
-    const childSources = { ...sources, props: childSourcesProps};
+    const childSources = { ...sources, props: { ...sources.props, user$: loggedUser$ }};
     const sinks = Child(childSources);
 
     const tokenSaveRequest$ = auth0
@@ -58,25 +63,28 @@ function AuthenticationWrapper(sources) {
         .map(response => ({ key: "token", value: response }));
 
     const showLoginRequest$ = state$
-        .filter(({ token, hasHashToken }) => !token && !hasHashToken)
-        .mapTo({ action: "show", params: {
-            authParams: { scope: "openid nickname" },
-            responseType: "token"
-        }});
+        .filter(({ token, location }) => !token && !location.hasToken)
+        .mapTo({
+            action: "show",
+            params: {
+                authParams: { scope: "openid nickname" },
+                responseType: "token"
+            }
+        });
 
     const parseHashRequest$ = state$
-        .filter(({ token, hasHashToken }) => !token && hasHashToken)
+        .filter(({ token, location }) => !token && location.hasToken)
         .map(({ location }) => ({ action: "parseHash", params: location.hash }));
 
-    const tokenRemoveRequest$ = (sinks.action$ || xs.empty())
+    const logoutAction$ = (sinks.action$ || xs.empty())
         .filter(action => action.type === "logout")
+
+    const tokenRemoveRequest$ = xs.merge(logoutAction$, invalidToken$)
         .mapTo({ action: "removeItem", key: "token" })
 
-    const cleanHash$ = xs
-        .combine(state$, loggedUser$)
-        .map(([ state ]) => ({ location: state.location, hasHashToken: state.hasHashToken }))
-        .filter(({ hasHashToken }) => hasHashToken)
-        .map(({ location }) => location.pathname);
+    const cleanHash$ = state$
+        .filter(state => state.location.hasToken && state.token)
+        .map(state => state.location.pathname)
 
     return Object.assign({}, sinks, {
         DOM: render(user$, sinks.DOM),
@@ -94,7 +102,7 @@ function AuthenticationWrapper(sources) {
         //the current token
         api: sinks
             .api
-            .map(request => state$.map(state => ({ ...request, token: state.token })).take(1))
+            .map(request => state$.filter(state => state.token).map(state => ({ ...request, token: state.token })).take(1))
             .flatten()
     });
 }

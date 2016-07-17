@@ -28,8 +28,11 @@ function request(url, params={}) {
         .catch(function (response) {
             return response
                 .json()
-                .then(function (error) {
-                    throw error;
+                .then(function (data) {
+                    throw {
+                        status: response.status,
+                        message: data.error
+                    };
                 });
         });
 }

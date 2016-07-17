@@ -1,12 +1,11 @@
 import xs from "xstream";
-import uuid from "uuid";
 
 function remove(stories, storyToRm) {
     return stories.filter((story) => story.id !== storyToRm.id);
 }
 
 function add(stories, story) {
-    return stories.concat(Object.assign({}, story, { id: uuid.v1() }));
+    return stories.concat(story);
 }
 
 function model(showFormAction$, createAction$, updateAction$, edit$, removeAction$, api) {

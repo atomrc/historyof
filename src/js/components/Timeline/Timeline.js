@@ -1,9 +1,10 @@
 import xs from "xstream";
 import {div, span, h1, table, tr, td, i, a} from "@cycle/dom";
 import Collection from '@cycle/collection';
+import isolate from "@cycle/isolate";
+
 import StoryForm from "../StoryForm";
 import Year from "../Year";
-import isolate from "@cycle/isolate";
 import model from "./model";
 
 function intent(DOM, itemActions$, formAction$) {
@@ -91,7 +92,7 @@ function Timeline(sources) {
 
     const match$ = router.define({
         "/": false,
-        "/story/create": {},
+        "/story/create": { date: new Date() },
         "/story/:id/edit": id => id
     });
 

@@ -2,10 +2,9 @@ import xs from "xstream";
 import {run} from "@cycle/xstream-run";
 
 import {makeDOMDriver} from "@cycle/dom";
-import storageDriver from "@cycle/storage";
+import makeAuth0Driver from "cyclejs-auth0";
 import {makeRouterDriver} from 'cyclic-router'
 import apiDriver from "./apiDriver";
-import makeAuth0Driver from "./drivers/auth0Driver";
 import {createHistory} from "history";
 import dropRepeats from 'xstream/extra/dropRepeats'
 
@@ -39,13 +38,12 @@ function main(sources) {
         .remember();
 
     function sinkGetter(sink) {
-        return (component) => component[sink] ? component[sink] : xs.empty();
+        return (component) => component[sink] ? component[sink] : xs.empty()
     }
 
     return {
         DOM: page$.map(sinkGetter("DOM")).flatten(),
         api: page$.map(sinkGetter("api")).flatten(),
-        storage: page$.map(sinkGetter("storage")).flatten(),
         router: page$.map(sinkGetter("router")).flatten(),
         auth0: page$.map(sinkGetter("auth0")).flatten()
     };
@@ -54,7 +52,6 @@ function main(sources) {
 var drivers = {
     DOM: makeDOMDriver("#main", { transposition: true }),
     api: apiDriver,
-    storage: storageDriver,
     auth0: makeAuth0Driver("tDjcxZrzyKB8a5SPqwn4XqJfdSvW4FXi", "atomrc.eu.auth0.com"),
     router: makeRouterDriver(createHistory())
 };

@@ -62,8 +62,12 @@ function model(showFormAction$, createAction$, updateAction$, edit$, removeActio
             for (var year of Object.keys(groups)) {
                 years.push({ year: year, stories: groups[year] });
             }
-            return years;
-        });
+            return years.sort((y1, y2) => {
+                return y1.year === y2.year ?
+                    0 :
+                    y1.year > y2.year ? -1 : 1;
+            });
+        })
 
     const editedStory$ = edit$
         .map(storyData => {

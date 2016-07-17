@@ -2,10 +2,8 @@ import xs from "xstream";
 import {div} from "@cycle/dom";
 import jwtDecode from "jwt-decode";
 
-function model(storage, router) {
-    const token$ = storage
-        .local
-        .getItem("token")
+function model(auth0, router) {
+    const token$ = auth0.token$;
 
     const user$ = token$
         .map(token => token ? jwtDecode(token) : null);
@@ -41,7 +39,7 @@ function render(user$, componentDOM) {
  * @returns {Object} sinks
  */
 function AuthenticationWrapper(sources) {
-    const { storage, router, auth0, api } = sources;
+    const { router, auth0, api } = sources;
     const { Child } = sources.props;
 
     const invalidToken$ = api
@@ -50,17 +48,11 @@ function AuthenticationWrapper(sources) {
         .replaceError(error => xs.of(error))
         .filter(response => response.status === 401)
 
-    const { user$, state$ } = model(storage, router);
+    const { user$, state$ } = model(auth0, router);
     const loggedUser$ = user$.filter(user => !!user).remember();
 
     const childSources = { ...sources, props: { ...sources.props, user$: loggedUser$ }};
     const sinks = Child(childSources);
-
-    const tokenSaveRequest$ = auth0
-        .filter(({ action }) => action.action === "parseHash")
-        .map(({ response$ }) => response$)
-        .flatten()
-        .map(response => ({ key: "token", value: response }));
 
     const showLoginRequest$ = state$
         .filter(({ token, location }) => !token && !location.hasToken)
@@ -79,8 +71,8 @@ function AuthenticationWrapper(sources) {
     const logoutAction$ = (sinks.action$ || xs.empty())
         .filter(action => action.type === "logout")
 
-    const tokenRemoveRequest$ = xs.merge(logoutAction$, invalidToken$)
-        .mapTo({ action: "removeItem", key: "token" })
+    const logout$ = xs.merge(logoutAction$, invalidToken$)
+        .mapTo({ action: "logout" })
 
     const cleanHash$ = state$
         .filter(state => state.location.hasToken && state.token)
@@ -89,15 +81,9 @@ function AuthenticationWrapper(sources) {
     return Object.assign({}, sinks, {
         DOM: render(user$, sinks.DOM),
 
-        storage: xs.merge(
-            tokenRemoveRequest$,
-            tokenSaveRequest$,
-            sinks.storage || xs.empty()
-        ),
-
         router: xs.merge(cleanHash$, sinks.router || xs.empty()),
 
-        auth0: xs.merge(showLoginRequest$, parseHashRequest$, sinks.auth0 || xs.empty()),
+        auth0: xs.merge(showLoginRequest$, parseHashRequest$, logout$, sinks.auth0 || xs.empty()),
         //decorate all the component api requests with
         //the current token
         api: sinks

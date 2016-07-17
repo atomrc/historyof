@@ -14,7 +14,6 @@ module.exports = {
             "xstream",
             "@cycle/xstream-run",
             "@cycle/dom",
-            "@cycle/storage",
             "@cycle/isolate",
             "@cycle/collection",
             "uuid",

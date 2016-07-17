@@ -158,7 +158,7 @@ function Timeline(sources) {
 
     return {
         DOM: render(editedStory$, user$, yearsView$, storyForm.DOM, router),
-        api: xs.merge(apiRemoveRequest$, apiCreateRequest$, apiUpdateRequest$, apiFetchStoriesRequest$).debug("api"),
+        api: xs.merge(apiRemoveRequest$, apiCreateRequest$, apiUpdateRequest$, apiFetchStoriesRequest$),
         router: xs.merge(navigate$, itemNavigate$, storyForm.router, storySaved$.mapTo("/me"))
     };
 }

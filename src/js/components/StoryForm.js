@@ -2,7 +2,12 @@ import xs from "xstream";
 import {form, input, div, a, button, textarea, span} from "@cycle/dom";
 import uuid from "uuid";
 
-function intent(DOM) {
+import Pikaday from "./Pikaday";
+
+function intent(DOM, dateUpdate$) {
+    const dateChange$ = dateUpdate$
+        .map(date => ({ date: date }));
+
     const update$ = DOM
         .select("input, textarea")
         .events("keyup")
@@ -26,7 +31,11 @@ function intent(DOM) {
         })
         .map(ev => ev.target.pathname);
 
-    return {update$, submit$, navigate$};
+    return {
+        update$: xs.merge(update$, dateChange$),
+        submit$,
+        navigate$
+    };
 }
 
 function model(initialStory$, update$, submit$) {
@@ -52,7 +61,7 @@ function model(initialStory$, update$, submit$) {
         .remember();
 }
 
-function view(state$) {
+function view(state$, pikadayView) {
     return state$
         .map(({ story, submitted }) => div([
                 form("#story-form", [
@@ -71,9 +80,7 @@ function view(state$) {
                             value: story.description || ""
                         }})
                     ]),
-                    div([
-                        span((story.date || new Date()).toLocaleString())
-                    ]),
+                    pikadayView,
                     div(".actions", [
                         button(".flat-button", { props: { type: "submit", disabled: submitted }}, (submitted ? "Saving..." : "Save")),
                         a(".cancel", { props: { href: "/me" }}, "Cancel")
@@ -86,9 +93,15 @@ function view(state$) {
 function StoryForm({ DOM, props }) {
     const { story$ } = props;
 
-    const {submit$, update$, navigate$} = intent(DOM);
+    const dateUpdateProxy$ = xs.create();
+
+    const {submit$, update$, navigate$} = intent(DOM, dateUpdateProxy$);
     const state$ = model(story$, update$, submit$);
-    const vTree$ = view(state$);
+    const pikaday = Pikaday({ DOM, props: { date$: state$.map(state => state.story.date) }});
+
+    dateUpdateProxy$.imitate(pikaday.update$);
+
+    const vTree$ = view(state$, pikaday.DOM);
 
     const storyToAdd$ = state$
         .filter(({ story }) => story.title)

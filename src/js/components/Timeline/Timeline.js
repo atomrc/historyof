@@ -63,7 +63,7 @@ function render(editedStory$, user$, yearsView$, formView$, router) {
                     table(".fluid-content", [
                         tr([
                             td([
-                                h1(user.nickname + "'s timeline"),
+                                h1((user || {}).nickname + "'s timeline"),
                                 span(yearsView.length + " stories")
                             ]),
                             td([

@@ -2,19 +2,14 @@ import xs from "xstream";
 import {run} from "@cycle/xstream-run";
 
 import {makeDOMDriver} from "@cycle/dom";
-import makeAuth0Driver from "cyclejs-auth0";
+import {makeAuth0Driver, protect} from "cyclejs-auth0";
 import {makeRouterDriver} from 'cyclic-router'
 import apiDriver from "./apiDriver";
 import {createHistory} from "history";
 import dropRepeats from 'xstream/extra/dropRepeats'
 
-import AuthenticationWrapper from "./components/AuthenticationWrapper";
 import App from "./components/App";
 import Timeline from "./components/Timeline/Timeline";
-
-function protect(Component) {
-    return compose(AuthenticationWrapper, Component);
-}
 
 function compose(Parent, Child) {
     return function (sources) {
@@ -29,7 +24,15 @@ function main(sources) {
     const {router} = sources;
 
     const match$ = router.define({
-        "/me": protect(compose(App, Timeline))
+        "/me": protect(compose(App, Timeline), {
+            auth0ShowParams: {
+                authParams: { scope: "openid nickname" },
+                responseType: "token"
+            },
+            decorators: {
+                api: (request, token) => ({ ...request, token })
+            }
+        })
     });
 
     const page$ = match$

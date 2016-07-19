@@ -17,11 +17,10 @@ module.exports = {
             "@cycle/isolate",
             "@cycle/collection",
             "uuid",
-            "auth0-lock",
             "cyclic-router",
-            "jwt-decode"
+            "cyclejs-auth0",
+            "pikaday"
             /*"moment",
-            "pikaday",
             "whatwg-fetch",
             "bcryptjs",*/
         ]

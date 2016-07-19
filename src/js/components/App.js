@@ -2,6 +2,9 @@ import xs from "xstream";
 import {div, button, span} from "@cycle/dom";
 
 function render({user, childDOM}) {
+    if (!user) {
+        return div("loading...");
+    }
     const header = div("#app-header", [
         span(".pseudo", user.nickname),
         button(".logout", "Logout")
@@ -42,7 +45,8 @@ function App(sources) {
     return {
         ...child,
         DOM: view(user$, child.DOM),
-        action$: logoutAction$
+        auth0: logoutAction$
+            .mapTo({ action: "logout" })
     }
 }
 

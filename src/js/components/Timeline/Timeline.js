@@ -150,11 +150,8 @@ function Timeline(sources) {
         .mapTo({ action: "fetchStories" });
 
     const storySaved$ = api
-        .filter(({ request }) => request.action === "createStory" || request.action === "updateStory")
-        .map(({ response$ }) =>
-            response$.replaceError(error => xs.of({ error }))
-        )
-        .flatten()
+        .select("createStory, updateStory")
+        .done$;
 
     return {
         DOM: render(editedStory$, user$, yearsView$, storyForm.DOM, router),

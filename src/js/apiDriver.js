@@ -1,6 +1,36 @@
 import xs from "xstream";
 import api from "./api/historyOfApi";
 
+function responseSelector(response$$) {
+    return function select(selector) {
+        const filters = !selector ?
+            [] :
+            selector
+                .replace(" ", "")
+                .split(",")
+
+        const request$ = response$$
+            .filter(request => filters.length === 0 || filters.indexOf(request.action) > -1)
+
+        const response$ = request$
+            .map(req => req.response$)
+            .flatten()
+
+        const done$ = response$
+            .replaceError(() => xs.empty());
+
+        const error$ = response$
+            .replaceError(error => xs.of({ error: error }))
+        .filter(response => !!response.error)
+
+        return {
+            start$: request$,
+            done$: done$,
+            error$: error$
+        };
+    }
+}
+
 function executeRequest(request) {
     const apiAction = api[request.action]
         ? api[request.action]
@@ -17,15 +47,18 @@ function apiDriver(request$) {
             const response$ = xs.fromPromise(executeRequest(request))
 
             return {
-                request: request,
+                ...request,
                 response$
             };
         })
-        .remember()
 
-    //response$$.addListener({next: () => {}, error: () => {}, complete: () => {}});
+    //response$$.addListener({next: () => {}, error: console.error.bind(console), complete: () => {}});
+    const select = responseSelector(response$$);
 
-    return response$$;
+    return {
+        ...select(),
+        select
+    };
 }
 
 export default apiDriver;

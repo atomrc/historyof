@@ -10,11 +10,8 @@ function add(stories, story) {
 
 function model(showFormAction$, createAction$, updateAction$, edit$, removeAction$, api) {
     const initialStories$ = api
-        .filter(({ request }) => request.action === "fetchStories")
-        .map(({ response$ }) =>
-            response$.replaceError(() => xs.empty())
-        )
-        .flatten()
+        .select("fetchStories")
+        .done$
 
     const removeReducer$ = removeAction$
         .map(action => (stories) => remove(stories, action.story))

@@ -16,13 +16,17 @@ function render({user, childDOM}) {
     ]);
 }
 
-function intent(DOM) {
+function intent(DOM, api) {
     const logoutAction$ = DOM
         .select(".logout")
         .events("click")
         .mapTo({ type: "logout" });
 
-    return logoutAction$;
+    const apiUnauthorized$ = api
+        .error$
+        .filter(({ error }) => error.status === 401);
+
+    return xs.merge(logoutAction$, apiUnauthorized$);
 }
 
 function view(user$, childDOM$) {

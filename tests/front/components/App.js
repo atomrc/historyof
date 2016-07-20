@@ -5,7 +5,7 @@ const APP_PATH = __dirname + "/../../../src/js";
 import xs from "xstream";
 import expect from "expect.js";
 import select from "snabbdom-selector";
-import {mockDOMSource} from '@cycle/dom';
+import {mockDOMSource, div} from '@cycle/dom';
 import xstreamAdapter from '@cycle/xstream-adapter';
 
 import {generateListener} from "../helpers";
@@ -17,21 +17,28 @@ describe("App Component", () => {
     function genDefaultSources(overrides) {
         const sources = {
             DOM: mockDOMSource(xstreamAdapter, {}),
-            api: xs.empty(),
-            props: { user$: xs.of(user) }
+            api: {
+                select: () => {},
+                done$: xs.empty(),
+                error$: xs.empty(),
+                start$: xs.empty()
+            },
+            props: {
+                Child: () => ({ DOM: xs.of(div("child")) }),
+                user$: xs.of(user)
+            }
         };
 
-        return Object.assign({}, sources, overrides);
+        return { ...sources, ...overrides };
     }
 
     describe("App init", () => {
         const sources = genDefaultSources({});
 
-        const {DOM, api}  = App(sources);
+        const {DOM}  = App(sources);
 
         it("should display user", (done) => {
             DOM
-                .take(1)
                 .addListener(generateListener({
                     next: vtree => {
                         const pseudoElm = select(".pseudo", vtree)[0];
@@ -40,16 +47,6 @@ describe("App Component", () => {
                     }
                 }));
 
-        });
-
-        it("should fetch user's stories", (done) => {
-            api
-                .addListener(generateListener({
-                    next: request => {
-                        expect(request.action).to.be("fetchStories"),
-                        done();
-                    }
-                }));
         });
     });
 
@@ -60,12 +57,12 @@ describe("App Component", () => {
             })
         });
 
-        const {action$} = App(sources);
+        const {auth0} = App(sources);
 
-        action$
+        auth0
             .addListener(generateListener({
                 next: action => {
-                    expect(action.type).to.be("logout")
+                    expect(action.action).to.be("logout")
                     done();
                 }
             }));

@@ -1,5 +1,6 @@
 import xs from "xstream";
 import {div, button, span} from "@cycle/dom";
+import jwtDecode from "jwt-decode";
 
 function render({user, childDOM}) {
     if (!user) {
@@ -40,7 +41,10 @@ function view(user$, childDOM$) {
 
 function App(sources) {
     const {DOM, api, props} = sources;
-    const { Child, user$ } = props;
+    const { Child, token$ } = props;
+
+    const user$ = token$
+        .map(token => token ? jwtDecode(token): null)
 
     const logoutAction$ = intent(DOM, api);
 

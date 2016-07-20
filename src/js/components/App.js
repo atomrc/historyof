@@ -22,11 +22,11 @@ function intent(DOM, api) {
         .events("click")
         .mapTo({ type: "logout" });
 
-    const apiUnauthorized$ = api
+    const invalidToken$ = api
         .error$
         .filter(({ error }) => error.status === 401);
 
-    return xs.merge(logoutAction$, apiUnauthorized$);
+    return xs.merge(logoutAction$, invalidToken$);
 }
 
 function view(user$, childDOM$) {

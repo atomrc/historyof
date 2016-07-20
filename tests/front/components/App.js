@@ -9,10 +9,11 @@ import {mockDOMSource, div} from '@cycle/dom';
 import xstreamAdapter from '@cycle/xstream-adapter';
 
 import {generateListener} from "../helpers";
+import jwt from "jsonwebtoken";
 
 describe("App Component", () => {
     const App = require(APP_PATH + "/components/App").default,
-        user = { nickname: "felix" };
+        token = jwt.sign({ nickname: "felix" }, "secret");
 
     function genDefaultSources(overrides) {
         const sources = {
@@ -25,7 +26,7 @@ describe("App Component", () => {
             },
             props: {
                 Child: () => ({ DOM: xs.of(div("child")) }),
-                user$: xs.of(user)
+                token$: xs.of(token)
             }
         };
 

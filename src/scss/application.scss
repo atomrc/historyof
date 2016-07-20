@@ -49,27 +49,28 @@ form {
         margin: 0;
         padding: 1em;
     }
-    #login-form {
-        background-color: #eee;
+}
+
+#login-form {
+    background-color: #eee;
+    box-sizing: border-box;
+    padding: 1.5em;
+    width: 500px;
+    margin: auto;
+    border-radius: 5px;
+    input {
         box-sizing: border-box;
-        padding: 1.5em;
-        width: 500px;
+        font-size: inherit;
+        padding: 0.8em;
+        border: none;
+        border-bottom: solid 1px #eee;
+        display: block;
+        width: 100%;
         margin: auto;
-        border-radius: 5px;
-        input {
-            box-sizing: border-box;
-            font-size: inherit;
-            padding: 0.8em;
-            border: none;
-            border-bottom: solid 1px #eee;
-            display: block;
-            width: 100%;
-            margin: auto;
-        }
-        input[type=submit] {
-            padding: 0.4em;
-            margin-top: 1em;
-        }
+    }
+    input[type=submit] {
+        padding: 0.4em;
+        margin-top: 1em;
     }
 }
 

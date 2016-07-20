@@ -1,70 +1,62 @@
-/*global require, document*/
-"use strict";
+import xs from "xstream";
+import {run} from "@cycle/xstream-run";
 
-var React = require("react"),
-    render = require("react-dom").render,
-    ReactRouter = require("react-router"),
-    Route = ReactRouter.Route,
-    Router = ReactRouter.Router,
-    createHistory = require("history/lib/createBrowserHistory"),
-    thunk = require("redux-thunk"),
-    Provider = require("react-redux").Provider,
-    ReduxRouter = require("redux-router"),
-    Redux = require("redux"),
-    appReducers = require("./reducers/appReducers"),
-    AppContainer = require("./components/containers/AppContainer.react"),
-    TimelineContainer = require("./components/containers/TimelineContainer.react"),
-    Register = require("./components/Register.react");
+import {makeDOMDriver} from "@cycle/dom";
+import {makeAuth0Driver, protect} from "cyclejs-auth0";
+import {makeRouterDriver} from 'cyclic-router'
+import apiDriver from "./apiDriver";
+import {createHistory} from "history";
+import dropRepeats from 'xstream/extra/dropRepeats'
 
-var routes = (
-    <Router>
-        <Route path="/register" component={Register}></Route>
-        <Route component={AppContainer}>
-            <Route path="/me" component={TimelineContainer}/>
-        </Route>
-    </Router>
-);
+import App from "./components/App";
+import Timeline from "./components/Timeline/Timeline";
 
-var store = Redux.compose(
-    Redux.applyMiddleware(thunk),
-    ReduxRouter.reduxReactRouter({ routes, createHistory })
-)(Redux.createStore)(appReducers, {
-    user: {},
-    stories: [],
-    token: window.localStorage.getItem("token")
-});
+function compose(Parent, Child) {
+    return function (sources) {
+        const props = { ...sources.props, Child: Child };
+        const decoratedSources = { ...sources, props };
 
-render(
-    <Provider store={store}>
-        <ReduxRouter.ReduxRouter>
-            {routes}
-        </ReduxRouter.ReduxRouter>
-    </Provider>,
-    document.getElementById("main")
-);
+        return Parent(decoratedSources);
+    }
+}
 
-/*
-var React = require("react"),
-    ReactDom = require("react-dom"),
-    ReactRouter = require("react-router"),
-    Route = ReactRouter.Route,
-    Router = ReactRouter.Router,
-    createBrowserHistory = require("history/lib/createBrowserHistory"),
-    AppContainer = require("./components/containers/AppContainer.react"),
-    GuestContainer = require("./components/containers/GuestContainer.react"),
-    Register = require("./components/Register.react"),
-    TimelineContainer = require("./components/containers/TimelineContainer.react");
+function main(sources) {
+    const {router} = sources;
 
-var routes = (
-    <Router history={createBrowserHistory()}>
-        <Route components={GuestContainer}>
-            <Route path="/register" component={Register}/>
-        </Route>
-        <Route component={AppContainer}>
-            <Route path="/me" component={TimelineContainer}/>
-        </Route>
-    </Router>
-);
+    const match$ = router.define({
+        "/me": protect(compose(App, Timeline), {
+            auth0ShowParams: {
+                authParams: { scope: "openid nickname" },
+                responseType: "token"
+            },
+            decorators: {
+                api: (request, token) => ({ ...request, token })
+            }
+        })
+    });
 
-ReactDom.render(routes, document.getElementById("main"));
-*/
+    const page$ = match$
+        .compose(dropRepeats((a, b) => a.path === b.path))
+        .map(({ path, value }) => value({ ...sources, router: sources.router.path(path) }))
+        .remember();
+
+    function sinkGetter(sink) {
+        return (component) => component[sink] ? component[sink] : xs.empty()
+    }
+
+    return {
+        DOM: page$.map(sinkGetter("DOM")).flatten(),
+        api: page$.map(sinkGetter("api")).flatten(),
+        router: page$.map(sinkGetter("router")).flatten(),
+        auth0: page$.map(sinkGetter("auth0")).flatten()
+    };
+}
+
+var drivers = {
+    DOM: makeDOMDriver("#main", { transposition: true }),
+    api: apiDriver,
+    auth0: makeAuth0Driver("tDjcxZrzyKB8a5SPqwn4XqJfdSvW4FXi", "atomrc.eu.auth0.com"),
+    router: makeRouterDriver(createHistory())
+};
+
+run(main, drivers);

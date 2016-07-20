@@ -1,8 +1,7 @@
 /*eslint-env node */
 
 "use strict";
-var db = require("../db/db"),
-    assign = require("object-assign");
+var db = require("../db/db");
 
 module.exports = {
     middlewares: {
@@ -10,7 +9,7 @@ module.exports = {
             db
                 .model("story")
                 .findOne({
-                    where: { user_id: req.user.id, id: req.params.eid }
+                    where: { user_id: req.user.sub, id: req.params.eid }
                 })
                 .then(function (story) {
                     if (!story) {
@@ -25,16 +24,18 @@ module.exports = {
     },
 
     getAll: function (req, res) {
-        req
-            .user
-            .getStories()
+        db
+            .model("story")
+            .findAll({
+                where: { user_id: req.user.sub }
+            })
             .then(function (stories) {
                 res.send(stories);
             });
     },
 
     create: function (req, res) {
-        req.body.user_id = req.user.id;
+        req.body.user_id = req.user.sub;
 
         db
             .model("story")

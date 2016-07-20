@@ -13,16 +13,24 @@ import {generateListener} from "../helpers";
 describe("StoryItem Component", () => {
     const StoryItem = require(APP_PATH + "/components/StoryItem").default;
 
-    const testStory = { id: "uuid-rand", title: "test story" };
+    const testStory = { id: "uuid-rand", title: "test story", date: new Date() };
+
+    function getSources(overrides) {
+        const sources = {
+            DOM: mockDOMSource(xstreamAdapter, {}),
+            router: { history$: xs.empty(), createHref: url => "edit-url" },
+            story$: xs.of(testStory)
+        };
+
+        return { ...sources, ...overrides };
+    }
 
     it("should display given story", (done) => {
-        const story$ = xs.of(testStory),
-            DOM = mockDOMSource(xstreamAdapter, {});
+        const sources = getSources();
 
-        const sinks = StoryItem({ DOM, props: { story$ } });
+        const {DOM} = StoryItem(sources);
 
-        sinks
-            .DOM
+        DOM
             .take(1)
             .addListener(generateListener({
                 next: vtree => {
@@ -34,12 +42,13 @@ describe("StoryItem Component", () => {
     });
 
     it("should send the remove action when remove button is clicked", (done) => {
-        const story$ = xs.of(testStory),
-            DOM = mockDOMSource(xstreamAdapter, {
+        const sources = getSources({
+            DOM: mockDOMSource(xstreamAdapter, {
                 ".remove": { click: xs.of(1) }
-            });
+            })
+        });
 
-        const { action$ } = StoryItem({ DOM, props: { story$ }});
+        const { action$ } = StoryItem(sources);
 
         action$
             .take(1)
@@ -51,21 +60,22 @@ describe("StoryItem Component", () => {
         }));
     });
 
-    it("should send the edit action when edit button is clicked", (done) => {
-        const story$ = xs.of(testStory),
-            DOM = mockDOMSource(xstreamAdapter, {
-                ".edit": { click: xs.of({}) }
-            });
+    it("should navigate to the edit url", (done) => {
+        const sources = getSources({
+            DOM: mockDOMSource(xstreamAdapter, {
+                "a.edit": { click: xs.of({ preventDefault: () => {}, ownerTarget: { pathname: "edit-url" } }) }
+            })
+        });
 
-        const { action$ } = StoryItem({ DOM, props: { story$ }});
+        const { router } = StoryItem(sources);
 
-        action$
+        router
             .take(1)
             .addListener(generateListener({
-            next: event => {
-                expect(event.type).to.be("edit");
-                done();
-            }
-        }));
+                next: url => {
+                    expect(url).to.be("edit-url");
+                    done();
+                }
+            }));
     });
 });

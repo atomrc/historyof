@@ -36,7 +36,7 @@ function view(story$, router) {
                             })
                         ])
                     ]),
-                    div([strong(story.title)]),
+                    div([strong(".title", story.title)]),
                     div(".actions", [
                         a(".edit", { props: { href: router.createHref("/story/" + story.id + "/edit") } }, [
                             i(".fa.fa-pencil")

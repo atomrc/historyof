@@ -8,9 +8,10 @@ function intent(DOM, dateUpdate$) {
     const dateChange$ = dateUpdate$
         .map(date => ({ date: date }));
 
-    const update$ = DOM
-        .select("input, textarea")
-        .events("keyup")
+    const update$ = xs.merge(
+            DOM.select("input").events("keyup"),
+            DOM.select("textarea").events("keyup")
+        )
         .map(ev => ({ [ev.target.name]: ev.target.value }));
 
     const submit$ = DOM

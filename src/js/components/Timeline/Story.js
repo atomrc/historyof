@@ -25,14 +25,16 @@ function view(story$, router, options$) {
         .map(([story, options]) => {
             if (!story) { return null; }
             const text = options.full ? p(story.description) : null;
-            const title = options.full ? h1(story.title) : strong(story.title);
+            const title = options.full ?
+                h1(story.title) :
+                a({ props: { href: router.createHref("/story/" + story.id) }}, [
+                    strong(story.title)
+                ]);
 
             return div(".story", { class: { selected: options.selected } }, [
                 header([
                     div(".infos", [
-                        a({ props: { href: router.createHref("/story/" + story.id) }}, [
-                            title
-                        ]),
+                        title,
                         div([
                             em(".date", [
                                 story.date.toLocaleString(undefined, {

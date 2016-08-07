@@ -53,7 +53,7 @@ function main(sources) {
 }
 
 var drivers = {
-    DOM: makeDOMDriver("#main", { transposition: true }),
+    DOM: makeDOMDriver("body", { transposition: true }),
     api: apiDriver,
     auth0: makeAuth0Driver("tDjcxZrzyKB8a5SPqwn4XqJfdSvW4FXi", "atomrc.eu.auth0.com"),
     router: makeRouterDriver(createHistory())

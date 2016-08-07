@@ -73,8 +73,8 @@ function render(editedStory$, readStory$, user$, stories$, storiesListView$, sto
                     ])
                 ]),
                 div(".timeline-content", [
-                    div([storiesListView]),
-                    mainView
+                    storiesListView,
+                    div(".main", [mainView])
                 ])
             ])
         });

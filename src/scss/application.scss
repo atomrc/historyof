@@ -153,14 +153,12 @@ button, input[type=submit] {
         overflow: auto;
         flex-grow: 1;
         padding: 1em 3em;
+        > * {
+            margin: auto;
+            max-width: 40em;
+        }
     }
 
-}
-
-.toggle {
-    &.closed {
-        display: none;
-    }
 }
 
 button.material {

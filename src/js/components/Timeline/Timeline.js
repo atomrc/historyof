@@ -8,10 +8,6 @@ import StoriesList from "./StoriesList";
 import model from "./model";
 
 function intent(DOM, storyAction$, formAction$) {
-    const showFormAction$ = DOM
-        .select("button.show-form")
-        .events("click");
-
     const removeAction$ = storyAction$
         .filter(action => action.type === "remove")
 
@@ -26,7 +22,6 @@ function intent(DOM, storyAction$, formAction$) {
 
 
     return {
-        showFormAction$,
         createAction$: formAction$
             .filter(action => action.type === "create")
             .map(action => action.story),
@@ -112,7 +107,6 @@ function Timeline(sources) {
         .remember();
 
     const {
-        showFormAction$,
         createAction$,
         updateAction$,
         removeAction$,
@@ -123,10 +117,10 @@ function Timeline(sources) {
         editedStory$,
         readStory$,
         stories$
-    } = model(showFormAction$, createAction$, updateAction$, edit$, read$, removeAction$, api);
+    } = model(createAction$, updateAction$, edit$, read$, removeAction$, api);
 
-    const storiesList = StoriesList({ ...sources, stories$: stories$ });
-    const storyReader = Story({ ...sources, story$: readStory$, full: true });
+    const storiesList = StoriesList({ ...sources, stories$: stories$, selectedElement$: readStory$ });
+    const storyReader = Story({ ...sources, story$: readStory$, options$: xs.of({ full: true }) });
     const storyForm = isolate(StoryForm)({DOM, props: { story$: editedStory$ }});
 
     storyActionProxy$.imitate(storyReader.action$);

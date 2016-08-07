@@ -1,5 +1,5 @@
 import xs from "xstream";
-import {form, input, div, a, button, textarea, span} from "@cycle/dom";
+import {form, input, div, a, button, textarea} from "@cycle/dom";
 import uuid from "uuid";
 
 import Pikaday from "./Pikaday";

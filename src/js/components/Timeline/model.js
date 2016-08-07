@@ -12,7 +12,7 @@ function find(stories, id) {
     return stories.filter((story) => story.id === id)[0];
 }
 
-function model(showFormAction$, createAction$, updateAction$, edit$, read$, removeAction$, api) {
+function model(createAction$, updateAction$, edit$, read$, removeAction$, api) {
     const initialStories$ = api
         .select("fetchStories")
         .done$

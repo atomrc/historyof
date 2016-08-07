@@ -153,7 +153,7 @@ form {
             border-left: solid 5px transparent;
             border-bottom: solid 1px #EEE;
 
-            &:hover {
+            &:hover, &.selected {
                 border-left: solid 5px $lightcoolblue;
             }
 

@@ -8,7 +8,11 @@ function add(stories, story) {
     return stories.concat(story);
 }
 
-function model(showFormAction$, createAction$, updateAction$, edit$, removeAction$, api) {
+function find(stories, id) {
+    return stories.filter((story) => story.id === id)[0];
+}
+
+function model(showFormAction$, createAction$, updateAction$, edit$, read$, removeAction$, api) {
     const initialStories$ = api
         .select("fetchStories")
         .done$
@@ -45,50 +49,28 @@ function model(showFormAction$, createAction$, updateAction$, edit$, removeActio
             return s1.date < s2.date ? 1 : -1;
         }));
 
-    const groupedStories$ = stories$
-        .map(stories => {
-            const groups = {};
-            const years = [];
-            for (var story of stories) {
-                const year = story.date.getFullYear();
-                groups[year] = groups[year] ? groups[year] : [];
+    const newStory$ = edit$
+        .filter(storyData => typeof storyData === "object");
 
-                groups[year].push(story);
-            }
+    const editStoryId$ = edit$
+        .filter(storyData => typeof storyData === "string")
 
-            for (var year of Object.keys(groups)) {
-                years.push({ year: year, stories: groups[year] });
-            }
-            return years.sort((y1, y2) => {
-                return y1.year === y2.year ?
-                    0 :
-                    y1.year > y2.year ? -1 : 1;
-            });
-        })
+    const editStory$ = xs
+        .combine(editStoryId$, stories$)
+        .map(([id, stories]) => find(stories, id));
 
-    const editedStory$ = edit$
-        .map(storyData => {
-            if (!storyData) {
-                return xs.of(null);
-            }
-            if (typeof storyData === "object") {
-                return xs.of(storyData);
-            }
+    const noEdit$ = edit$
+        .filter(storyData => !storyData);
 
-            return stories$
-                .filter(stories => stories.length > 0)
-                .take(1)
-                .map(stories => {
-                    const story = stories.filter(story => story.id === storyData)
-                    return story[0] || {};
-                })
-        })
-        .flatten()
+    const editedStory$ = xs.merge(newStory$, editStory$, noEdit$);
+
+    const readStory$ = xs.combine(stories$, read$)
+        .map(([stories, id]) => find(stories, id))
 
     return {
         editedStory$,
-        stories$,
-        years$: groupedStories$
+        readStory$,
+        stories$
     };
 }
 

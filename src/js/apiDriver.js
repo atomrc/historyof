@@ -21,7 +21,7 @@ function responseSelector(response$$) {
 
         const error$ = response$
             .replaceError(error => xs.of({ error: error }))
-        .filter(response => !!response.error)
+            .filter(response => !!response.error)
 
         return {
             start$: request$,

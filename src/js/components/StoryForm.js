@@ -84,7 +84,7 @@ function view(state$, pikadayView) {
                     pikadayView,
                     div(".actions", [
                         button(".flat-button", { props: { type: "submit", disabled: submitted }}, (submitted ? "Saving..." : "Save")),
-                        a(".cancel", { props: { href: "/me" }}, "Cancel")
+                        a(".cancel", { props: { href: "." }}, "Cancel")
                     ])
                 ])
             ])

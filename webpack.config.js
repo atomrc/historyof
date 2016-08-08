@@ -15,7 +15,6 @@ module.exports = {
             "@cycle/xstream-run",
             "@cycle/dom",
             "@cycle/isolate",
-            "@cycle/collection",
             "uuid",
             "cyclic-router",
             "cyclejs-auth0",

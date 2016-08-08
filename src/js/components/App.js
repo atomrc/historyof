@@ -27,7 +27,7 @@ function intent(DOM, api) {
         .error$
         .filter(({ error }) => error.status === 401);
 
-    return xs.merge(logoutAction$, invalidToken$);
+    return xs.merge(logoutAction$, invalidToken$)
 }
 
 function view(user$, childDOM$) {

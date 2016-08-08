@@ -40,15 +40,15 @@ function main(sources) {
         .map(({ path, value }) => value({ ...sources, router: sources.router.path(path) }))
         .remember();
 
-    function sinkGetter(sink) {
-        return (component) => component[sink] ? component[sink] : xs.empty()
+    function pluck(source$, attr) {
+        return source$.map(source => source[attr]).flatten();
     }
 
     return {
-        DOM: page$.map(sinkGetter("DOM")).flatten(),
-        api: page$.map(sinkGetter("api")).flatten(),
-        router: page$.map(sinkGetter("router")).flatten(),
-        auth0: page$.map(sinkGetter("auth0")).flatten()
+        DOM: pluck(page$, "DOM"),
+        api: pluck(page$, "api"),
+        router: pluck(page$, "router"),
+        auth0: pluck(page$, "auth0")
     };
 }
 

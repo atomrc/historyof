@@ -45,8 +45,10 @@ function model(createAction$, updateAction$, edit$, read$, removeAction$, api) {
     const stories$ = reducer$
         .fold((stories, reduceFn) => reduceFn(stories), [])
         .map(stories => stories.sort((s1, s2) => {
-            if (s1.date === s2.date) { return 0; }
-            return s1.date < s2.date ? 1 : -1;
+            if (s1.date.getTime() === s2.date.getTime()) {
+                return s1.created_at < s2.created_at ? 1 : -1;
+            }
+            return s1.date.getTime() < s2.date.getTime() ? 1 : -1;
         }));
 
     const newStory$ = edit$

@@ -1,5 +1,5 @@
 import xs from "xstream";
-import {div, a, header, em, h1, i, p, strong} from '@cycle/dom';
+import {div, a, header, em, h1, i, p, strong, button} from '@cycle/dom';
 
 function intent(DOM) {
     const navigate$ = DOM
@@ -11,7 +11,9 @@ function intent(DOM) {
         })
         .map(ev => ev.ownerTarget.pathname);
 
-    const remove$ = xs.empty();
+    const remove$ = DOM
+        .select(".remove")
+        .events("click")
 
     return {
         navigate$,
@@ -48,6 +50,9 @@ function view(story$, router, options$) {
                         div(".actions", [
                             a(".edit", { props: { href: router.createHref("/story/" + story.id + "/edit") } }, [
                                 i(".fa.fa-pencil")
+                            ]),
+                            button(".remove", [
+                                i(".fa.fa-trash")
                             ])
                         ])
                     ])
@@ -63,7 +68,10 @@ function Story({DOM, router, story$, options$}) {
     return {
         DOM: view(story$, router, options$),
         router: navigate$,
-        action$: remove$
+        action$: story$
+            .filter(story => !!story)
+            .map(story => remove$.mapTo({ type: "remove", story: story }))
+            .flatten()
     };
 }
 

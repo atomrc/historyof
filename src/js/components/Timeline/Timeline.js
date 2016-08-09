@@ -49,10 +49,6 @@ function render(editedStory$, readStory$, user$, stories$, storiesListView$, sto
                 formView:
                 readStory ? storyReader : null;
 
-            const reader = readStory ?
-                    div("#story-container", [storyReader]) :
-                    div();
-
             return div(".timeline", [
                 div(".timeline-header", [
                     table(".fluid-content", [
@@ -123,8 +119,9 @@ function Timeline(sources) {
     const storyReader = Story({ ...sources, story$: readStory$, options$: xs.of({ full: true }) });
     const storyForm = isolate(StoryForm)({DOM, props: { story$: editedStory$ }});
 
-    storyActionProxy$.imitate(storyReader.action$);
+    storyActionProxy$.imitate(xs.merge(storiesList.action$, storyReader.action$));
     storyFormActionProxy$.imitate(storyForm.action$);
+
 
     const apiCreateRequest$ = createAction$
         .map(story => ({

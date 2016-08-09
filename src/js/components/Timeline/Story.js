@@ -31,7 +31,7 @@ function view(story$, router, options$) {
                     strong(story.title)
                 ]);
 
-            return div(".story", { class: { selected: options.selected } }, [
+            return div(".story", {key: "story-" + story.id, class: { selected: options.selected } }, [
                 header([
                     div(".infos", [
                         title,

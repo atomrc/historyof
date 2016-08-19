@@ -3,7 +3,7 @@ import {div, span, h1, table, tr, td, i, a} from "@cycle/dom";
 import isolate from "@cycle/isolate";
 
 import Story from "./Story";
-import StoryForm from "../StoryForm";
+import StoryForm from "./StoryForm";
 import StoriesList from "./StoriesList";
 import model from "./model";
 

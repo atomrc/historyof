@@ -8,7 +8,7 @@ import xstreamAdapter from '@cycle/xstream-adapter';
 import select from "snabbdom-selector";
 import jsdom from "mocha-jsdom";
 
-import {generateListener} from "../helpers";
+import {generateListener} from "../../helpers";
 import xs from "xstream";
 
 describe("Timeline Component", () => {

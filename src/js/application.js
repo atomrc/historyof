@@ -1,4 +1,3 @@
-import xs from "xstream";
 import {run} from "@cycle/xstream-run";
 
 import {makeDOMDriver} from "@cycle/dom";
@@ -55,7 +54,12 @@ function main(sources) {
 var drivers = {
     DOM: makeDOMDriver("body", { transposition: true }),
     api: apiDriver,
-    auth0: makeAuth0Driver("tDjcxZrzyKB8a5SPqwn4XqJfdSvW4FXi", "atomrc.eu.auth0.com"),
+    auth0: makeAuth0Driver("tDjcxZrzyKB8a5SPqwn4XqJfdSvW4FXi", "atomrc.eu.auth0.com", {
+        auth: {
+            params: { scope: "openid nickname" },
+            responseType: "token"
+        }
+    }),
     router: makeRouterDriver(createHistory())
 };
 

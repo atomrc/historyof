@@ -142,7 +142,7 @@ describe("StoriesContainer Component", () => {
             props: {
                 Child: (sources) => ({
                     DOM: sources.props.stories$.map(stories => div(".stories-count", stories.length)),
-                    action$: xs.of({ type: "remove", param: 0 })
+                    action$: xs.of({ type: "remove", params: 0 })
                 })
             }
         });
@@ -173,7 +173,7 @@ describe("StoriesContainer Component", () => {
         });
     });
 
-    describe("Add story action", () => {
+    describe("Create story action", () => {
         const sources = getSources({
             api: {
                 select: (selector) => {
@@ -189,7 +189,7 @@ describe("StoriesContainer Component", () => {
             props: {
                 Child: (sources) => ({
                     DOM: sources.props.stories$.map(stories => div(".stories-count", stories.length)),
-                    action$: xs.of({ type: "add", param: { title: "new story", id: 2 }})
+                    action$: xs.of({ type: "create", params: { title: "new story", id: 2 }})
                 })
             }
         });
@@ -236,7 +236,7 @@ describe("StoriesContainer Component", () => {
             props: {
                 Child: (sources) => ({
                     DOM: sources.props.stories$.map(stories => div(".stories-count", stories.length)),
-                    action$: xs.of({ type: "update", param: { title: "updated title", id: 1 }})
+                    action$: xs.of({ type: "update", params: { title: "updated title", id: 1 }})
                 })
             }
         });

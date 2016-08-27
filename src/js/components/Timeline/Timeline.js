@@ -1,6 +1,5 @@
 import xs from "xstream";
 import {div, span, h1, table, tr, td, i, a} from "@cycle/dom";
-import isolate from "@cycle/isolate";
 
 import Story from "./Story";
 import StoryForm from "./StoryForm";
@@ -12,9 +11,8 @@ function intent(DOM) {
         .events("click")
         .map(ev => {
             ev.preventDefault()
-            return ev;
+            return ev.ownerTarget.pathname;
         })
-        .map(ev => ev.ownerTarget.pathname);
 
     return { navigate$ };
 }
@@ -61,7 +59,7 @@ function render(user$, stories$, mode$, storiesListView$, reader$, editor$, rout
 }
 
 function Timeline(sources) {
-    const {DOM, router, props} = sources;
+    const {DOM, router, api, props} = sources;
     const { user$, stories$ } = props;
 
     const storyActionProxy$ = xs.create();
@@ -104,13 +102,18 @@ function Timeline(sources) {
     const storyReader = Story({ ...sources, story$: readStory$, options$: xs.of({ full: true }) });
     const storyForm = StoryForm({DOM, props: { story$: editedStory$ }});
 
+    const backToStory$ = api
+        .select("updateStory, createStory")
+        .done$
+        .map(story => router.createHref("/story/" + story.id))
+
     storyActionProxy$.imitate(xs.merge(storiesList.action$, storyReader.action$));
     storyFormActionProxy$.imitate(storyForm.action$);
 
     return {
         DOM: render(user$, stories$, mode$, storiesList.DOM, storyReader.DOM, storyForm.DOM, router),
-        router: xs.merge(navigate$, storyForm.router, storyReader.router, storiesList.router),
-        action$: storyActionProxy$
+        router: xs.merge(navigate$, backToStory$, storyReader.router, storiesList.router),
+        action$: xs.merge(storyFormActionProxy$, storyActionProxy$)
     };
 }
 

@@ -42,7 +42,7 @@
     "uuid": "^2.0.1",
     "webpack": "^1.13.0",
     "whatwg-fetch": "^1.0.0",
-    "xstream": "^5.0.0"
+    "xstream": "^6.0.0"
   },
   "devDependencies": {
     "babel-plugin-transform-object-rest-spread": "^6.8.0",

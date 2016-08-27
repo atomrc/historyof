@@ -70,7 +70,7 @@ function Story({DOM, router, story$, options$}) {
         router: navigate$,
         action$: story$
             .filter(story => !!story)
-            .map(story => remove$.mapTo({ type: "remove", story: story }))
+            .map(story => remove$.mapTo({ type: "remove", params: story.id }))
             .flatten()
     };
 }

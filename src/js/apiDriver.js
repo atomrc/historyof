@@ -55,7 +55,8 @@ function apiDriver(request$) {
 
     const select = responseSelector(response$$);
     const noop = () => {};
-    response$$.addListener({next: noop, error: noop, complete: noop});
+    const errorLog = console.error.bind(console);
+    response$$.addListener({next: noop, error: errorLog, complete: noop});
 
     return {
         ...select(),

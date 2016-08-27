@@ -27,12 +27,25 @@ function wrapper(key) {
 }
 
 function StoriesList(sources) {
-    const {stories$, selectedElement$} = sources;
+    const {stories$, selectedId$} = sources;
+
+    const sortedStories$ = stories$
+        .map(stories => stories.sort(function sortStories(s1, s2) {
+            if (s1.date === s2.date) {
+                return 0;
+            }
+            return s1.date < s2.date ? 1 : -1;
+        }));
 
     const viewDatas$ = xs
-        .combine(stories$, selectedElement$.startWith(null))
-        .map(([stories, element]) => {
-            return stories.map(story => ({ key: "story-element-" + story.id, story$: xs.of(story), options$: xs.of({ selected: story.id === (element || {}).id })}));
+        .combine(sortedStories$, selectedId$.startWith(null))
+        .map(([stories, selectedId]) => {
+            return stories.map(story => ({
+                id: story.id,
+                key: "story-element-" + story.id,
+                story$: xs.of(story),
+                options$: xs.of({ selected: story.id === selectedId })
+            }));
         });
 
     const storyItems$ = viewDatas$
@@ -40,6 +53,7 @@ function StoriesList(sources) {
             var element = isolate(Story)({ ...sources, ...data })
             return {
                 ...element,
+                action$: element.action$.map(action => ({ ...action, params: data.id })),
                 DOM: element.DOM.map(wrapper(data.key))
             };
         }))

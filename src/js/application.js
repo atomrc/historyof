@@ -1,4 +1,5 @@
 import {run} from "@cycle/xstream-run";
+import xs from "xstream";
 
 import {makeDOMDriver} from "@cycle/dom";
 import {makeAuth0Driver, protect} from "cyclejs-auth0";
@@ -9,6 +10,7 @@ import dropRepeats from 'xstream/extra/dropRepeats'
 
 import App from "./components/App";
 import Timeline from "./components/Timeline/Timeline";
+import StoriesContainer from "./components/StoriesContainer";
 
 function compose(Parent, Child) {
     return function (sources) {
@@ -23,7 +25,7 @@ function main(sources) {
     const {router} = sources;
 
     const match$ = router.define({
-        "/me": protect(compose(App, Timeline), {
+        "/me": protect(compose(App, compose(StoriesContainer, Timeline)), {
             auth0ShowParams: {
                 authParams: { scope: "openid nickname" },
                 responseType: "token"
@@ -40,7 +42,7 @@ function main(sources) {
         .remember();
 
     function pluck(source$, attr) {
-        return source$.map(source => source[attr]).flatten();
+        return source$.map(source => source[attr] || xs.empty()).flatten();
     }
 
     return {

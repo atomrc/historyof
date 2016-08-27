@@ -27,16 +27,16 @@ function wrapper(key) {
 }
 
 function StoriesList(sources) {
-    const {stories$, selectedElement$} = sources;
+    const {stories$, selectedId$} = sources;
 
     const viewDatas$ = xs
-        .combine(stories$, selectedElement$.startWith(null))
-        .map(([stories, element]) => {
+        .combine(stories$, selectedId$.startWith(null))
+        .map(([stories, selectedId]) => {
             return stories.map(story => ({
                 id: story.id,
                 key: "story-element-" + story.id,
                 story$: xs.of(story),
-                options$: xs.of({ selected: story.id === (element || {}).id })
+                options$: xs.of({ selected: story.id === selectedId })
             }));
         });
 

@@ -19,18 +19,19 @@ function intent(DOM) {
     return { navigate$ };
 }
 
-function render(user$, stories$, storiesListView$, reader$, editor$, router) {
+function render(user$, stories$, mode$, storiesListView$, reader$, editor$, router) {
     return xs
         .combine(
             user$,
             stories$,
+            mode$,
             storiesListView$,
             reader$,
             editor$
         )
-        .map(([user, stories, storiesListView, reader, editor]) => {
+        .map(([user, stories, mode, storiesListView, reader, editor]) => {
 
-            const mainView = reader || editor;
+            const mainView = mode === "read" ? reader : editor;
 
             return div(".timeline", [
                 div(".timeline-header", [
@@ -83,18 +84,31 @@ function Timeline(sources) {
 
     const { navigate$ } = intent(DOM);
 
-    const editedStory$ = xs.of(null);
-    const readStory$ = xs.of(null);
+    const editedStory$ = xs
+        .combine(stories$, edit$)
+        .map(([stories, id]) => {
+            if (typeof id === "string") {
+                return stories.filter(s => s.id === id)[0];
+            }
+            return id;
+        })
 
-    const storiesList = StoriesList({ ...sources, stories$: stories$, selectedElement$: read$ });
+    const readStory$ = xs
+        .combine(stories$, read$)
+        .map(([stories, id]) => stories.filter(s => s.id === id)[0]);
+
+    const mode$ = editedStory$
+        .map(editedStory => editedStory ? "edit" : "read")
+
+    const storiesList = StoriesList({ ...sources, stories$: stories$, selectedId$: read$ });
     const storyReader = Story({ ...sources, story$: readStory$, options$: xs.of({ full: true }) });
-    const storyForm = StoryForm({DOM, props: { story$: xs.of(null) }});
+    const storyForm = StoryForm({DOM, props: { story$: editedStory$ }});
 
     storyActionProxy$.imitate(xs.merge(storiesList.action$, storyReader.action$));
     storyFormActionProxy$.imitate(storyForm.action$);
 
     return {
-        DOM: render(user$, stories$, storiesList.DOM, storyReader.DOM, storyForm.DOM, router),
+        DOM: render(user$, stories$, mode$, storiesList.DOM, storyReader.DOM, storyForm.DOM, router),
         router: xs.merge(navigate$, storyForm.router, storyReader.router, storiesList.router),
         action$: storyActionProxy$
     };

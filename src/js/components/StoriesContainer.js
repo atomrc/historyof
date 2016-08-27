@@ -52,7 +52,7 @@ function StoriesContainer(sources) {
 
             return {
                 action: translations[action.type],
-                params: action.param
+                params: action.params
             }
         });
 
@@ -60,11 +60,10 @@ function StoriesContainer(sources) {
         .take(1)
         .mapTo({ action: "fetchStories" })
 
-
     childActionProxy$.imitate(child.action$);
 
     return {
-        DOM: child.DOM,
+        ...child,
         api: xs.merge(fetchStories$, apiRequest$)
     }
 }

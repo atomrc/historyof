@@ -32,7 +32,12 @@ function StoriesList(sources) {
     const viewDatas$ = xs
         .combine(stories$, selectedElement$.startWith(null))
         .map(([stories, element]) => {
-            return stories.map(story => ({ key: "story-element-" + story.id, story$: xs.of(story), options$: xs.of({ selected: story.id === (element || {}).id })}));
+            return stories.map(story => ({
+                id: story.id,
+                key: "story-element-" + story.id,
+                story$: xs.of(story),
+                options$: xs.of({ selected: story.id === (element || {}).id })
+            }));
         });
 
     const storyItems$ = viewDatas$
@@ -40,6 +45,7 @@ function StoriesList(sources) {
             var element = isolate(Story)({ ...sources, ...data })
             return {
                 ...element,
+                action$: element.action$.map(action => ({ ...action, params: data.id })),
                 DOM: element.DOM.map(wrapper(data.key))
             };
         }))

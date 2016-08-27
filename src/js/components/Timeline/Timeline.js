@@ -5,12 +5,8 @@ import isolate from "@cycle/isolate";
 import Story from "./Story";
 import StoryForm from "./StoryForm";
 import StoriesList from "./StoriesList";
-import model from "./model";
 
-function intent(DOM, storyAction$, formAction$) {
-    const removeAction$ = storyAction$
-        .filter(action => action.type === "remove")
-
+function intent(DOM) {
     const navigate$ = DOM
         .select("a")
         .events("click")
@@ -20,34 +16,21 @@ function intent(DOM, storyAction$, formAction$) {
         })
         .map(ev => ev.ownerTarget.pathname);
 
-
-    return {
-        createAction$: formAction$
-            .filter(action => action.type === "create")
-            .map(action => action.story),
-        updateAction$: formAction$
-            .filter(action => action.type === "update")
-            .map(action => action.story),
-        removeAction$,
-        navigate$
-    };
+    return { navigate$ };
 }
 
-function render(editedStory$, readStory$, user$, stories$, storiesListView$, storyReader$, formView$, router) {
+function render(user$, stories$, storiesListView$, reader$, editor$, router) {
     return xs
         .combine(
-            editedStory$,
-            readStory$,
             user$,
             stories$,
             storiesListView$,
-            storyReader$,
-            formView$
+            reader$,
+            editor$
         )
-        .map(([editedStory, readStory, user, stories, storiesListView, storyReader, formView]) => {
-            const mainView = editedStory ?
-                formView:
-                readStory ? storyReader : null;
+        .map(([user, stories, storiesListView, reader, editor]) => {
+
+            const mainView = reader || editor;
 
             return div(".timeline", [
                 div(".timeline-header", [
@@ -77,82 +60,43 @@ function render(editedStory$, readStory$, user$, stories$, storiesListView$, sto
 }
 
 function Timeline(sources) {
-    const {DOM, api, router, props} = sources;
-    const { user$ } = props;
+    const {DOM, router, props} = sources;
+    const { user$, stories$ } = props;
 
     const storyActionProxy$ = xs.create();
     const storyFormActionProxy$ = xs.create();
 
-    const editRoute$ = router.define({
-        "/story/create": { date: new Date() },
-        "/story/:id/edit": id => id,
-        "*": false
-    });
-
-    const readRoute$ = router.define({
-        "/story/:id": id => id,
-        "*": false
-    });
-
-    const edit$ = editRoute$
+    const edit$ = router.define({
+            "/story/create": { date: new Date() },
+            "/story/:id/edit": id => id,
+            "*": false
+        })
         .map(({ value }) => value)
         .remember();
 
-    const read$ = readRoute$
+    const read$ = router.define({
+            "/story/:id": id => id,
+            "*": false
+        })
         .map(({ value }) => value)
         .remember();
 
-    const {
-        createAction$,
-        updateAction$,
-        removeAction$,
-        navigate$
-    } = intent(DOM, storyActionProxy$, storyFormActionProxy$);
+    const { navigate$ } = intent(DOM);
 
-    const {
-        editedStory$,
-        readStory$,
-        stories$
-    } = model(createAction$, updateAction$, edit$, read$, removeAction$, api);
+    const editedStory$ = xs.of(null);
+    const readStory$ = xs.of(null);
 
-    const storiesList = StoriesList({ ...sources, stories$: stories$, selectedElement$: readStory$ });
+    const storiesList = StoriesList({ ...sources, stories$: stories$, selectedElement$: read$ });
     const storyReader = Story({ ...sources, story$: readStory$, options$: xs.of({ full: true }) });
-    const storyForm = isolate(StoryForm)({DOM, props: { story$: editedStory$ }});
+    const storyForm = StoryForm({DOM, props: { story$: xs.of(null) }});
 
     storyActionProxy$.imitate(xs.merge(storiesList.action$, storyReader.action$));
     storyFormActionProxy$.imitate(storyForm.action$);
 
-
-    const apiCreateRequest$ = createAction$
-        .map(story => ({
-            action: "createStory",
-            params: { story }
-        }))
-
-    const apiUpdateRequest$ = updateAction$
-        .map(story => ({
-            action: "updateStory",
-            params: { story }
-        }))
-
-    const apiRemoveRequest$ = removeAction$
-        .map(action => ({ action: "removeStory", params: { story: action.story } }))
-
-    const apiFetchStoriesRequest$ = user$
-        .filter(user => user)
-        .mapTo({ action: "fetchStories" });
-
-    const storySaved$ = api
-        .select("createStory, updateStory")
-        .done$;
-
-    const backToStory$ = storySaved$
-        .map(response => "/me/story/" + response.id)
-
     return {
-        DOM: render(editedStory$, readStory$, user$, stories$, storiesList.DOM, storyReader.DOM, storyForm.DOM, router),
-        api: xs.merge(apiRemoveRequest$, apiCreateRequest$, apiUpdateRequest$, apiFetchStoriesRequest$),
-        router: xs.merge(navigate$, storyForm.router, storyReader.router, storiesList.router, backToStory$)
+        DOM: render(user$, stories$, storiesList.DOM, storyReader.DOM, storyForm.DOM, router),
+        router: xs.merge(navigate$, storyForm.router, storyReader.router, storiesList.router),
+        action$: storyActionProxy$
     };
 }
 

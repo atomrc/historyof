@@ -6,19 +6,20 @@ const reducers = {
     update: newStory => stories => stories
         .filter((story) => story.id !== newStory.id)
         .concat(newStory),
-    add: story => stories => stories.concat(story),
+    create: story => stories => stories.concat(story),
     find: id => stories => stories.filter((story) => story.id === id)[0]
 }
 
 function getReducer(action) {
-    return reducers[action.type](action.param);
+    return reducers[action.type](action.params);
 }
 
 function model(initialStories$, action$) {
     const resetAction$ = initialStories$
-        .map(stories => ({ type: "reset", param: stories }));
+        .map(stories => ({ type: "reset", params: stories }));
 
-    const reducer$ = xs.merge(resetAction$, action$)
+    const reducer$ = xs
+        .merge(resetAction$, action$)
         .map(getReducer);
 
     const stories$ = reducer$
@@ -46,7 +47,7 @@ function StoriesContainer(sources) {
         .map(action => {
             const translations = {
                 "remove": "removeStory",
-                "add": "createStory",
+                "create": "createStory",
                 "update": "updateStory"
             };
 

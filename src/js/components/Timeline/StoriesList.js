@@ -29,8 +29,16 @@ function wrapper(key) {
 function StoriesList(sources) {
     const {stories$, selectedId$} = sources;
 
+    const sortedStories$ = stories$
+        .map(stories => stories.sort(function sortStories(s1, s2) {
+            if (s1.date === s2.date) {
+                return 0;
+            }
+            return s1.date < s2.date ? 1 : -1;
+        }));
+
     const viewDatas$ = xs
-        .combine(stories$, selectedId$.startWith(null))
+        .combine(sortedStories$, selectedId$.startWith(null))
         .map(([stories, selectedId]) => {
             return stories.map(story => ({
                 id: story.id,

@@ -64,8 +64,8 @@ describe("StoryForm Component", () => {
             .addListener(generateListener({
                 next: action => {
                     expect(action.type).to.be("create")
-                    expect(action.story.title).to.be("story one")
-                    expect(action.story.id).not.to.be(null)
+                    expect(action.params.title).to.be("story one")
+                    expect(action.params.id).not.to.be(null)
                     done();
                 }
             }));
@@ -97,8 +97,8 @@ describe("StoryForm Component", () => {
             .addListener(generateListener({
                 next: action => {
                     expect(action.type).to.be("update")
-                    expect(action.story.title).to.be("updated story")
-                    expect(action.story.id).to.be("story-uuid")
+                    expect(action.params.title).to.be("updated story")
+                    expect(action.params.id).to.be("story-uuid")
                     done();
                 }
             }));

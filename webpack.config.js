@@ -1,7 +1,7 @@
 var webpack = require("webpack");
 
 var plugins = [
-    new webpack.optimize.CommonsChunkPlugin("vendor", "vendor.js")
+    new webpack.optimize.CommonsChunkPlugin({ name: "vendor", filename: "vendor.js"})
 ];
 if (process.env.NODE_ENV === "production") {
     plugins.push(new webpack.optimize.UglifyJsPlugin())
@@ -32,7 +32,7 @@ module.exports = {
         loaders: [
             {
                 test: /src\/js.*\.js$/,
-                loader: 'babel',
+                loader: 'babel-loader',
                 query: {
                     presets: ['es2015'],
                     plugins: ['transform-object-rest-spread']

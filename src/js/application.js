@@ -7,6 +7,7 @@ import {makeRouterDriver} from 'cyclic-router'
 import apiDriver from "./apiDriver";
 import {createHistory} from "history";
 import dropRepeats from 'xstream/extra/dropRepeats'
+import switchPath from "switch-path"
 
 import App from "./components/App";
 import Timeline from "./components/Timeline/Timeline";
@@ -62,7 +63,7 @@ var drivers = {
             responseType: "token"
         }
     }),
-    router: makeRouterDriver(createHistory())
+    router: makeRouterDriver(createHistory(), switchPath)
 };
 
 run(main, drivers);

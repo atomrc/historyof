@@ -1,7 +1,7 @@
 var webpack = require("webpack");
 
 var plugins = [
-    new webpack.optimize.CommonsChunkPlugin("vendor", "vendor.js")
+    new webpack.optimize.CommonsChunkPlugin({ name: "vendor", filename: "vendor.js"})
 ];
 if (process.env.NODE_ENV === "production") {
     plugins.push(new webpack.optimize.UglifyJsPlugin())
@@ -15,7 +15,6 @@ module.exports = {
             "@cycle/xstream-run",
             "@cycle/dom",
             "@cycle/isolate",
-            "@cycle/collection",
             "uuid",
             "cyclic-router",
             "cyclejs-auth0",
@@ -32,23 +31,8 @@ module.exports = {
     module: {
         loaders: [
             {
-                test: /node_modules[\\\/]auth0-lock[\\\/].*\.js$/,
-                loaders: [
-                    'transform-loader/cacheable?brfs',
-                    'transform-loader/cacheable?packageify'
-                ]
-            },
-            {
-                test: /node_modules[\\\/]auth0-lock[\\\/].*\.ejs$/,
-                loader: 'transform-loader/cacheable?ejsify'
-            },
-            {
-                test: /\.json$/,
-                loader: 'json-loader'
-            },
-            {
                 test: /src\/js.*\.js$/,
-                loader: 'babel',
+                loader: 'babel-loader',
                 query: {
                     presets: ['es2015'],
                     plugins: ['transform-object-rest-spread']

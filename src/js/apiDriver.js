@@ -21,7 +21,7 @@ function responseSelector(response$$) {
 
         const error$ = response$
             .replaceError(error => xs.of({ error: error }))
-        .filter(response => !!response.error)
+            .filter(response => !!response.error)
 
         return {
             start$: request$,
@@ -51,9 +51,12 @@ function apiDriver(request$) {
                 response$
             };
         })
+        .remember()
 
-    //response$$.addListener({next: () => {}, error: console.error.bind(console), complete: () => {}});
     const select = responseSelector(response$$);
+    const noop = () => {};
+    const errorLog = console.error.bind(console);
+    response$$.addListener({next: noop, error: errorLog, complete: noop});
 
     return {
         ...select(),

@@ -1,6 +1,6 @@
 /*global __dirname, it, describe, require*/
 "use strict";
-const APP_PATH = __dirname + "/../../../src/js";
+const APP_PATH = __dirname + "/../../../../src/js";
 
 import xs from "xstream";
 import expect from "expect.js";
@@ -9,14 +9,14 @@ import jsdom from "mocha-jsdom";
 import {mockDOMSource} from '@cycle/dom';
 import xstreamAdapter from '@cycle/xstream-adapter';
 
-import {generateListener} from "../helpers";
+import {generateListener} from "../../helpers";
 
 describe("StoryForm Component", () => {
 
     jsdom();
 
     it("should display empty form if no story given", (done) => {
-        const StoryForm = require(APP_PATH + "/components/StoryForm").default;
+        const StoryForm = require(APP_PATH + "/components/Timeline/StoryForm").default;
 
         const sources = {
             DOM: mockDOMSource(xstreamAdapter, {}),
@@ -39,7 +39,7 @@ describe("StoryForm Component", () => {
     });
 
     it("should return a create action if user submits a new story", (done) => {
-        const StoryForm = require(APP_PATH + "/components/StoryForm").default;
+        const StoryForm = require(APP_PATH + "/components/Timeline/StoryForm").default;
 
         const sources = {
             DOM: mockDOMSource(xstreamAdapter, {
@@ -64,15 +64,15 @@ describe("StoryForm Component", () => {
             .addListener(generateListener({
                 next: action => {
                     expect(action.type).to.be("create")
-                    expect(action.story.title).to.be("story one")
-                    expect(action.story.id).not.to.be(null)
+                    expect(action.params.title).to.be("story one")
+                    expect(action.params.id).not.to.be(null)
                     done();
                 }
             }));
     });
 
     it("should return an update action if user edits a story", (done) => {
-        const StoryForm = require(APP_PATH + "/components/StoryForm").default;
+        const StoryForm = require(APP_PATH + "/components/Timeline/StoryForm").default;
 
         const sources = {
             DOM: mockDOMSource(xstreamAdapter, {
@@ -97,15 +97,15 @@ describe("StoryForm Component", () => {
             .addListener(generateListener({
                 next: action => {
                     expect(action.type).to.be("update")
-                    expect(action.story.title).to.be("updated story")
-                    expect(action.story.id).to.be("story-uuid")
+                    expect(action.params.title).to.be("updated story")
+                    expect(action.params.id).to.be("story-uuid")
                     done();
                 }
             }));
     });
 
     it("fill form with edited story if given", (done) => {
-        const StoryForm = require(APP_PATH + "/components/StoryForm").default;
+        const StoryForm = require(APP_PATH + "/components/Timeline/StoryForm").default;
 
         const sources = {
             DOM: mockDOMSource(xstreamAdapter, {}),

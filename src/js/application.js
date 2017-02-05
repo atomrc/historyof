@@ -1,5 +1,5 @@
-import xs from "xstream";
 import {run} from "@cycle/xstream-run";
+import xs from "xstream";
 
 import {makeDOMDriver} from "@cycle/dom";
 import {makeAuth0Driver, protect} from "cyclejs-auth0";
@@ -7,9 +7,11 @@ import {makeRouterDriver} from 'cyclic-router'
 import apiDriver from "./apiDriver";
 import {createHistory} from "history";
 import dropRepeats from 'xstream/extra/dropRepeats'
+import switchPath from "switch-path"
 
 import App from "./components/App";
 import Timeline from "./components/Timeline/Timeline";
+import StoriesContainer from "./components/StoriesContainer";
 
 function compose(Parent, Child) {
     return function (sources) {
@@ -24,7 +26,7 @@ function main(sources) {
     const {router} = sources;
 
     const match$ = router.define({
-        "/me": protect(compose(App, Timeline), {
+        "/me": protect(compose(App, compose(StoriesContainer, Timeline)), {
             auth0ShowParams: {
                 authParams: { scope: "openid nickname" },
                 responseType: "token"
@@ -40,23 +42,28 @@ function main(sources) {
         .map(({ path, value }) => value({ ...sources, router: sources.router.path(path) }))
         .remember();
 
-    function sinkGetter(sink) {
-        return (component) => component[sink] ? component[sink] : xs.empty()
+    function pluck(source$, attr) {
+        return source$.map(source => source[attr] || xs.empty()).flatten();
     }
 
     return {
-        DOM: page$.map(sinkGetter("DOM")).flatten(),
-        api: page$.map(sinkGetter("api")).flatten(),
-        router: page$.map(sinkGetter("router")).flatten(),
-        auth0: page$.map(sinkGetter("auth0")).flatten()
+        DOM: pluck(page$, "DOM"),
+        api: pluck(page$, "api"),
+        router: pluck(page$, "router"),
+        auth0: pluck(page$, "auth0")
     };
 }
 
 var drivers = {
-    DOM: makeDOMDriver("#main", { transposition: true }),
+    DOM: makeDOMDriver("body", { transposition: true }),
     api: apiDriver,
-    auth0: makeAuth0Driver("tDjcxZrzyKB8a5SPqwn4XqJfdSvW4FXi", "atomrc.eu.auth0.com"),
-    router: makeRouterDriver(createHistory())
+    auth0: makeAuth0Driver("tDjcxZrzyKB8a5SPqwn4XqJfdSvW4FXi", "atomrc.eu.auth0.com", {
+        auth: {
+            params: { scope: "openid nickname" },
+            responseType: "token"
+        }
+    }),
+    router: makeRouterDriver(createHistory(), switchPath)
 };
 
 run(main, drivers);

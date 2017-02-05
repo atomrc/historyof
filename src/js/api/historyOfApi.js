@@ -103,22 +103,22 @@ var api = {
             });
     },
 
-    createStory: function (token, { story }) {
+    createStory: function (token, story) {
         return requestProtected("/u/stories", token, {
                 method: "POST",
                 body: story
             }).then(initStory);
     },
 
-    updateStory: function (token, { story }) {
+    updateStory: function (token, story) {
         return requestProtected(generateUrl(config.urlPattern, { eid: story.id }), token, {
             method: "PUT",
             body: story
         }).then(initStory);
     },
 
-    removeStory: function (token, { story }) {
-        requestProtected(generateUrl(config.urlPattern, { eid: story.id }), token, {
+    removeStory: function (token, storyid) {
+        requestProtected(generateUrl(config.urlPattern, { eid: storyid }), token, {
             method: "DELETE"
         });
     }

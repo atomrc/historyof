@@ -1,62 +1,35 @@
 import xs from "xstream";
 import {div, span, h1, table, tr, td, i, a} from "@cycle/dom";
-import Collection from '@cycle/collection';
-import isolate from "@cycle/isolate";
 
-import StoryForm from "../StoryForm";
-import Year from "../Year";
-import model from "./model";
+import Story from "./Story";
+import StoryForm from "./StoryForm";
+import StoriesList from "./StoriesList";
 
-function intent(DOM, itemActions$, formAction$) {
-    const showFormAction$ = DOM
-        .select("button.show-form")
-        .events("click");
-
-    const removeAction$ = itemActions$
-        .filter(action => action.type === "remove")
-
+function intent(DOM) {
     const navigate$ = DOM
         .select("a")
         .events("click")
         .map(ev => {
             ev.preventDefault()
-            return ev;
+            return ev.ownerTarget.pathname;
         })
-        .map(ev => ev.target.pathname);
 
-
-    return {
-        showFormAction$,
-        createAction$: formAction$
-            .filter(action => action.type === "create")
-            .map(action => action.story),
-        updateAction$: formAction$
-            .filter(action => action.type === "update")
-            .map(action => action.story),
-        removeAction$,
-        navigate$
-    };
+    return { navigate$ };
 }
 
-function render(editedStory$, user$, yearsView$, formView$, router) {
+function render(user$, stories$, mode$, storiesListView$, reader$, editor$, router) {
     return xs
         .combine(
-            editedStory$,
             user$,
-            yearsView$,
-            formView$
+            stories$,
+            mode$,
+            storiesListView$,
+            reader$,
+            editor$
         )
-        .map(([editedStory, user, yearsView, formView]) => {
-            const form = editedStory ?
-                div("#form-container", {
-                    style: {
-                        opacity: "0",
-                        transition: "opacity .5s",
-                        delayed: { opacity: "1" },
-                        remove: { opacity: "0" }
-                    }
-                }, [formView]) :
-                null;
+        .map(([user, stories, mode, storiesListView, reader, editor]) => {
+
+            const mainView = mode === "read" ? reader : editor;
 
             return div(".timeline", [
                 div(".timeline-header", [
@@ -64,7 +37,7 @@ function render(editedStory$, user$, yearsView$, formView$, router) {
                         tr([
                             td([
                                 h1((user || {}).nickname + "'s timeline"),
-                                span(yearsView.length + " stories")
+                                span(stories.length + " stories")
                             ]),
                             td([
                                 a(".flat-button.show-form", {
@@ -77,86 +50,70 @@ function render(editedStory$, user$, yearsView$, formView$, router) {
                         ])
                     ])
                 ]),
-                div(".fluid-content.stories-container", yearsView),
-                form
+                div(".timeline-content", [
+                    storiesListView,
+                    div(".main", [mainView])
+                ])
             ])
         });
 }
 
 function Timeline(sources) {
-    const {DOM, api, router, props} = sources;
-    const { user$ } = props;
+    const {DOM, router, api, props} = sources;
+    const { user$, stories$ } = props;
 
-    const yearsActionProxy$ = xs.create();
+    const storyActionProxy$ = xs.create();
     const storyFormActionProxy$ = xs.create();
 
-    const match$ = router.define({
-        "/": false,
-        "/story/create": { date: new Date() },
-        "/story/:id/edit": id => id
-    });
-
-    const edit$ = match$
+    const edit$ = router.define({
+            "/story/create": { date: new Date() },
+            "/story/:id/edit": id => id,
+            "*": false
+        })
         .map(({ value }) => value)
         .remember();
 
-    const {
-        showFormAction$,
-        createAction$,
-        updateAction$,
-        removeAction$,
-        navigate$
-    } = intent(DOM, yearsActionProxy$, storyFormActionProxy$);
+    const read$ = router.define({
+            "/story/:id": id => id,
+            "*": false
+        })
+        .map(({ value }) => value)
+        .remember();
 
-    const {
-        editedStory$,
-        years$,
-        stories$
-    } = model(showFormAction$, createAction$, updateAction$, edit$, removeAction$, api);
+    const { navigate$ } = intent(DOM);
 
-    const yearsItems$ = Collection
-        .gather(
-            Year,
-            sources,
-            years$.map(years => years.map(year => ({ id: year.year, year$: { year: year.year, stories: year.stories }})))
-        );
+    const editedStory$ = xs
+        .combine(stories$, edit$)
+        .map(([stories, id]) => {
+            if (typeof id === "string") {
+                return stories.filter(s => s.id === id)[0];
+            }
+            return id;
+        })
 
-    const storyForm = isolate(StoryForm)({DOM, props: { story$: editedStory$ }});
+    const readStory$ = xs
+        .combine(stories$, read$)
+        .map(([stories, id]) => stories.filter(s => s.id === id)[0]);
 
-    const itemNavigate$ = Collection.merge(yearsItems$, item => item.router);
-    const yearsAction$ = Collection.merge(yearsItems$, item => item.action$);
-    const yearsView$ = Collection.pluck(yearsItems$, item => item.DOM);
+    const mode$ = editedStory$
+        .map(editedStory => editedStory ? "edit" : "read")
 
-    yearsActionProxy$.imitate(yearsAction$);
+    const storiesList = StoriesList({ ...sources, stories$: stories$, selectedId$: read$ });
+    const storyReader = Story({ ...sources, story$: readStory$, options$: xs.of({ full: true }) });
+    const storyForm = StoryForm({DOM, props: { story$: editedStory$ }});
+
+    const backToStory$ = api
+        .select("updateStory, createStory")
+        .done$
+        .map(story => router.createHref("/story/" + story.id))
+
+    storyActionProxy$.imitate(xs.merge(storiesList.action$, storyReader.action$));
     storyFormActionProxy$.imitate(storyForm.action$);
 
-    const apiCreateRequest$ = createAction$
-        .map(story => ({
-            action: "createStory",
-            params: { story }
-        }))
-
-    const apiUpdateRequest$ = updateAction$
-        .map(story => ({
-            action: "updateStory",
-            params: { story }
-        }))
-
-    const apiRemoveRequest$ = removeAction$
-        .map(action => ({ action: "removeStory", params: { story: action.story } }))
-
-    const apiFetchStoriesRequest$ = user$
-        .filter(user => user)
-        .mapTo({ action: "fetchStories" });
-
-    const storySaved$ = api
-        .select("createStory, updateStory")
-        .done$;
-
     return {
-        DOM: render(editedStory$, user$, yearsView$, storyForm.DOM, router),
-        api: xs.merge(apiRemoveRequest$, apiCreateRequest$, apiUpdateRequest$, apiFetchStoriesRequest$),
-        router: xs.merge(navigate$, itemNavigate$, storyForm.router, storySaved$.mapTo("/me"))
+        DOM: render(user$, stories$, mode$, storiesList.DOM, storyReader.DOM, storyForm.DOM, router),
+        router: xs.merge(navigate$, backToStory$, storyReader.router, storiesList.router),
+        action$: xs.merge(storyFormActionProxy$, storyActionProxy$)
     };
 }
 

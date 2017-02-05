@@ -6,8 +6,6 @@ var request = require("supertest"),
     setup = require("./setup"),
     jwt = require("jsonwebtoken"),
     app = require("../../app"),
-    assign = Object.assign,
-    Promise = require("es6-promise").Promise,
     expect = require("expect.js");
 
 beforeEach(function (done) {

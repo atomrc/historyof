@@ -1,5 +1,5 @@
 import xs from "xstream";
-import {form, input, div, a, button, textarea, span} from "@cycle/dom";
+import {form, input, div, a, button, textarea} from "@cycle/dom";
 import uuid from "uuid";
 
 import Pikaday from "./Pikaday";
@@ -23,19 +23,9 @@ function intent(DOM, dateUpdate$) {
         })
         .mapTo("add");
 
-    const navigate$ = DOM
-        .select("a")
-        .events("click")
-        .map(ev => {
-            ev.preventDefault()
-            return ev;
-        })
-        .map(ev => ev.target.pathname);
-
     return {
         update$: xs.merge(update$, dateChange$),
-        submit$,
-        navigate$
+        submit$
     };
 }
 
@@ -84,7 +74,7 @@ function view(state$, pikadayView) {
                     pikadayView,
                     div(".actions", [
                         button(".flat-button", { props: { type: "submit", disabled: submitted }}, (submitted ? "Saving..." : "Save")),
-                        a(".cancel", { props: { href: "/me" }}, "Cancel")
+                        a(".cancel", { props: { href: "." }}, "Cancel")
                     ])
                 ])
             ])
@@ -96,7 +86,7 @@ function StoryForm({ DOM, props }) {
 
     const dateUpdateProxy$ = xs.create();
 
-    const {submit$, update$, navigate$} = intent(DOM, dateUpdateProxy$);
+    const {submit$, update$} = intent(DOM, dateUpdateProxy$);
     const state$ = model(story$, update$, submit$);
     const pikaday = Pikaday({ DOM, props: { date$: state$.map(state => state.story.date) }});
 
@@ -111,17 +101,16 @@ function StoryForm({ DOM, props }) {
     const addActionSink$ = submit$
         .mapTo(storyToAdd$.take(1))
         .flatten()
-        .map(story => ({ type: (story.id ? "update" : "create"), story: story }))
+        .map(story => ({ type: (story.id ? "update" : "create"), params: story }))
         .map(addAction => {
             if (addAction.type === "update") {
                 return addAction;
             }
-            return { ...addAction, story: { ...addAction.story, id: uuid.v1() }};
+            return { ...addAction, params: { ...addAction.params, id: uuid.v1() }};
         })
 
     return {
         DOM: vTree$,
-        router: navigate$,
         action$: addActionSink$
     };
 }

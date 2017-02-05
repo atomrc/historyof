@@ -24,54 +24,10 @@ button, input[type=submit] {
     }
 }
 
-form {
-    .async-input {
-        position: relative;
-        .loader {
-            display: none;
-            position: absolute;
-            right: 1em;
-            top: 1em;
-        }
-        &.loading {
-            .loader {
-                display: inline;
-            }
-        }
-    }
-}
-
-#login {
+#app {
     height: 100%;
-    font-size: 1.5em;
-    text-align: center;
-    h1 {
-        margin: 0;
-        padding: 1em;
-    }
-}
-
-#login-form {
-    background-color: #eee;
-    box-sizing: border-box;
-    padding: 1.5em;
-    width: 500px;
-    margin: auto;
-    border-radius: 5px;
-    input {
-        box-sizing: border-box;
-        font-size: inherit;
-        padding: 0.8em;
-        border: none;
-        border-bottom: solid 1px #eee;
-        display: block;
-        width: 100%;
-        margin: auto;
-    }
-    input[type=submit] {
-        padding: 0.4em;
-        margin-top: 1em;
-    }
+    display: flex;
+    flex-direction: column;
 }
 
 #app-notifier {
@@ -93,11 +49,6 @@ form {
             background-color: green;
         }
     }
-}
-
-#app {
-    height: 100%;
-    background-color: #EEE;
 }
 
 #app-header {
@@ -133,38 +84,10 @@ form {
     padding: 0.5em;
 }
 
-#timelines-menu {
-    width: 200px;
-    padding: 1em;
-    .timeline {
-        a {
-            color: inherit;
-            text-decoration: none;
-        }
-        &.current {
-            a {
-                font-weight: bold;
-            }
-        }
-    }
-    ul {
-        margin: 0;
-        list-style: none;
-        padding: 0;
-        li {
-            padding: 0.3em 0.3em;
-            border-bottom: solid 1px #DDD;
-            .actions {
-                display: none;
-            }
-            &:hover .actions {
-                //display: inline;
-            }
-        }
-    }
-}
-
 .timeline {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
     .timeline-header {
         background-color: white;
         box-shadow: 0 -2px 6px 1px #DDD inset;
@@ -180,31 +103,22 @@ form {
         }
     }
 
-    h2 {
-        margin: 0;
-        padding: 1em 0 0.5em 0;
+    .timeline-content {
+        display: flex;
+        flex-grow: 1;
     }
 
-    .stories-container {
-        margin: auto;
-        .year {
-            position: relative;
-
-            h2 {
-                font-family: Open Sans, sans-serif;
-                font-weight: normal;
-                text-shadow: 1px 1px 0px white;
-                text-align: center;
-                color: #F06;
-            }
-        }
-
+    .stories-list {
+        overflow: auto;
+        width: 250px;
+        min-width: 250px;
+        border-right: 1px solid #EEE;
         .story {
             background-color: #fff;
             border-left: solid 5px transparent;
             border-bottom: solid 1px #EEE;
 
-            &:hover {
+            &:hover, &.selected {
                 border-left: solid 5px $lightcoolblue;
             }
 
@@ -235,12 +149,16 @@ form {
             }
         }
     }
-}
-
-.toggle {
-    &.closed {
-        display: none;
+    .main {
+        overflow: auto;
+        flex-grow: 1;
+        padding: 1em 3em;
+        > * {
+            margin: auto;
+            max-width: 40em;
+        }
     }
+
 }
 
 button.material {
@@ -253,35 +171,23 @@ button.material {
     cursor: pointer;
 }
 
-#form-container {
-    position: fixed;
-    left: 0;
-    top: 0;
-    height: 100%;
-    width: 100%;
-    font-size: 1.25em;
-    z-index: 1;
-    box-sizing: border-box;
-    background-color: white;
-    padding: 3em;
 
-    #story-form {
-        margin: auto;
-        input, textarea {
-            width: 100%;
-            font-family: Arial;
-            font-size: 1em;
-            padding: 30px 10px;
-            box-sizing: border-box;
-            border: none;
-            color: inherit;
-        }
-        input[name=title] {
-            font-size: 1.5em;
-        }
-        .actions {
-            text-align: right;
-        }
+#story-form {
+    margin: auto;
+    input, textarea {
+        width: 100%;
+        font-family: Arial;
+        font-size: 1em;
+        padding: 30px 10px;
+        box-sizing: border-box;
+        border: none;
+        color: inherit;
+    }
+    input[name=title] {
+        font-size: 1.5em;
+    }
+    .actions {
+        text-align: right;
     }
 }
 

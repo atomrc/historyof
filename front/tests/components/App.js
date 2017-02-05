@@ -1,6 +1,6 @@
 /*global __dirname, it, describe, require*/
 "use strict";
-const APP_PATH = __dirname + "/../../../src/js";
+const APP_PATH = __dirname + "/../../src/js";
 
 import xs from "xstream";
 import expect from "expect.js";
@@ -40,12 +40,13 @@ describe("App Component", () => {
 
         it("should display user", (done) => {
             DOM
+                .take(1)
                 .addListener(generateListener({
                     next: vtree => {
                         const pseudoElm = select(".pseudo", vtree)[0];
                         expect(pseudoElm.text).to.be("felix");
-                        done();
-                    }
+                    },
+                    complete: done
                 }));
 
         });

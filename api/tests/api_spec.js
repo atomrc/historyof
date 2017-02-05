@@ -5,7 +5,7 @@
 var request = require("supertest"),
     setup = require("./setup"),
     jwt = require("jsonwebtoken"),
-    app = require("../../app"),
+    app = require("../app"),
     expect = require("expect.js");
 
 beforeEach(function (done) {

@@ -1,0 +1,28 @@
+{
+  "name": "historyof.us",
+  "version": "1.0.0",
+  "description": "Don't forget any of what has made you",
+  "main": "index.js",
+  "scripts": {
+    "install": "db-migrate up",
+    "test": "db-migrate up && mocha tests/api_spec.js"
+  },
+  "author": "Thomas Belin",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.3.0",
+    "body-parser": "^1.15.0",
+    "db-migrate": "^0.9.23",
+    "dotenv": "^4.0.0",
+    "express": "^4.13.4",
+    "express-jwt": "^5.1.0",
+    "jsonwebtoken": "^7.0.0",
+    "jwt-decode": "^2.1.0",
+    "sequelize": "^3.20.0"
+  },
+  "devDependencies": {
+    "expect.js": "^0.3.1",
+    "mocha": "^3.0.0",
+    "supertest": "^3.0.0"
+  }
+}

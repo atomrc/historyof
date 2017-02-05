@@ -1,6 +1,6 @@
 /*global __dirname, it, describe, require*/
 "use strict";
-const APP_PATH = __dirname + "/../../../src/js";
+const APP_PATH = __dirname + "/../../src/js";
 
 import expect from "expect.js";
 

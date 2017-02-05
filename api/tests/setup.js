@@ -2,8 +2,8 @@
 
 "use strict";
 require("dotenv").load();
-var db = require("../../db/db"),
-    config = require("../../config/config");
+var db = require("../db/db"),
+    config = require("../config/config");
 
 var sequelize = db.init(config.db);
 
